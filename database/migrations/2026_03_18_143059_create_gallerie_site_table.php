@@ -5,12 +5,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('fonctionnalite', function (Blueprint $table) {
+        Schema::create('galerie_site', function (Blueprint $table) {
             $table->id();
             $table->string('libelle');
             $table->string('type');
+            $table->boolean('status')->default(1);
+            $table->foreignId('id_site')->constrained('site')->cascadeOnDelete();
             $table->timestamps();
         });
     }
-    public function down(): void { Schema::dropIfExists('fonctionnalite'); }
+    public function down(): void { Schema::dropIfExists('galerie_site'); }
 };

@@ -1,0 +1,2939 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Benin Tourisme API",
+        "description": "API de gestion et promotion des sites touristiques et événements culturels du Bénin",
+        "contact": {
+            "email": "ajustinsena@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Serveur API local"
+        }
+    ],
+    "paths": {
+        "/admins": {
+            "get": {
+                "tags": [
+                    "Admins"
+                ],
+                "summary": "Lister les administrateurs",
+                "operationId": "386c6e73dbe80d4674b7a41e6a708ecf",
+                "responses": {
+                    "200": {
+                        "description": "Liste des admins"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Admins"
+                ],
+                "summary": "Créer un admin",
+                "operationId": "83528520c2f718a850babe9cded3828a",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "prenom",
+                                    "tel",
+                                    "pass"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string"
+                                    },
+                                    "prenom": {
+                                        "type": "string"
+                                    },
+                                    "tel": {
+                                        "type": "string"
+                                    },
+                                    "pass": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Admin créé"
+                    }
+                }
+            }
+        },
+        "/admins/{id}": {
+            "get": {
+                "tags": [
+                    "Admins"
+                ],
+                "summary": "Afficher un admin",
+                "operationId": "d8d7dec34d9f94676a74b136926d5618",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails de l'admin"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Admins"
+                ],
+                "summary": "Mettre à jour un admin",
+                "operationId": "91ac65a79b1b48b4ff74aaafc4b27d8d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nom": {
+                                        "type": "string"
+                                    },
+                                    "prenom": {
+                                        "type": "string"
+                                    },
+                                    "tel": {
+                                        "type": "string"
+                                    },
+                                    "pass": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Admin mis à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Admins"
+                ],
+                "summary": "Supprimer un admin",
+                "operationId": "486f654de4856410fde2554c3b64b177",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Admin supprimé"
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Inscription d'un nouvel utilisateur",
+                "operationId": "0903f2e0df1a8857bee538fc055417f0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "prenom",
+                                    "tel",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Doe"
+                                    },
+                                    "prenom": {
+                                        "type": "string",
+                                        "example": "John"
+                                    },
+                                    "tel": {
+                                        "type": "string",
+                                        "example": "+22901000000"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "nationalite": {
+                                        "type": "string",
+                                        "example": "Béninoise"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Inscription réussie"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Connexion utilisateur",
+                "operationId": "2dd578ff7aba2721293dac66833b27d1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie"
+                    },
+                    "422": {
+                        "description": "Identifiants incorrects"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Déconnexion",
+                "operationId": "68a6108af04af5e3bc1ea68a6c6f1299",
+                "responses": {
+                    "200": {
+                        "description": "Déconnexion réussie"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Profil de l'utilisateur connecté",
+                "operationId": "e18baa7d6dfc432241dca2fc1985ce40",
+                "responses": {
+                    "200": {
+                        "description": "Profil retourné"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/update-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Mise à jour du mot de passe",
+                "operationId": "4bbf51be0a31831a698b3e75871c478d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mot de passe mis à jour"
+                    },
+                    "422": {
+                        "description": "Mot de passe actuel incorrect"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/avis": {
+            "get": {
+                "tags": [
+                    "Avis"
+                ],
+                "summary": "Lister les avis",
+                "operationId": "ebc64993ff32e91562d915f0a5ee9d6e",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id_utilisation",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des avis"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Avis"
+                ],
+                "summary": "Créer un avis",
+                "operationId": "abe4cf8f11bf7ad43c5ede395e8071d9",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id_utilisation",
+                                    "message"
+                                ],
+                                "properties": {
+                                    "id_utilisation": {
+                                        "type": "integer"
+                                    },
+                                    "message": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "en_attente",
+                                            "approuve",
+                                            "rejete"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Avis créé"
+                    }
+                }
+            }
+        },
+        "/avis/{id}": {
+            "get": {
+                "tags": [
+                    "Avis"
+                ],
+                "summary": "Afficher un avis",
+                "operationId": "f3721cec8f3364f5259986fa0fd091d1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails de l'avis"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Avis"
+                ],
+                "summary": "Mettre à jour un avis",
+                "operationId": "5091eaeec101b0fbe32849e323412607",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "message": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "en_attente",
+                                            "approuve",
+                                            "rejete"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Avis mis à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Avis"
+                ],
+                "summary": "Supprimer un avis",
+                "operationId": "c502451e80eec12131f45f6cd1157638",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Avis supprimé"
+                    }
+                }
+            }
+        },
+        "/avis/{id}/approuver": {
+            "patch": {
+                "tags": [
+                    "Avis"
+                ],
+                "summary": "Approuver un avis",
+                "operationId": "61a4e3e9a8a75c2b965010e9b40daf2c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Avis approuvé"
+                    }
+                }
+            }
+        },
+        "/avis/{id}/rejeter": {
+            "patch": {
+                "tags": [
+                    "Avis"
+                ],
+                "summary": "Rejeter un avis",
+                "operationId": "153c578b3cef689af349064d52e72245",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Avis rejeté"
+                    }
+                }
+            }
+        },
+        "/cat-evenmts": {
+            "get": {
+                "tags": [
+                    "Categories Evenements"
+                ],
+                "summary": "Lister les catégories d'événements",
+                "operationId": "c62b9a7c72ae9c3d0de336fc461dc7d9",
+                "responses": {
+                    "200": {
+                        "description": "Liste des catégories"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Categories Evenements"
+                ],
+                "summary": "Créer une catégorie d'événement",
+                "operationId": "8d25e79ed7e33c22005f718089f50f99",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "libelle"
+                                ],
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Catégorie créée"
+                    }
+                }
+            }
+        },
+        "/cat-evenmts/{id}": {
+            "get": {
+                "tags": [
+                    "Categories Evenements"
+                ],
+                "summary": "Afficher une catégorie d'événement",
+                "operationId": "c4acae4ecd6703fb65b16621f2c71796",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails de la catégorie"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Categories Evenements"
+                ],
+                "summary": "Mettre à jour une catégorie d'événement",
+                "operationId": "3f943a13d879943eb2053d6e00478fdb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Catégorie mise à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Categories Evenements"
+                ],
+                "summary": "Supprimer une catégorie d'événement",
+                "operationId": "678dc2e5b935f3c8a3d08028996e45dd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Catégorie supprimée"
+                    }
+                }
+            }
+        },
+        "/cat-sites": {
+            "get": {
+                "tags": [
+                    "Categories Sites"
+                ],
+                "summary": "Lister les catégories de sites",
+                "operationId": "327546aa0c5f4ee37cd149dbdbfecf78",
+                "responses": {
+                    "200": {
+                        "description": "Liste des catégories"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Categories Sites"
+                ],
+                "summary": "Créer une catégorie de site",
+                "operationId": "1a2ed119c3c2cc03dacc7d08b7c8f4e0",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "libelle"
+                                ],
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Catégorie créée"
+                    }
+                }
+            }
+        },
+        "/cat-sites/{id}": {
+            "get": {
+                "tags": [
+                    "Categories Sites"
+                ],
+                "summary": "Afficher une catégorie de site",
+                "operationId": "217747e27606fac9f38ae1d7221bfa65",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails de la catégorie"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Categories Sites"
+                ],
+                "summary": "Mettre à jour une catégorie de site",
+                "operationId": "c63bbd230b75fd39a36176d259b7c4d2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Catégorie mise à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Categories Sites"
+                ],
+                "summary": "Supprimer une catégorie de site",
+                "operationId": "0283e4942825d64e09a6edc9c2e70824",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Catégorie supprimée"
+                    }
+                }
+            }
+        },
+        "/evenements": {
+            "get": {
+                "tags": [
+                    "Evenements"
+                ],
+                "summary": "Lister les événements",
+                "operationId": "cb3fe99770d07fbf0ef6055fcb0d97c1",
+                "parameters": [
+                    {
+                        "name": "libelle",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id_cat_evenmt",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "date_debut",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des événements"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Evenements"
+                ],
+                "summary": "Créer un événement",
+                "operationId": "b6750e72640a383312a6c52103c65794",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "libelle",
+                                    "adresse",
+                                    "longitude",
+                                    "latitude",
+                                    "date_debut",
+                                    "date_fin",
+                                    "id_cat_evenmt",
+                                    "id_admin"
+                                ],
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "adresse": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "date_debut": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "date_fin": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "en_attente",
+                                            "valide",
+                                            "rejete",
+                                            "suspendu"
+                                        ]
+                                    },
+                                    "id_cat_evenmt": {
+                                        "type": "integer"
+                                    },
+                                    "id_admin": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Événement créé"
+                    }
+                }
+            }
+        },
+        "/evenements/{id}": {
+            "get": {
+                "tags": [
+                    "Evenements"
+                ],
+                "summary": "Afficher un événement",
+                "operationId": "d3c3d5db859af4b93c56fe34b317d5d6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails de l'événement"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Evenements"
+                ],
+                "summary": "Mettre à jour un événement",
+                "operationId": "a560c6b9aaebaebe0c882d949be3d3f5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "adresse": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "date_debut": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "date_fin": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "en_attente",
+                                            "valide",
+                                            "rejete",
+                                            "suspendu"
+                                        ]
+                                    },
+                                    "id_cat_evenmt": {
+                                        "type": "integer"
+                                    },
+                                    "id_admin": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Événement mis à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Evenements"
+                ],
+                "summary": "Supprimer un événement",
+                "operationId": "65d7612bffacfa7b26143d533d721e73",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Événement supprimé"
+                    }
+                }
+            }
+        },
+        "/evenements/{id}/valider": {
+            "patch": {
+                "tags": [
+                    "Evenements"
+                ],
+                "summary": "Valider un événement",
+                "operationId": "e60721adc1bca6edba030dd9e58505e5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Événement validé"
+                    }
+                }
+            }
+        },
+        "/evenements/{id}/rejeter": {
+            "patch": {
+                "tags": [
+                    "Evenements"
+                ],
+                "summary": "Rejeter un événement",
+                "operationId": "251230611d6d0c91945319b89f20ab0f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Événement rejeté"
+                    }
+                }
+            }
+        },
+        "/fonctionnalites": {
+            "get": {
+                "tags": [
+                    "Fonctionnalites"
+                ],
+                "summary": "Lister les fonctionnalités",
+                "operationId": "230e997f756e42d82bbf66d396cfd2c4",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des fonctionnalités"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Fonctionnalites"
+                ],
+                "summary": "Créer une fonctionnalité",
+                "operationId": "b321cc3759ba5ca103bf5926faed4e20",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "libelle",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "admin",
+                                            "user",
+                                            "both"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Fonctionnalité créée"
+                    }
+                }
+            }
+        },
+        "/fonctionnalites/{id}": {
+            "get": {
+                "tags": [
+                    "Fonctionnalites"
+                ],
+                "summary": "Afficher une fonctionnalité",
+                "operationId": "94157bc7d563e547664379a8de78c216",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails de la fonctionnalité"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Fonctionnalites"
+                ],
+                "summary": "Mettre à jour une fonctionnalité",
+                "operationId": "4f16a412279bbdadfc95c9326633142b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "admin",
+                                            "user",
+                                            "both"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Fonctionnalité mise à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Fonctionnalites"
+                ],
+                "summary": "Supprimer une fonctionnalité",
+                "operationId": "dcc5a7244df09041101a785ab4924782",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Fonctionnalité supprimée"
+                    }
+                }
+            }
+        },
+        "/fonctionnalites/{id}/assigner-admin": {
+            "post": {
+                "tags": [
+                    "Fonctionnalites"
+                ],
+                "summary": "Assigner une fonctionnalité à un admin",
+                "operationId": "e14ed8dea6e25a7c0c59fd1499f95d24",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id_admin"
+                                ],
+                                "properties": {
+                                    "id_admin": {
+                                        "type": "integer"
+                                    },
+                                    "status": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Accès admin attribué"
+                    }
+                }
+            }
+        },
+        "/fonctionnalites/{id}/assigner-user": {
+            "post": {
+                "tags": [
+                    "Fonctionnalites"
+                ],
+                "summary": "Assigner une fonctionnalité à un utilisateur",
+                "operationId": "f551a1f7793457eca87c23d7ebd268d3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id_user"
+                                ],
+                                "properties": {
+                                    "id_user": {
+                                        "type": "integer"
+                                    },
+                                    "status": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Accès utilisateur attribué"
+                    }
+                }
+            }
+        },
+        "/galeries-sites": {
+            "get": {
+                "tags": [
+                    "Galeries Sites"
+                ],
+                "summary": "Lister les galeries de sites",
+                "operationId": "e99fd5fcead563dfb73b9cf276a41f8d",
+                "parameters": [
+                    {
+                        "name": "id_site",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des galeries de sites"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Galeries Sites"
+                ],
+                "summary": "Créer une galerie de site",
+                "operationId": "9310d6475a358c4a143c592916ed0a4a",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "libelle",
+                                    "type",
+                                    "id_site"
+                                ],
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "image",
+                                            "video"
+                                        ]
+                                    },
+                                    "status": {
+                                        "type": "boolean"
+                                    },
+                                    "id_site": {
+                                        "type": "integer"
+                                    },
+                                    "fichier": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Galerie créée"
+                    }
+                }
+            }
+        },
+        "/galeries-sites/{id}": {
+            "get": {
+                "tags": [
+                    "Galeries Sites"
+                ],
+                "summary": "Afficher une galerie de site",
+                "operationId": "48ed1d5a9c5bf978180e88722927d66f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Galerie de site"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Galeries Sites"
+                ],
+                "summary": "Mettre à jour une galerie de site",
+                "operationId": "8a8c76528668ed6f425fab8cadd24085",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "boolean"
+                                    },
+                                    "id_site": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Galerie mise à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Galeries Sites"
+                ],
+                "summary": "Supprimer une galerie de site",
+                "operationId": "1b02601af8e26ecef1aca0bb8650f828",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Galerie supprimée"
+                    }
+                }
+            }
+        },
+        "/galeries-evenements": {
+            "get": {
+                "tags": [
+                    "Galeries Evenements"
+                ],
+                "summary": "Lister les galeries d'événements",
+                "operationId": "3591fe8b1709e551b16f24caec2faca8",
+                "parameters": [
+                    {
+                        "name": "id_evnmt",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des galeries d'événements"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Galeries Evenements"
+                ],
+                "summary": "Créer une galerie d'événement",
+                "operationId": "8551e9c58af0db04444b8b4aa0d5e011",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "libelle",
+                                    "type",
+                                    "id_evnmt"
+                                ],
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "image",
+                                            "video"
+                                        ]
+                                    },
+                                    "status": {
+                                        "type": "boolean"
+                                    },
+                                    "id_evnmt": {
+                                        "type": "integer"
+                                    },
+                                    "fichier": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Galerie créée"
+                    }
+                }
+            }
+        },
+        "/galeries-evenements/{id}": {
+            "get": {
+                "tags": [
+                    "Galeries Evenements"
+                ],
+                "summary": "Afficher une galerie d'événement",
+                "operationId": "61d5801e0166395df62fc24e90a31daf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Galerie d'événement"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Galeries Evenements"
+                ],
+                "summary": "Mettre à jour une galerie d'événement",
+                "operationId": "53e42cd59c5b18c582fb73402f7135e0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "boolean"
+                                    },
+                                    "id_evnmt": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Galerie mise à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Galeries Evenements"
+                ],
+                "summary": "Supprimer une galerie d'événement",
+                "operationId": "a2041dfe6425127c689410842057b799",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Galerie supprimée"
+                    }
+                }
+            }
+        },
+        "/prix": {
+            "get": {
+                "tags": [
+                    "Prix"
+                ],
+                "summary": "Lister les prix",
+                "operationId": "db3777ee113eadf64cd202af66bf33b3",
+                "parameters": [
+                    {
+                        "name": "id_site",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id_evnmt",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des prix"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Prix"
+                ],
+                "summary": "Créer un prix",
+                "operationId": "712a549a7b608dcffbb9e993a2bd4346",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "libelle",
+                                    "montant"
+                                ],
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "montant": {
+                                        "type": "number"
+                                    },
+                                    "id_site": {
+                                        "type": "integer"
+                                    },
+                                    "id_evnmt": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Prix créé"
+                    }
+                }
+            }
+        },
+        "/prix/{id}": {
+            "get": {
+                "tags": [
+                    "Prix"
+                ],
+                "summary": "Afficher un prix",
+                "operationId": "3cb8b0d99bd656cfb2f327709ccc1bea",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails du prix"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Prix"
+                ],
+                "summary": "Mettre à jour un prix",
+                "operationId": "53de2984c2be4852fc6a12a2f8ff460f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "montant": {
+                                        "type": "number"
+                                    },
+                                    "id_site": {
+                                        "type": "integer"
+                                    },
+                                    "id_evnmt": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Prix mis à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Prix"
+                ],
+                "summary": "Supprimer un prix",
+                "operationId": "9a01357dc910ca05a819ab31fe8b9ace",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Prix supprimé"
+                    }
+                }
+            }
+        },
+        "/reservations": {
+            "get": {
+                "tags": [
+                    "Reservations"
+                ],
+                "summary": "Lister les réservations",
+                "operationId": "69fb15b9890a0559eb50e5e1777d9b64",
+                "parameters": [
+                    {
+                        "name": "id_user",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id_site",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id_evnmt",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "site",
+                                "evenement"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des réservations"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Reservations"
+                ],
+                "summary": "Créer une réservation",
+                "operationId": "1aabc7d432cc652e63cfc3fb514132cd",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "type",
+                                    "prix",
+                                    "nombre",
+                                    "id_user"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "site"
+                                    },
+                                    "prix": {
+                                        "type": "number"
+                                    },
+                                    "nombre": {
+                                        "type": "integer"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "id_site": {
+                                        "type": "integer"
+                                    },
+                                    "id_evnmt": {
+                                        "type": "integer"
+                                    },
+                                    "id_user": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Réservation créée"
+                    }
+                }
+            }
+        },
+        "/reservations/{id}": {
+            "get": {
+                "tags": [
+                    "Reservations"
+                ],
+                "summary": "Afficher une réservation",
+                "operationId": "4472ee4ed670cd72b7969d6e32473b92",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails de la réservation"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Reservations"
+                ],
+                "summary": "Mettre à jour une réservation",
+                "operationId": "3cb121a7272b76103c947578223bb7d5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "type": {
+                                        "type": "string"
+                                    },
+                                    "prix": {
+                                        "type": "number"
+                                    },
+                                    "nombre": {
+                                        "type": "integer"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "id_site": {
+                                        "type": "integer"
+                                    },
+                                    "id_evnmt": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Réservation mise à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Reservations"
+                ],
+                "summary": "Supprimer une réservation",
+                "operationId": "fa964cce3285d6c10989429c544421ca",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Réservation annulée"
+                    }
+                }
+            }
+        },
+        "/sites": {
+            "get": {
+                "tags": [
+                    "Sites"
+                ],
+                "summary": "Liste des sites",
+                "operationId": "61029bffba42b03ead16a3c82a321627",
+                "parameters": [
+                    {
+                        "name": "libelle",
+                        "in": "query",
+                        "description": "Filtrer par libelle",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id_cat_site",
+                        "in": "query",
+                        "description": "Filtrer par catégorie",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filtrer par status",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée des sites"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Sites"
+                ],
+                "summary": "Créer un site",
+                "operationId": "a04a76406c6b259e2996f4c4f37d1cdb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "libelle",
+                                    "adresse",
+                                    "longitude",
+                                    "latitude",
+                                    "id_cat_site",
+                                    "id_admin"
+                                ],
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "adresse": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "ouverture": {
+                                        "type": "string",
+                                        "example": "08:00"
+                                    },
+                                    "fermeture": {
+                                        "type": "string",
+                                        "example": "18:00"
+                                    },
+                                    "status": {
+                                        "type": "boolean"
+                                    },
+                                    "id_cat_site": {
+                                        "type": "integer"
+                                    },
+                                    "id_admin": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Site créé"
+                    }
+                }
+            }
+        },
+        "/sites/{id}": {
+            "get": {
+                "tags": [
+                    "Sites"
+                ],
+                "summary": "Afficher un site",
+                "operationId": "1157229d7d075840c759e156b651760d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails du site"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Sites"
+                ],
+                "summary": "Mettre à jour un site",
+                "operationId": "d74a517aaed2c73d05e62c60babe15c7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "adresse": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "ouverture": {
+                                        "type": "string",
+                                        "example": "08:00"
+                                    },
+                                    "fermeture": {
+                                        "type": "string",
+                                        "example": "18:00"
+                                    },
+                                    "status": {
+                                        "type": "boolean"
+                                    },
+                                    "id_cat_site": {
+                                        "type": "integer"
+                                    },
+                                    "id_admin": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Site mis à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Sites"
+                ],
+                "summary": "Supprimer un site",
+                "operationId": "0fd2990fbee87f35f6f8c427059b166d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Site supprimé"
+                    }
+                }
+            }
+        },
+        "/api/health": {
+            "get": {
+                "tags": [
+                    "Test"
+                ],
+                "summary": "Vérification de l'état de l'API",
+                "operationId": "f55bd3481fce0c2668d768f679fc876d",
+                "responses": {
+                    "200": {
+                        "description": "API en ligne",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Benin Tourisme API is running"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/test-swagger": {
+            "get": {
+                "tags": [
+                    "Test"
+                ],
+                "summary": "Endpoint de test pour vérifier que Swagger détecte les opérations",
+                "operationId": "58a4a367ab42538a80561d3e339993ec",
+                "responses": {
+                    "200": {
+                        "description": "API fonctionne correctement",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Test Swagger OK"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tickets": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Liste des tickets",
+                "operationId": "aa5e80a6f31951862c4554396ce1b1fd",
+                "parameters": [
+                    {
+                        "name": "id_reservation",
+                        "in": "query",
+                        "description": "Filtrer par réservation",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des tickets"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Créer un ticket",
+                "operationId": "f9282cd452389d3cc5d06f0cf782b672",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "numero",
+                                    "id_reservation"
+                                ],
+                                "properties": {
+                                    "numero": {
+                                        "type": "string",
+                                        "example": "TCK-1234"
+                                    },
+                                    "id_reservation": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ticket créé"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/tickets/{id}": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Afficher un ticket",
+                "operationId": "58c0560497a0fe53498de3da53eee228",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ticket affiché"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Mettre à jour un ticket",
+                "operationId": "c1fed2bc5f00f4279c3d38565e671762",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "numero": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ticket mis à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Supprimer un ticket",
+                "operationId": "cec7be57c0153e6b94020ab492e0ab2b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ticket supprimé"
+                    }
+                }
+            }
+        },
+        "/tickets/verifier": {
+            "post": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Vérifier un ticket par numéro",
+                "operationId": "547d231e6b8e8d197d732f0ead4a76fa",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "numero"
+                                ],
+                                "properties": {
+                                    "numero": {
+                                        "type": "string",
+                                        "example": "TCK-1234"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ticket vérifié"
+                    },
+                    "404": {
+                        "description": "Ticket introuvable"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Liste des utilisateurs",
+                "operationId": "7e2f5799553ec93c9c43e2a58490d447",
+                "responses": {
+                    "200": {
+                        "description": "Liste des utilisateurs paginée"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Créer un utilisateur",
+                "operationId": "a1fce870c566eb5fc0cf3178ec5d2fed",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "prenom",
+                                    "tel",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Doe"
+                                    },
+                                    "prenom": {
+                                        "type": "string",
+                                        "example": "John"
+                                    },
+                                    "tel": {
+                                        "type": "string",
+                                        "example": "+22901000000"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "nationalite": {
+                                        "type": "string",
+                                        "example": "Béninoise"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Afficher un utilisateur",
+                "operationId": "910a0c7cf580e1c605648d82a4e57f46",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur affiché"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Mettre à jour un utilisateur",
+                "operationId": "ddfe232db1870b82493bf8bd25596d37",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nom": {
+                                        "type": "string"
+                                    },
+                                    "prenom": {
+                                        "type": "string"
+                                    },
+                                    "tel": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    },
+                                    "nationalite": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur mis à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Supprimer un utilisateur",
+                "operationId": "43dd20becb1f47444e484cbb18ce345c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur supprimé"
+                    }
+                }
+            }
+        },
+        "/utilisations": {
+            "get": {
+                "tags": [
+                    "Utilisations"
+                ],
+                "summary": "Liste des utilisations",
+                "operationId": "50eb3e9335d2f4b2b41dd0067544a4a0",
+                "parameters": [
+                    {
+                        "name": "id_ticket",
+                        "in": "query",
+                        "description": "Filtrer par ID de ticket",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "date_visite",
+                        "in": "query",
+                        "description": "Filtrer par date de visite",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des utilisations"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Utilisations"
+                ],
+                "summary": "Créer une utilisation",
+                "operationId": "70b7f65fb0cdebb663cf90f07b35dd07",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "date_visite",
+                                    "heure",
+                                    "id_ticket"
+                                ],
+                                "properties": {
+                                    "date_visite": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "heure": {
+                                        "type": "string",
+                                        "example": "14:30"
+                                    },
+                                    "id_ticket": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utilisation créée"
+                    },
+                    "422": {
+                        "description": "Erreur de validation ou ticket déjà utilisé"
+                    }
+                }
+            }
+        },
+        "/utilisations/{id}": {
+            "get": {
+                "tags": [
+                    "Utilisations"
+                ],
+                "summary": "Afficher une utilisation",
+                "operationId": "5b72bfb5defb7f2b7f2c4bd2458dedd4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisation affichée"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Utilisations"
+                ],
+                "summary": "Mettre à jour une utilisation",
+                "operationId": "5afbbb57acf43313ef2992e4ab4bb952",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "date_visite": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "heure": {
+                                        "type": "string",
+                                        "example": "14:30"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Utilisation mise à jour"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Utilisations"
+                ],
+                "summary": "Supprimer une utilisation",
+                "operationId": "c3504b60d839350309e9bd6d84adc69e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisation supprimée"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "JWT Authorization header using the Bearer scheme"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Authentification"
+        },
+        {
+            "name": "Admins",
+            "description": "Administrateurs"
+        },
+        {
+            "name": "Sites",
+            "description": "Sites touristiques"
+        },
+        {
+            "name": "Evenements",
+            "description": "Événements culturels"
+        },
+        {
+            "name": "Prix",
+            "description": "Tarifs"
+        },
+        {
+            "name": "Reservations",
+            "description": "Réservations"
+        },
+        {
+            "name": "Tickets",
+            "description": "Tickets de visite"
+        },
+        {
+            "name": "Utilisations",
+            "description": "Utilisations des tickets"
+        },
+        {
+            "name": "Avis",
+            "description": "Avis et commentaires"
+        },
+        {
+            "name": "Users",
+            "description": "Utilisateurs"
+        },
+        {
+            "name": "Fonctionnalites",
+            "description": "Gestion des droits"
+        },
+        {
+            "name": "Test",
+            "description": "Endpoints de diagnostic"
+        },
+        {
+            "name": "Categories Evenements",
+            "description": "Categories Evenements"
+        },
+        {
+            "name": "Categories Sites",
+            "description": "Categories Sites"
+        },
+        {
+            "name": "Galeries Sites",
+            "description": "Galeries Sites"
+        },
+        {
+            "name": "Galeries Evenements",
+            "description": "Galeries Evenements"
+        }
+    ],
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ]
+}

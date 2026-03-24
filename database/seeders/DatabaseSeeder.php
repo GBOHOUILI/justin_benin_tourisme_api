@@ -2,24 +2,34 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // ─── Admin par défaut ──────────────────────────────────
+        \App\Models\Admin::firstOrCreate(
+            ['tel' => '+22901000000'],
+            [
+                'nom'      => 'Super',
+                'prenom'   => 'Admin',
+                'password' => Hash::make('admin123'),
+                'status'   => true,
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // ─── Catégories de sites ───────────────────────────────
+        foreach (['Patrimoine historique','Site naturel','Musée','Monument','Plage'] as $libelle) {
+            \App\Models\CatSite::firstOrCreate(['libelle' => $libelle]);
+        }
+
+        // ─── Catégories d'événements ───────────────────────────
+        foreach (['Festival culturel','Concert','Exposition','Cérémonie traditionnelle','Foire'] as $libelle) {
+            \App\Models\CatEvenmt::firstOrCreate(['libelle' => $libelle]);
+        }
+
+        $this->command->info('✅ Admin + catégories créés.');
     }
 }

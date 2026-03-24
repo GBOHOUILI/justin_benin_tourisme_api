@@ -2,31 +2,50 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
+
+    protected $fillable = [
+        'nom',
+        'prenom',
+        'tel',
+        'email',
+        'password',
+        'nationalite',
+        'longitude',
+        'latitude',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed', // Gère automatiquement le Hash::make() à la création
+    ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Un utilisateur peut effectuer plusieurs réservations.
      */
-    protected function casts(): array
+    public function reservations()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasMany(Reservation::class, 'id_user');
+    }
+
+    /**
+     * Fonctionnalités visibles par cet utilisateur (table pivot voir).
+     */
+    public function fonctionnalites()
+    {
+        return $this->belongsToMany(Fonctionnalite::class, 'voir', 'id_user', 'id_fonc')
+                    ->withPivot('status');
     }
 }
