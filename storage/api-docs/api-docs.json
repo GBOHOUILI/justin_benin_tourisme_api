@@ -4,7 +4,7 @@
         "title": "Benin Tourisme API",
         "description": "API de gestion et promotion des sites touristiques et événements culturels du Bénin",
         "contact": {
-            "email": "ajustinsena@gmail.com"
+            "email": "eldomoreogbohouili@gmail.com"
         },
         "version": "1.0.0"
     },
@@ -15,13 +15,13 @@
         }
     ],
     "paths": {
-        "/admins": {
+        "/api/admin/admins": {
             "get": {
                 "tags": [
                     "Admins"
                 ],
                 "summary": "Lister les administrateurs",
-                "operationId": "386c6e73dbe80d4674b7a41e6a708ecf",
+                "operationId": "9a660a06a7f3fd979fa2898bf16ae873",
                 "responses": {
                     "200": {
                         "description": "Liste des admins"
@@ -33,7 +33,7 @@
                     "Admins"
                 ],
                 "summary": "Créer un admin",
-                "operationId": "83528520c2f718a850babe9cded3828a",
+                "operationId": "b7126ca6727f1f59ffb8bcf2b9adc57c",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -42,7 +42,7 @@
                                     "nom",
                                     "prenom",
                                     "tel",
-                                    "pass"
+                                    "password"
                                 ],
                                 "properties": {
                                     "nom": {
@@ -54,7 +54,7 @@
                                     "tel": {
                                         "type": "string"
                                     },
-                                    "pass": {
+                                    "password": {
                                         "type": "string"
                                     },
                                     "status": {
@@ -73,13 +73,13 @@
                 }
             }
         },
-        "/admins/{id}": {
+        "/api/admin/admins/{id}": {
             "get": {
                 "tags": [
                     "Admins"
                 ],
                 "summary": "Afficher un admin",
-                "operationId": "d8d7dec34d9f94676a74b136926d5618",
+                "operationId": "0c78ef17cd24543e448aec8670840ed3",
                 "parameters": [
                     {
                         "name": "id",
@@ -101,7 +101,7 @@
                     "Admins"
                 ],
                 "summary": "Mettre à jour un admin",
-                "operationId": "91ac65a79b1b48b4ff74aaafc4b27d8d",
+                "operationId": "2326fae561c671672396afe5b0ec2b00",
                 "parameters": [
                     {
                         "name": "id",
@@ -126,7 +126,7 @@
                                     "tel": {
                                         "type": "string"
                                     },
-                                    "pass": {
+                                    "password": {
                                         "type": "string"
                                     },
                                     "status": {
@@ -149,7 +149,7 @@
                     "Admins"
                 ],
                 "summary": "Supprimer un admin",
-                "operationId": "486f654de4856410fde2554c3b64b177",
+                "operationId": "58672fc8d14eb709b76e9c5650ffd64f",
                 "parameters": [
                     {
                         "name": "id",
@@ -167,13 +167,13 @@
                 }
             }
         },
-        "/register": {
+        "/api/register": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
                 "summary": "Inscription d'un nouvel utilisateur",
-                "operationId": "0903f2e0df1a8857bee538fc055417f0",
+                "operationId": "8a56853624e025573120a09a4c75d468",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -232,13 +232,13 @@
                 }
             }
         },
-        "/login": {
+        "/api/login": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
                 "summary": "Connexion utilisateur",
-                "operationId": "2dd578ff7aba2721293dac66833b27d1",
+                "operationId": "a3b306d14572d1f4bd6c064b3233e7b8",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -273,13 +273,54 @@
                 }
             }
         },
-        "/logout": {
+        "/api/admin/login": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Déconnexion",
-                "operationId": "68a6108af04af5e3bc1ea68a6c6f1299",
+                "summary": "Connexion administrateur",
+                "operationId": "bddbac6d4dfe7ae52db274728f5024be",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tel",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "tel": {
+                                        "type": "string",
+                                        "example": "+22901000000"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "admin123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion admin réussie"
+                    },
+                    "422": {
+                        "description": "Identifiants incorrects"
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Déconnexion (user ou admin)",
+                "operationId": "fe8f3429cd6979b3b4517e186505f9f9",
                 "responses": {
                     "200": {
                         "description": "Déconnexion réussie"
@@ -292,13 +333,13 @@
                 ]
             }
         },
-        "/me": {
+        "/api/me": {
             "get": {
                 "tags": [
                     "Auth"
                 ],
                 "summary": "Profil de l'utilisateur connecté",
-                "operationId": "e18baa7d6dfc432241dca2fc1985ce40",
+                "operationId": "9d9bc556f927575aa492a88c28fe5908",
                 "responses": {
                     "200": {
                         "description": "Profil retourné"
@@ -314,13 +355,13 @@
                 ]
             }
         },
-        "/update-password": {
+        "/api/update-password": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
                 "summary": "Mise à jour du mot de passe",
-                "operationId": "4bbf51be0a31831a698b3e75871c478d",
+                "operationId": "b0d1434f194356ab3b59cc8abbed505e",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -362,13 +403,13 @@
                 ]
             }
         },
-        "/avis": {
+        "/api/avis": {
             "get": {
                 "tags": [
                     "Avis"
                 ],
                 "summary": "Lister les avis",
-                "operationId": "ebc64993ff32e91562d915f0a5ee9d6e",
+                "operationId": "074b394984977e6dba6974626b17ff22",
                 "parameters": [
                     {
                         "name": "status",
@@ -396,7 +437,7 @@
                     "Avis"
                 ],
                 "summary": "Créer un avis",
-                "operationId": "abe4cf8f11bf7ad43c5ede395e8071d9",
+                "operationId": "c6eeaa4be5353dc347263747d29b964d",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -433,13 +474,13 @@
                 }
             }
         },
-        "/avis/{id}": {
+        "/api/avis/{id}": {
             "get": {
                 "tags": [
                     "Avis"
                 ],
                 "summary": "Afficher un avis",
-                "operationId": "f3721cec8f3364f5259986fa0fd091d1",
+                "operationId": "4167dc39a58a676e2b99040ac98ae715",
                 "parameters": [
                     {
                         "name": "id",
@@ -461,7 +502,7 @@
                     "Avis"
                 ],
                 "summary": "Mettre à jour un avis",
-                "operationId": "5091eaeec101b0fbe32849e323412607",
+                "operationId": "d1cd0f2a587d195a4e36eb1ad258f878",
                 "parameters": [
                     {
                         "name": "id",
@@ -505,7 +546,7 @@
                     "Avis"
                 ],
                 "summary": "Supprimer un avis",
-                "operationId": "c502451e80eec12131f45f6cd1157638",
+                "operationId": "c158d9539417f8b9af2ad21eec4d7f98",
                 "parameters": [
                     {
                         "name": "id",
@@ -523,13 +564,13 @@
                 }
             }
         },
-        "/avis/{id}/approuver": {
+        "/api/avis/{id}/approuver": {
             "patch": {
                 "tags": [
                     "Avis"
                 ],
                 "summary": "Approuver un avis",
-                "operationId": "61a4e3e9a8a75c2b965010e9b40daf2c",
+                "operationId": "aa638b3ab1e15211a696b75e7831bcae",
                 "parameters": [
                     {
                         "name": "id",
@@ -547,13 +588,13 @@
                 }
             }
         },
-        "/avis/{id}/rejeter": {
+        "/api/avis/{id}/rejeter": {
             "patch": {
                 "tags": [
                     "Avis"
                 ],
                 "summary": "Rejeter un avis",
-                "operationId": "153c578b3cef689af349064d52e72245",
+                "operationId": "54a58a4a0cf642dc16e0c848dcae27ad",
                 "parameters": [
                     {
                         "name": "id",
@@ -571,13 +612,13 @@
                 }
             }
         },
-        "/cat-evenmts": {
+        "/api/cat-evenmts": {
             "get": {
                 "tags": [
                     "Categories Evenements"
                 ],
                 "summary": "Lister les catégories d'événements",
-                "operationId": "c62b9a7c72ae9c3d0de336fc461dc7d9",
+                "operationId": "7a64e5c063f9c133f679ed8a9295f394",
                 "responses": {
                     "200": {
                         "description": "Liste des catégories"
@@ -589,7 +630,7 @@
                     "Categories Evenements"
                 ],
                 "summary": "Créer une catégorie d'événement",
-                "operationId": "8d25e79ed7e33c22005f718089f50f99",
+                "operationId": "a9a00b35d59226c9e112df062862ca3f",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -614,13 +655,13 @@
                 }
             }
         },
-        "/cat-evenmts/{id}": {
+        "/api/cat-evenmts/{id}": {
             "get": {
                 "tags": [
                     "Categories Evenements"
                 ],
                 "summary": "Afficher une catégorie d'événement",
-                "operationId": "c4acae4ecd6703fb65b16621f2c71796",
+                "operationId": "616d0e133c6a804badd083f9d6d269a4",
                 "parameters": [
                     {
                         "name": "id",
@@ -642,7 +683,7 @@
                     "Categories Evenements"
                 ],
                 "summary": "Mettre à jour une catégorie d'événement",
-                "operationId": "3f943a13d879943eb2053d6e00478fdb",
+                "operationId": "c6ef2290bbb75789e4bc5ae96985b267",
                 "parameters": [
                     {
                         "name": "id",
@@ -678,7 +719,7 @@
                     "Categories Evenements"
                 ],
                 "summary": "Supprimer une catégorie d'événement",
-                "operationId": "678dc2e5b935f3c8a3d08028996e45dd",
+                "operationId": "d9a823eec080b1299b759619235da235",
                 "parameters": [
                     {
                         "name": "id",
@@ -696,13 +737,13 @@
                 }
             }
         },
-        "/cat-sites": {
+        "/api/cat-sites": {
             "get": {
                 "tags": [
                     "Categories Sites"
                 ],
                 "summary": "Lister les catégories de sites",
-                "operationId": "327546aa0c5f4ee37cd149dbdbfecf78",
+                "operationId": "402f1c68ad5ee925f353bb3a60d5940f",
                 "responses": {
                     "200": {
                         "description": "Liste des catégories"
@@ -714,7 +755,7 @@
                     "Categories Sites"
                 ],
                 "summary": "Créer une catégorie de site",
-                "operationId": "1a2ed119c3c2cc03dacc7d08b7c8f4e0",
+                "operationId": "991e323e4ee8eca4d973b350f775d539",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -739,13 +780,13 @@
                 }
             }
         },
-        "/cat-sites/{id}": {
+        "/api/cat-sites/{id}": {
             "get": {
                 "tags": [
                     "Categories Sites"
                 ],
                 "summary": "Afficher une catégorie de site",
-                "operationId": "217747e27606fac9f38ae1d7221bfa65",
+                "operationId": "0badaee12091336bbb71db4368e2e3c6",
                 "parameters": [
                     {
                         "name": "id",
@@ -767,7 +808,7 @@
                     "Categories Sites"
                 ],
                 "summary": "Mettre à jour une catégorie de site",
-                "operationId": "c63bbd230b75fd39a36176d259b7c4d2",
+                "operationId": "547ce2d418a1200178388bbcb12a104e",
                 "parameters": [
                     {
                         "name": "id",
@@ -803,7 +844,7 @@
                     "Categories Sites"
                 ],
                 "summary": "Supprimer une catégorie de site",
-                "operationId": "0283e4942825d64e09a6edc9c2e70824",
+                "operationId": "92b5cbc3b0c85022487e7f739c899287",
                 "parameters": [
                     {
                         "name": "id",
@@ -821,13 +862,13 @@
                 }
             }
         },
-        "/evenements": {
+        "/api/evenements": {
             "get": {
                 "tags": [
                     "Evenements"
                 ],
                 "summary": "Lister les événements",
-                "operationId": "cb3fe99770d07fbf0ef6055fcb0d97c1",
+                "operationId": "cf17114513864def8e795303a48f7205",
                 "parameters": [
                     {
                         "name": "libelle",
@@ -870,7 +911,7 @@
                     "Evenements"
                 ],
                 "summary": "Créer un événement",
-                "operationId": "b6750e72640a383312a6c52103c65794",
+                "operationId": "6cc07eed54d06683e60f49ae4d921be1",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -937,13 +978,13 @@
                 }
             }
         },
-        "/evenements/{id}": {
+        "/api/evenements/{id}": {
             "get": {
                 "tags": [
                     "Evenements"
                 ],
                 "summary": "Afficher un événement",
-                "operationId": "d3c3d5db859af4b93c56fe34b317d5d6",
+                "operationId": "8a580ac0db622f34e0deb0f5fb79364b",
                 "parameters": [
                     {
                         "name": "id",
@@ -965,7 +1006,7 @@
                     "Evenements"
                 ],
                 "summary": "Mettre à jour un événement",
-                "operationId": "a560c6b9aaebaebe0c882d949be3d3f5",
+                "operationId": "4c5cc09e979a893b3a326e10e79dc12a",
                 "parameters": [
                     {
                         "name": "id",
@@ -1036,7 +1077,7 @@
                     "Evenements"
                 ],
                 "summary": "Supprimer un événement",
-                "operationId": "65d7612bffacfa7b26143d533d721e73",
+                "operationId": "86e6f8fa5098872c9168eef893ab3876",
                 "parameters": [
                     {
                         "name": "id",
@@ -1054,13 +1095,13 @@
                 }
             }
         },
-        "/evenements/{id}/valider": {
+        "/api/evenements/{id}/valider": {
             "patch": {
                 "tags": [
                     "Evenements"
                 ],
                 "summary": "Valider un événement",
-                "operationId": "e60721adc1bca6edba030dd9e58505e5",
+                "operationId": "53286cfad3ada7463f28ce41078c02aa",
                 "parameters": [
                     {
                         "name": "id",
@@ -1078,13 +1119,13 @@
                 }
             }
         },
-        "/evenements/{id}/rejeter": {
+        "/api/evenements/{id}/rejeter": {
             "patch": {
                 "tags": [
                     "Evenements"
                 ],
                 "summary": "Rejeter un événement",
-                "operationId": "251230611d6d0c91945319b89f20ab0f",
+                "operationId": "c47e2e687a9691f8cf4987665d9f4960",
                 "parameters": [
                     {
                         "name": "id",
@@ -1102,13 +1143,13 @@
                 }
             }
         },
-        "/fonctionnalites": {
+        "/api/fonctionnalites": {
             "get": {
                 "tags": [
                     "Fonctionnalites"
                 ],
                 "summary": "Lister les fonctionnalités",
-                "operationId": "230e997f756e42d82bbf66d396cfd2c4",
+                "operationId": "a826b46c685d9b92f41ce61e624652fe",
                 "parameters": [
                     {
                         "name": "type",
@@ -1129,7 +1170,7 @@
                     "Fonctionnalites"
                 ],
                 "summary": "Créer une fonctionnalité",
-                "operationId": "b321cc3759ba5ca103bf5926faed4e20",
+                "operationId": "fe3e11c035a779acc04b99a900f663b1",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -1163,13 +1204,13 @@
                 }
             }
         },
-        "/fonctionnalites/{id}": {
+        "/api/fonctionnalites/{id}": {
             "get": {
                 "tags": [
                     "Fonctionnalites"
                 ],
                 "summary": "Afficher une fonctionnalité",
-                "operationId": "94157bc7d563e547664379a8de78c216",
+                "operationId": "f379ad7c43ae1ec8119a4b3058ead38e",
                 "parameters": [
                     {
                         "name": "id",
@@ -1191,7 +1232,7 @@
                     "Fonctionnalites"
                 ],
                 "summary": "Mettre à jour une fonctionnalité",
-                "operationId": "4f16a412279bbdadfc95c9326633142b",
+                "operationId": "10575af210c8503e468ee48a8167437f",
                 "parameters": [
                     {
                         "name": "id",
@@ -1235,7 +1276,7 @@
                     "Fonctionnalites"
                 ],
                 "summary": "Supprimer une fonctionnalité",
-                "operationId": "dcc5a7244df09041101a785ab4924782",
+                "operationId": "463828f77fe17a278f4efd44bcff6c16",
                 "parameters": [
                     {
                         "name": "id",
@@ -1253,13 +1294,13 @@
                 }
             }
         },
-        "/fonctionnalites/{id}/assigner-admin": {
+        "/api/fonctionnalites/{id}/assigner-admin": {
             "post": {
                 "tags": [
                     "Fonctionnalites"
                 ],
                 "summary": "Assigner une fonctionnalité à un admin",
-                "operationId": "e14ed8dea6e25a7c0c59fd1499f95d24",
+                "operationId": "bec9aa8fc6550e7016f42e79bf514dcd",
                 "parameters": [
                     {
                         "name": "id",
@@ -1297,13 +1338,13 @@
                 }
             }
         },
-        "/fonctionnalites/{id}/assigner-user": {
+        "/api/fonctionnalites/{id}/assigner-user": {
             "post": {
                 "tags": [
                     "Fonctionnalites"
                 ],
                 "summary": "Assigner une fonctionnalité à un utilisateur",
-                "operationId": "f551a1f7793457eca87c23d7ebd268d3",
+                "operationId": "8fe39733d24bd423a44789b2f21202de",
                 "parameters": [
                     {
                         "name": "id",
@@ -1341,13 +1382,13 @@
                 }
             }
         },
-        "/galeries-sites": {
+        "/api/galeries-sites": {
             "get": {
                 "tags": [
                     "Galeries Sites"
                 ],
                 "summary": "Lister les galeries de sites",
-                "operationId": "e99fd5fcead563dfb73b9cf276a41f8d",
+                "operationId": "93685b0bf86291ff35c21ac4cd34b01b",
                 "parameters": [
                     {
                         "name": "id_site",
@@ -1382,7 +1423,7 @@
                     "Galeries Sites"
                 ],
                 "summary": "Créer une galerie de site",
-                "operationId": "9310d6475a358c4a143c592916ed0a4a",
+                "operationId": "2e7ec8849926016912c702a4dc613247",
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
@@ -1426,13 +1467,13 @@
                 }
             }
         },
-        "/galeries-sites/{id}": {
+        "/api/galeries-sites/{id}": {
             "get": {
                 "tags": [
                     "Galeries Sites"
                 ],
                 "summary": "Afficher une galerie de site",
-                "operationId": "48ed1d5a9c5bf978180e88722927d66f",
+                "operationId": "90df268ebd24f5cb6057fd8f7710e84d",
                 "parameters": [
                     {
                         "name": "id",
@@ -1454,7 +1495,7 @@
                     "Galeries Sites"
                 ],
                 "summary": "Mettre à jour une galerie de site",
-                "operationId": "8a8c76528668ed6f425fab8cadd24085",
+                "operationId": "a2fd56e0dfb5f32c97cf25dfc4cb21d1",
                 "parameters": [
                     {
                         "name": "id",
@@ -1499,7 +1540,7 @@
                     "Galeries Sites"
                 ],
                 "summary": "Supprimer une galerie de site",
-                "operationId": "1b02601af8e26ecef1aca0bb8650f828",
+                "operationId": "c1b156b40f741af828d84034de92edb8",
                 "parameters": [
                     {
                         "name": "id",
@@ -1517,13 +1558,13 @@
                 }
             }
         },
-        "/galeries-evenements": {
+        "/api/galeries-evenements": {
             "get": {
                 "tags": [
                     "Galeries Evenements"
                 ],
                 "summary": "Lister les galeries d'événements",
-                "operationId": "3591fe8b1709e551b16f24caec2faca8",
+                "operationId": "5de7b1f2ec081bef58ca9533fd7597b4",
                 "parameters": [
                     {
                         "name": "id_evnmt",
@@ -1558,7 +1599,7 @@
                     "Galeries Evenements"
                 ],
                 "summary": "Créer une galerie d'événement",
-                "operationId": "8551e9c58af0db04444b8b4aa0d5e011",
+                "operationId": "05716671abc2a88d18852f0ce879d79c",
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
@@ -1602,13 +1643,13 @@
                 }
             }
         },
-        "/galeries-evenements/{id}": {
+        "/api/galeries-evenements/{id}": {
             "get": {
                 "tags": [
                     "Galeries Evenements"
                 ],
                 "summary": "Afficher une galerie d'événement",
-                "operationId": "61d5801e0166395df62fc24e90a31daf",
+                "operationId": "7af57bd866d05083d50afd391b3620c2",
                 "parameters": [
                     {
                         "name": "id",
@@ -1630,7 +1671,7 @@
                     "Galeries Evenements"
                 ],
                 "summary": "Mettre à jour une galerie d'événement",
-                "operationId": "53e42cd59c5b18c582fb73402f7135e0",
+                "operationId": "77b0d321c4e4664d6619c9dcf346e7fc",
                 "parameters": [
                     {
                         "name": "id",
@@ -1675,7 +1716,7 @@
                     "Galeries Evenements"
                 ],
                 "summary": "Supprimer une galerie d'événement",
-                "operationId": "a2041dfe6425127c689410842057b799",
+                "operationId": "bfeb22d85e8d6df021a89f4f18812c7c",
                 "parameters": [
                     {
                         "name": "id",
@@ -1693,13 +1734,13 @@
                 }
             }
         },
-        "/prix": {
+        "/api/prix": {
             "get": {
                 "tags": [
                     "Prix"
                 ],
                 "summary": "Lister les prix",
-                "operationId": "db3777ee113eadf64cd202af66bf33b3",
+                "operationId": "fee5da546673b4198261bf8e6cd8c981",
                 "parameters": [
                     {
                         "name": "id_site",
@@ -1727,7 +1768,7 @@
                     "Prix"
                 ],
                 "summary": "Créer un prix",
-                "operationId": "712a549a7b608dcffbb9e993a2bd4346",
+                "operationId": "426255c3e1e411dae88a3581fb1497af",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -1762,13 +1803,13 @@
                 }
             }
         },
-        "/prix/{id}": {
+        "/api/prix/{id}": {
             "get": {
                 "tags": [
                     "Prix"
                 ],
                 "summary": "Afficher un prix",
-                "operationId": "3cb8b0d99bd656cfb2f327709ccc1bea",
+                "operationId": "bf5b97aa3b33843ea3e80c67c2226fab",
                 "parameters": [
                     {
                         "name": "id",
@@ -1790,7 +1831,7 @@
                     "Prix"
                 ],
                 "summary": "Mettre à jour un prix",
-                "operationId": "53de2984c2be4852fc6a12a2f8ff460f",
+                "operationId": "db3b0435e0d1f758ccdf542d1e14e55d",
                 "parameters": [
                     {
                         "name": "id",
@@ -1835,7 +1876,7 @@
                     "Prix"
                 ],
                 "summary": "Supprimer un prix",
-                "operationId": "9a01357dc910ca05a819ab31fe8b9ace",
+                "operationId": "8f8f5a30ecb435fdffca8866b405a8bc",
                 "parameters": [
                     {
                         "name": "id",
@@ -1853,13 +1894,13 @@
                 }
             }
         },
-        "/reservations": {
+        "/api/reservations": {
             "get": {
                 "tags": [
                     "Reservations"
                 ],
                 "summary": "Lister les réservations",
-                "operationId": "69fb15b9890a0559eb50e5e1777d9b64",
+                "operationId": "fbc6050d9f7fdb07075d3aaeb157ffa9",
                 "parameters": [
                     {
                         "name": "id_user",
@@ -1905,7 +1946,7 @@
                     "Reservations"
                 ],
                 "summary": "Créer une réservation",
-                "operationId": "1aabc7d432cc652e63cfc3fb514132cd",
+                "operationId": "01e3d21dc330a31de025203bc142ffa3",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -1952,13 +1993,13 @@
                 }
             }
         },
-        "/reservations/{id}": {
+        "/api/reservations/{id}": {
             "get": {
                 "tags": [
                     "Reservations"
                 ],
                 "summary": "Afficher une réservation",
-                "operationId": "4472ee4ed670cd72b7969d6e32473b92",
+                "operationId": "a226b43b2a6a846245e658d01bf00720",
                 "parameters": [
                     {
                         "name": "id",
@@ -1980,7 +2021,7 @@
                     "Reservations"
                 ],
                 "summary": "Mettre à jour une réservation",
-                "operationId": "3cb121a7272b76103c947578223bb7d5",
+                "operationId": "02fa683a9f80a0563596fb06685bcbc7",
                 "parameters": [
                     {
                         "name": "id",
@@ -2031,7 +2072,7 @@
                     "Reservations"
                 ],
                 "summary": "Supprimer une réservation",
-                "operationId": "fa964cce3285d6c10989429c544421ca",
+                "operationId": "9b6641e4ded1ff7adfce352d589b85e9",
                 "parameters": [
                     {
                         "name": "id",
@@ -2049,13 +2090,13 @@
                 }
             }
         },
-        "/sites": {
+        "/api/sites": {
             "get": {
                 "tags": [
                     "Sites"
                 ],
                 "summary": "Liste des sites",
-                "operationId": "61029bffba42b03ead16a3c82a321627",
+                "operationId": "b2375423d59eedc5dcce02e3cb15173a",
                 "parameters": [
                     {
                         "name": "libelle",
@@ -2093,7 +2134,7 @@
                     "Sites"
                 ],
                 "summary": "Créer un site",
-                "operationId": "a04a76406c6b259e2996f4c4f37d1cdb",
+                "operationId": "4fe9547a6429a6b8f5b442d220939790",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2153,13 +2194,13 @@
                 }
             }
         },
-        "/sites/{id}": {
+        "/api/sites/{id}": {
             "get": {
                 "tags": [
                     "Sites"
                 ],
                 "summary": "Afficher un site",
-                "operationId": "1157229d7d075840c759e156b651760d",
+                "operationId": "5e74356f1cbbbdbe769db68482cc3a85",
                 "parameters": [
                     {
                         "name": "id",
@@ -2181,7 +2222,7 @@
                     "Sites"
                 ],
                 "summary": "Mettre à jour un site",
-                "operationId": "d74a517aaed2c73d05e62c60babe15c7",
+                "operationId": "a3231ef301930fefe403ab4a7b506612",
                 "parameters": [
                     {
                         "name": "id",
@@ -2246,7 +2287,7 @@
                     "Sites"
                 ],
                 "summary": "Supprimer un site",
-                "operationId": "0fd2990fbee87f35f6f8c427059b166d",
+                "operationId": "d6cffc5b1111fb5ede331beb6ba025f3",
                 "parameters": [
                     {
                         "name": "id",
@@ -2322,13 +2363,13 @@
                 }
             }
         },
-        "/tickets": {
+        "/api/tickets": {
             "get": {
                 "tags": [
                     "Tickets"
                 ],
                 "summary": "Liste des tickets",
-                "operationId": "aa5e80a6f31951862c4554396ce1b1fd",
+                "operationId": "0082053c3590628e674a11ec0d1466e6",
                 "parameters": [
                     {
                         "name": "id_reservation",
@@ -2350,7 +2391,7 @@
                     "Tickets"
                 ],
                 "summary": "Créer un ticket",
-                "operationId": "f9282cd452389d3cc5d06f0cf782b672",
+                "operationId": "93882881cca9046d8c6ddbbab7309b4b",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2384,13 +2425,13 @@
                 }
             }
         },
-        "/tickets/{id}": {
+        "/api/tickets/{id}": {
             "get": {
                 "tags": [
                     "Tickets"
                 ],
                 "summary": "Afficher un ticket",
-                "operationId": "58c0560497a0fe53498de3da53eee228",
+                "operationId": "62091a82e5103c19191c4c1ebd30ec6f",
                 "parameters": [
                     {
                         "name": "id",
@@ -2412,7 +2453,7 @@
                     "Tickets"
                 ],
                 "summary": "Mettre à jour un ticket",
-                "operationId": "c1fed2bc5f00f4279c3d38565e671762",
+                "operationId": "1010dcd7a1f352766df66431f1df4745",
                 "parameters": [
                     {
                         "name": "id",
@@ -2442,7 +2483,9 @@
                         "description": "Ticket mis à jour"
                     }
                 }
-            },
+            }
+        },
+        "/tickets/{id}": {
             "delete": {
                 "tags": [
                     "Tickets"
@@ -2466,13 +2509,13 @@
                 }
             }
         },
-        "/tickets/verifier": {
+        "/api/tickets/verifier": {
             "post": {
                 "tags": [
                     "Tickets"
                 ],
                 "summary": "Vérifier un ticket par numéro",
-                "operationId": "547d231e6b8e8d197d732f0ead4a76fa",
+                "operationId": "90e58130421a04aa2d31c142306ec9f3",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2502,13 +2545,13 @@
                 }
             }
         },
-        "/users": {
+        "/api/users": {
             "get": {
                 "tags": [
                     "Users"
                 ],
                 "summary": "Liste des utilisateurs",
-                "operationId": "7e2f5799553ec93c9c43e2a58490d447",
+                "operationId": "c457726701591d1183b53aa71fc13441",
                 "responses": {
                     "200": {
                         "description": "Liste des utilisateurs paginée"
@@ -2520,7 +2563,7 @@
                     "Users"
                 ],
                 "summary": "Créer un utilisateur",
-                "operationId": "a1fce870c566eb5fc0cf3178ec5d2fed",
+                "operationId": "592819a0265360b2014512d6dbfaf0e7",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2585,13 +2628,13 @@
                 }
             }
         },
-        "/users/{id}": {
+        "/api/users/{id}": {
             "get": {
                 "tags": [
                     "Users"
                 ],
                 "summary": "Afficher un utilisateur",
-                "operationId": "910a0c7cf580e1c605648d82a4e57f46",
+                "operationId": "36a33ff774d5cba33c039dec2c3e0287",
                 "parameters": [
                     {
                         "name": "id",
@@ -2613,7 +2656,7 @@
                     "Users"
                 ],
                 "summary": "Mettre à jour un utilisateur",
-                "operationId": "ddfe232db1870b82493bf8bd25596d37",
+                "operationId": "b9091397c8b25f12c6adb74be6ce3a5a",
                 "parameters": [
                     {
                         "name": "id",
@@ -2673,7 +2716,7 @@
                     "Users"
                 ],
                 "summary": "Supprimer un utilisateur",
-                "operationId": "43dd20becb1f47444e484cbb18ce345c",
+                "operationId": "fa56cffde745d3f152f95cbacd936c0b",
                 "parameters": [
                     {
                         "name": "id",
@@ -2691,13 +2734,13 @@
                 }
             }
         },
-        "/utilisations": {
+        "/api/utilisations": {
             "get": {
                 "tags": [
                     "Utilisations"
                 ],
                 "summary": "Liste des utilisations",
-                "operationId": "50eb3e9335d2f4b2b41dd0067544a4a0",
+                "operationId": "d061dbac31cefb35238452c98a2810ab",
                 "parameters": [
                     {
                         "name": "id_ticket",
@@ -2728,7 +2771,7 @@
                     "Utilisations"
                 ],
                 "summary": "Créer une utilisation",
-                "operationId": "70b7f65fb0cdebb663cf90f07b35dd07",
+                "operationId": "06955519e821a5998bfe1445e0e7af1a",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2767,13 +2810,13 @@
                 }
             }
         },
-        "/utilisations/{id}": {
+        "/api/utilisations/{id}": {
             "get": {
                 "tags": [
                     "Utilisations"
                 ],
                 "summary": "Afficher une utilisation",
-                "operationId": "5b72bfb5defb7f2b7f2c4bd2458dedd4",
+                "operationId": "5bd93db8053a6f991822f70a17e63602",
                 "parameters": [
                     {
                         "name": "id",
@@ -2795,7 +2838,7 @@
                     "Utilisations"
                 ],
                 "summary": "Mettre à jour une utilisation",
-                "operationId": "5afbbb57acf43313ef2992e4ab4bb952",
+                "operationId": "081130dd47768fe6435a99f85fcb034b",
                 "parameters": [
                     {
                         "name": "id",
@@ -2836,7 +2879,7 @@
                     "Utilisations"
                 ],
                 "summary": "Supprimer une utilisation",
-                "operationId": "c3504b60d839350309e9bd6d84adc69e",
+                "operationId": "234f381419e7fbbcbee8f01a6103fc80",
                 "parameters": [
                     {
                         "name": "id",

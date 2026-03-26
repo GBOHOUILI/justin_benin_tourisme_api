@@ -16,7 +16,7 @@ class Admin extends Authenticatable
         'nom',
         'prenom',
         'tel',
-        'password', // Renommé de 'pass' à 'password' pour la conformité Auth
+        'password',
         'status',
     ];
 
