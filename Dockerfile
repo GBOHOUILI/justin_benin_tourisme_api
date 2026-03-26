@@ -31,7 +31,7 @@ WORKDIR /var/www
 # Copier uniquement les fichiers de configuration d'abord pour optimiser le cache
 COPY composer.json composer.lock ./
 
-# Installer avec --no-scripts pour éviter que Laravel ne tente de lancer 
+# Installer avec --no-scripts pour éviter que Laravel ne tente de lancer
 # des commandes artisan avant que tout ne soit copié
 RUN composer install --no-interaction --no-scripts --no-autoloader --prefer-dist
 

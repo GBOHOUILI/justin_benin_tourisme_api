@@ -225,8 +225,10 @@ class AuthController extends Controller
             ]);
         }
 
-        // Révoquer les anciens tokens admin
+        // Révoquer les anciens tokens pour éviter la prolifération de sessions
         $admin->tokens()->delete();
+
+        // On crée le token via le guard 'admin' pour qu'il soit lié au provider admins
         $token = $admin->createToken("admin_token")->plainTextToken;
 
         return response()->json([
@@ -255,6 +257,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
+
         return response()->json(["message" => "Déconnexion réussie"]);
     }
 
@@ -263,7 +266,7 @@ class AuthController extends Controller
         OA\Get(
             path: "/api/me",
             tags: ["Auth"],
-            summary: "Profil de l'utilisateur connecté",
+            summary: "Profil de l'utilisateur ou admin connecté",
             security: [["bearerAuth" => []]],
             responses: [
                 new OA\Response(response: 200, description: "Profil retourné"),
@@ -275,7 +278,6 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
-        // Distinguer admin et user selon le type de token
         if ($user instanceof Admin) {
             return response()->json(
                 $user->load(["sites", "evenements", "fonctionnalites"]),

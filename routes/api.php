@@ -21,11 +21,8 @@ use App\Http\Controllers\PrixController;
 //  ROUTES PUBLIQUES — aucun token requis
 // ══════════════════════════════════════════════════════
 
-// Auth users
 Route::post("/register", [AuthController::class, "register"]);
 Route::post("/login", [AuthController::class, "login"]);
-
-// Auth admin (login séparé)
 Route::post("/admin/login", [AuthController::class, "loginAdmin"]);
 
 // Consultation publique
@@ -63,7 +60,7 @@ Route::get("/avis/{avi}", [AvisController::class, "show"]);
 Route::post("/tickets/verifier", [TicketController::class, "verifier"]);
 
 // ══════════════════════════════════════════════════════
-//  ROUTES AUTHENTIFIÉES — token Sanctum requis
+//  ROUTES UTILISATEURS — token User (auth:sanctum)
 // ══════════════════════════════════════════════════════
 Route::middleware("auth:sanctum")->group(function () {
     Route::get("/me", [AuthController::class, "me"]);
@@ -82,15 +79,28 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::post("/avis", [AvisController::class, "store"]);
     Route::put("/avis/{avi}", [AvisController::class, "update"]);
     Route::delete("/avis/{avi}", [AvisController::class, "destroy"]);
+});
 
-    // ══════════════════════════════════════════════════
-    //  ESPACE ADMIN
-    // ══════════════════════════════════════════════════
-    Route::prefix("admin")->group(function () {
-        // Admins
+// ══════════════════════════════════════════════════════
+//  ROUTES ADMIN — token Admin uniquement (auth:admin)
+//  Le middleware 'admin' vérifie en plus que le compte
+//  n'est pas désactivé (status = false).
+// ══════════════════════════════════════════════════════
+Route::middleware(["auth:sanctum", "admin"])
+    ->prefix("admin")
+    ->group(function () {
+        // Profil admin connecté
+        Route::get("/me", [AuthController::class, "me"]);
+        Route::post("/logout", [AuthController::class, "logout"]);
+        Route::post("/update-password", [
+            AuthController::class,
+            "updatePassword",
+        ]);
+
+        // Gestion des admins
         Route::apiResource("admins", AdminController::class);
 
-        // Users
+        // Gestion des utilisateurs
         Route::get("/users", [UserController::class, "index"]);
         Route::post("/users", [UserController::class, "store"]);
 
@@ -175,14 +185,14 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::apiResource("tickets", TicketController::class);
         Route::apiResource("utilisations", UtilisationController::class);
 
-        // Modération avis
+        // Modération des avis
         Route::patch("/avis/{avi}/approuver", [
             AvisController::class,
             "approuver",
         ]);
         Route::patch("/avis/{avi}/rejeter", [AvisController::class, "rejeter"]);
 
-        // Fonctionnalités
+        // Fonctionnalités & permissions
         Route::apiResource("fonctionnalites", FonctionnaliteController::class);
         Route::post("/fonctionnalites/{fonctionnalite}/assigner-admin", [
             FonctionnaliteController::class,
@@ -193,4 +203,3 @@ Route::middleware("auth:sanctum")->group(function () {
             "assignerUser",
         ]);
     });
-});

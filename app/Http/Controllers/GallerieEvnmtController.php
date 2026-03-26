@@ -11,7 +11,7 @@ class GallerieEvnmtController extends Controller
 {
     #[
         OA\Get(
-            path: "/api/galeries-evenements",
+            path: "/api/galeries/evenements",
             tags: ["Galeries Evenements"],
             summary: "Lister les galeries d'événements",
             parameters: [
@@ -42,6 +42,7 @@ class GallerieEvnmtController extends Controller
     public function index(Request $request)
     {
         $query = GallerieEvnmt::with("evenement");
+
         if ($request->filled("id_evnmt")) {
             $query->where("id_evnmt", $request->id_evnmt);
         }
@@ -51,14 +52,16 @@ class GallerieEvnmtController extends Controller
         if ($request->filled("status")) {
             $query->where("status", $request->status);
         }
+
         return response()->json($query->get());
     }
 
     #[
         OA\Post(
-            path: "/api/galeries-evenements",
+            path: "/api/admin/galeries/evenements",
             tags: ["Galeries Evenements"],
-            summary: "Créer une galerie d'événement",
+            summary: "Créer une galerie d'événement (admin)",
+            security: [["bearerAuth" => []]],
             requestBody: new OA\RequestBody(
                 content: [
                     new OA\MediaType(
@@ -69,6 +72,7 @@ class GallerieEvnmtController extends Controller
                                 new OA\Property(
                                     property: "libelle",
                                     type: "string",
+                                    description: "Titre/description du média",
                                 ),
                                 new OA\Property(
                                     property: "type",
@@ -104,25 +108,27 @@ class GallerieEvnmtController extends Controller
             "libelle" => "required|string|max:255",
             "type" => "required|string|in:image,video",
             "status" => "nullable|boolean",
-            "id_evnmt" => "required|exists:evenements,id",
+            "id_evnmt" => "required|exists:evenement,id",
             "fichier" =>
                 "nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov|max:51200",
         ]);
 
+        // CORRECTION : le libelle (titre) est conservé tel quel.
+        // Le chemin du fichier est stocké dans un champ séparé 'url_fichier'.
         if ($request->hasFile("fichier")) {
-            $path = $request
+            $validated["url_fichier"] = $request
                 ->file("fichier")
                 ->store("galeries/evenements", "public");
-            $validated["libelle"] = $path;
         }
 
         $galerie = GallerieEvnmt::create($validated);
+
         return response()->json($galerie->load("evenement"), 201);
     }
 
     #[
         OA\Get(
-            path: "/api/galeries-evenements/{id}",
+            path: "/api/galeries/evenements/{id}",
             tags: ["Galeries Evenements"],
             summary: "Afficher une galerie d'événement",
             parameters: [
@@ -148,9 +154,10 @@ class GallerieEvnmtController extends Controller
 
     #[
         OA\Put(
-            path: "/api/galeries-evenements/{id}",
+            path: "/api/admin/galeries/evenements/{id}",
             tags: ["Galeries Evenements"],
-            summary: "Mettre à jour une galerie d'événement",
+            summary: "Mettre à jour une galerie d'événement (admin)",
+            security: [["bearerAuth" => []]],
             parameters: [
                 new OA\Parameter(
                     name: "id",
@@ -183,18 +190,20 @@ class GallerieEvnmtController extends Controller
             "libelle" => "sometimes|string|max:255",
             "type" => "sometimes|string|in:image,video",
             "status" => "nullable|boolean",
-            "id_evnmt" => "sometimes|exists:evenements,id",
+            "id_evnmt" => "sometimes|exists:evenement,id",
         ]);
 
         $gallerieEvnmt->update($validated);
+
         return response()->json($gallerieEvnmt);
     }
 
     #[
         OA\Delete(
-            path: "/api/galeries-evenements/{id}",
+            path: "/api/admin/galeries/evenements/{id}",
             tags: ["Galeries Evenements"],
-            summary: "Supprimer une galerie d'événement",
+            summary: "Supprimer une galerie d'événement (admin)",
+            security: [["bearerAuth" => []]],
             parameters: [
                 new OA\Parameter(
                     name: "id",
@@ -213,10 +222,15 @@ class GallerieEvnmtController extends Controller
     ]
     public function destroy(GallerieEvnmt $gallerieEvnmt)
     {
-        if (Storage::disk("public")->exists($gallerieEvnmt->libelle)) {
-            Storage::disk("public")->delete($gallerieEvnmt->libelle);
+        if (
+            $gallerieEvnmt->url_fichier &&
+            Storage::disk("public")->exists($gallerieEvnmt->url_fichier)
+        ) {
+            Storage::disk("public")->delete($gallerieEvnmt->url_fichier);
         }
+
         $gallerieEvnmt->delete();
+
         return response()->json(["message" => "Média supprimé"], 200);
     }
 }

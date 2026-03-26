@@ -46,6 +46,7 @@ class EvenementController extends Controller
     public function index(Request $request)
     {
         $query = Evenement::with(["categorie", "galeries", "prix"]);
+
         if ($request->filled("libelle")) {
             $query->where("libelle", "like", "%" . $request->libelle . "%");
         }
@@ -58,14 +59,17 @@ class EvenementController extends Controller
         if ($request->filled("date_debut")) {
             $query->whereDate("date_debut", ">=", $request->date_debut);
         }
+
         return response()->json($query->paginate(12));
     }
 
+    // id_admin est retiré du body — déduit du token admin connecté
     #[
         OA\Post(
-            path: "/api/evenements",
+            path: "/api/admin/evenements",
             tags: ["Evenements"],
-            summary: "Créer un événement",
+            summary: "Créer un événement (admin)",
+            security: [["bearerAuth" => []]],
             requestBody: new OA\RequestBody(
                 content: new OA\JsonContent(
                     required: [
@@ -76,7 +80,6 @@ class EvenementController extends Controller
                         "date_debut",
                         "date_fin",
                         "id_cat_evenmt",
-                        "id_admin",
                     ],
                     properties: [
                         new OA\Property(property: "libelle", type: "string"),
@@ -111,7 +114,6 @@ class EvenementController extends Controller
                             property: "id_cat_evenmt",
                             type: "integer",
                         ),
-                        new OA\Property(property: "id_admin", type: "integer"),
                     ],
                 ),
             ),
@@ -131,16 +133,20 @@ class EvenementController extends Controller
             "date_debut" => "required|date",
             "date_fin" => "required|date|after_or_equal:date_debut",
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
-            "id_cat_evenmt" => "required|exists:cat_evenmts,id",
-            "id_admin" => "required|exists:admins,id",
+            "id_cat_evenmt" => "required|exists:cat_evenmt,id",
         ]);
+
+        // CORRECTION : l'id_admin est toujours celui de l'admin connecté
+        $validated["id_admin"] = $request->user()->id;
+
         $evenement = Evenement::create($validated);
+
         return response()->json($evenement->load(["categorie", "admin"]), 201);
     }
 
     #[
         OA\Get(
-            path: "/api/evenements/{id}",
+            path: "/evenements/{id}",
             tags: ["Evenements"],
             summary: "Afficher un événement",
             parameters: [
@@ -174,9 +180,10 @@ class EvenementController extends Controller
 
     #[
         OA\Put(
-            path: "/api/evenements/{id}",
+            path: "/api/admin/evenements/{id}",
             tags: ["Evenements"],
-            summary: "Mettre à jour un événement",
+            summary: "Mettre à jour un événement (admin)",
+            security: [["bearerAuth" => []]],
             parameters: [
                 new OA\Parameter(
                     name: "id",
@@ -220,7 +227,6 @@ class EvenementController extends Controller
                             property: "id_cat_evenmt",
                             type: "integer",
                         ),
-                        new OA\Property(property: "id_admin", type: "integer"),
                     ],
                 ),
             ),
@@ -241,20 +247,22 @@ class EvenementController extends Controller
             "latitude" => "sometimes|numeric",
             "description" => "nullable|string",
             "date_debut" => "sometimes|date",
-            "date_fin" => "sometimes|date",
+            "date_fin" => "sometimes|date|after_or_equal:date_debut",
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
-            "id_cat_evenmt" => "sometimes|exists:cat_evenmts,id",
-            "id_admin" => "sometimes|exists:admins,id",
+            "id_cat_evenmt" => "sometimes|exists:cat_evenmt,id",
         ]);
+
         $evenement->update($validated);
+
         return response()->json($evenement->load(["categorie", "admin"]));
     }
 
     #[
         OA\Patch(
-            path: "/api/evenements/{id}/valider",
+            path: "/api/admin/evenements/{id}/valider",
             tags: ["Evenements"],
-            summary: "Valider un événement",
+            summary: "Valider un événement (admin)",
+            security: [["bearerAuth" => []]],
             parameters: [
                 new OA\Parameter(
                     name: "id",
@@ -271,6 +279,7 @@ class EvenementController extends Controller
     public function valider(Evenement $evenement)
     {
         $evenement->update(["status" => "valide"]);
+
         return response()->json([
             "message" => "Événement validé",
             "evenement" => $evenement,
@@ -279,9 +288,10 @@ class EvenementController extends Controller
 
     #[
         OA\Patch(
-            path: "/api/evenements/{id}/rejeter",
+            path: "/api/admin/evenements/{id}/rejeter",
             tags: ["Evenements"],
-            summary: "Rejeter un événement",
+            summary: "Rejeter un événement (admin)",
+            security: [["bearerAuth" => []]],
             parameters: [
                 new OA\Parameter(
                     name: "id",
@@ -298,6 +308,7 @@ class EvenementController extends Controller
     public function rejeter(Evenement $evenement)
     {
         $evenement->update(["status" => "rejete"]);
+
         return response()->json([
             "message" => "Événement rejeté",
             "evenement" => $evenement,
@@ -306,9 +317,10 @@ class EvenementController extends Controller
 
     #[
         OA\Delete(
-            path: "/api/evenements/{id}",
+            path: "/api/admin/evenements/{id}",
             tags: ["Evenements"],
-            summary: "Supprimer un événement",
+            summary: "Supprimer un événement (admin)",
+            security: [["bearerAuth" => []]],
             parameters: [
                 new OA\Parameter(
                     name: "id",
@@ -328,6 +340,7 @@ class EvenementController extends Controller
     public function destroy(Evenement $evenement)
     {
         $evenement->delete();
+
         return response()->json(["message" => "Événement supprimé"], 200);
     }
 }

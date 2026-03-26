@@ -17,19 +17,16 @@ class SiteController extends Controller
                 new OA\Parameter(
                     name: "libelle",
                     in: "query",
-                    description: "Filtrer par libelle",
                     schema: new OA\Schema(type: "string"),
                 ),
                 new OA\Parameter(
                     name: "id_cat_site",
                     in: "query",
-                    description: "Filtrer par catégorie",
                     schema: new OA\Schema(type: "integer"),
                 ),
                 new OA\Parameter(
                     name: "status",
                     in: "query",
-                    description: "Filtrer par status",
                     schema: new OA\Schema(type: "boolean"),
                 ),
             ],
@@ -58,11 +55,13 @@ class SiteController extends Controller
         return response()->json($query->paginate(12));
     }
 
+    // id_admin est retiré du body — déduit du token admin connecté
     #[
         OA\Post(
-            path: "/api/sites",
+            path: "/api/admin/sites",
             tags: ["Sites"],
-            summary: "Créer un site",
+            summary: "Créer un site (admin)",
+            security: [["bearerAuth" => []]],
             requestBody: new OA\RequestBody(
                 required: true,
                 content: new OA\JsonContent(
@@ -72,7 +71,6 @@ class SiteController extends Controller
                         "longitude",
                         "latitude",
                         "id_cat_site",
-                        "id_admin",
                     ],
                     properties: [
                         new OA\Property(property: "libelle", type: "string"),
@@ -98,7 +96,6 @@ class SiteController extends Controller
                             property: "id_cat_site",
                             type: "integer",
                         ),
-                        new OA\Property(property: "id_admin", type: "integer"),
                     ],
                 ),
             ),
@@ -118,11 +115,14 @@ class SiteController extends Controller
             "ouverture" => "nullable|date_format:H:i",
             "fermeture" => "nullable|date_format:H:i",
             "status" => "nullable|boolean",
-            "id_cat_site" => "required|exists:cat_sites,id",
-            "id_admin" => "required|exists:admins,id",
+            "id_cat_site" => "required|exists:cat_site,id",
         ]);
 
+        // CORRECTION : l'id_admin est toujours celui de l'admin connecté
+        $validated["id_admin"] = $request->user()->id;
+
         $site = Site::create($validated);
+
         return response()->json($site->load(["categorie", "admin"]), 201);
     }
 
@@ -159,9 +159,10 @@ class SiteController extends Controller
 
     #[
         OA\Put(
-            path: "/api/sites/{id}",
+            path: "/api/admin/sites/{id}",
             tags: ["Sites"],
-            summary: "Mettre à jour un site",
+            summary: "Mettre à jour un site (admin)",
+            security: [["bearerAuth" => []]],
             parameters: [
                 new OA\Parameter(
                     name: "id",
@@ -196,7 +197,6 @@ class SiteController extends Controller
                             property: "id_cat_site",
                             type: "integer",
                         ),
-                        new OA\Property(property: "id_admin", type: "integer"),
                     ],
                 ),
             ),
@@ -216,19 +216,20 @@ class SiteController extends Controller
             "ouverture" => "nullable|date_format:H:i",
             "fermeture" => "nullable|date_format:H:i",
             "status" => "nullable|boolean",
-            "id_cat_site" => "sometimes|exists:cat_sites,id",
-            "id_admin" => "sometimes|exists:admins,id",
+            "id_cat_site" => "sometimes|exists:cat_site,id",
         ]);
 
         $site->update($validated);
+
         return response()->json($site->load(["categorie", "admin"]));
     }
 
     #[
         OA\Delete(
-            path: "/api/sites/{id}",
+            path: "/api/admin/sites/{id}",
             tags: ["Sites"],
-            summary: "Supprimer un site",
+            summary: "Supprimer un site (admin)",
+            security: [["bearerAuth" => []]],
             parameters: [
                 new OA\Parameter(
                     name: "id",
@@ -245,6 +246,7 @@ class SiteController extends Controller
     public function destroy(Site $site)
     {
         $site->delete();
+
         return response()->json(
             ["message" => "Site supprimé avec succès"],
             200,

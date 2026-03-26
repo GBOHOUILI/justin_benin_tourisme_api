@@ -338,7 +338,7 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Profil de l'utilisateur connecté",
+                "summary": "Profil de l'utilisateur ou admin connecté",
                 "operationId": "9d9bc556f927575aa492a88c28fe5908",
                 "responses": {
                     "200": {
@@ -905,13 +905,15 @@
                         "description": "Liste des événements"
                     }
                 }
-            },
+            }
+        },
+        "/api/admin/evenements": {
             "post": {
                 "tags": [
                     "Evenements"
                 ],
-                "summary": "Créer un événement",
-                "operationId": "6cc07eed54d06683e60f49ae4d921be1",
+                "summary": "Créer un événement (admin)",
+                "operationId": "91edcf77f676cc8e61f924043f4d694e",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -923,8 +925,7 @@
                                     "latitude",
                                     "date_debut",
                                     "date_fin",
-                                    "id_cat_evenmt",
-                                    "id_admin"
+                                    "id_cat_evenmt"
                                 ],
                                 "properties": {
                                     "libelle": {
@@ -961,9 +962,6 @@
                                     },
                                     "id_cat_evenmt": {
                                         "type": "integer"
-                                    },
-                                    "id_admin": {
-                                        "type": "integer"
                                     }
                                 },
                                 "type": "object"
@@ -975,16 +973,21 @@
                     "201": {
                         "description": "Événement créé"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
-        "/api/evenements/{id}": {
+        "/evenements/{id}": {
             "get": {
                 "tags": [
                     "Evenements"
                 ],
                 "summary": "Afficher un événement",
-                "operationId": "8a580ac0db622f34e0deb0f5fb79364b",
+                "operationId": "d3c3d5db859af4b93c56fe34b317d5d6",
                 "parameters": [
                     {
                         "name": "id",
@@ -1000,13 +1003,15 @@
                         "description": "Détails de l'événement"
                     }
                 }
-            },
+            }
+        },
+        "/api/admin/evenements/{id}": {
             "put": {
                 "tags": [
                     "Evenements"
                 ],
-                "summary": "Mettre à jour un événement",
-                "operationId": "4c5cc09e979a893b3a326e10e79dc12a",
+                "summary": "Mettre à jour un événement (admin)",
+                "operationId": "246533e3ab9ff3513bf0164fcf2c9ca4",
                 "parameters": [
                     {
                         "name": "id",
@@ -1056,9 +1061,6 @@
                                     },
                                     "id_cat_evenmt": {
                                         "type": "integer"
-                                    },
-                                    "id_admin": {
-                                        "type": "integer"
                                     }
                                 },
                                 "type": "object"
@@ -1070,14 +1072,19 @@
                     "200": {
                         "description": "Événement mis à jour"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
                     "Evenements"
                 ],
-                "summary": "Supprimer un événement",
-                "operationId": "86e6f8fa5098872c9168eef893ab3876",
+                "summary": "Supprimer un événement (admin)",
+                "operationId": "d6617d52bb62d4d7211ba59ef65c12ca",
                 "parameters": [
                     {
                         "name": "id",
@@ -1092,16 +1099,21 @@
                     "200": {
                         "description": "Événement supprimé"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
-        "/api/evenements/{id}/valider": {
+        "/api/admin/evenements/{id}/valider": {
             "patch": {
                 "tags": [
                     "Evenements"
                 ],
-                "summary": "Valider un événement",
-                "operationId": "53286cfad3ada7463f28ce41078c02aa",
+                "summary": "Valider un événement (admin)",
+                "operationId": "b6b5ac5674956aa2b212d08adced2ce0",
                 "parameters": [
                     {
                         "name": "id",
@@ -1116,16 +1128,21 @@
                     "200": {
                         "description": "Événement validé"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
-        "/api/evenements/{id}/rejeter": {
+        "/api/admin/evenements/{id}/rejeter": {
             "patch": {
                 "tags": [
                     "Evenements"
                 ],
-                "summary": "Rejeter un événement",
-                "operationId": "c47e2e687a9691f8cf4987665d9f4960",
+                "summary": "Rejeter un événement (admin)",
+                "operationId": "85182d14a933adcf671d1109bf7dc95e",
                 "parameters": [
                     {
                         "name": "id",
@@ -1140,7 +1157,12 @@
                     "200": {
                         "description": "Événement rejeté"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/fonctionnalites": {
@@ -1382,13 +1404,13 @@
                 }
             }
         },
-        "/api/galeries-sites": {
+        "/api/galeries/sites": {
             "get": {
                 "tags": [
                     "Galeries Sites"
                 ],
                 "summary": "Lister les galeries de sites",
-                "operationId": "93685b0bf86291ff35c21ac4cd34b01b",
+                "operationId": "c161da2721e77f226524e32b8a1e9e0a",
                 "parameters": [
                     {
                         "name": "id_site",
@@ -1417,13 +1439,15 @@
                         "description": "Liste des galeries de sites"
                     }
                 }
-            },
+            }
+        },
+        "/api/admin/galeries/sites": {
             "post": {
                 "tags": [
                     "Galeries Sites"
                 ],
-                "summary": "Créer une galerie de site",
-                "operationId": "2e7ec8849926016912c702a4dc613247",
+                "summary": "Créer une entrée de galerie pour un site (admin)",
+                "operationId": "a09cefb9e30296669282d1c5dec88754",
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
@@ -1435,6 +1459,7 @@
                                 ],
                                 "properties": {
                                     "libelle": {
+                                        "description": "Titre/description du média",
                                         "type": "string"
                                     },
                                     "type": {
@@ -1451,6 +1476,7 @@
                                         "type": "integer"
                                     },
                                     "fichier": {
+                                        "description": "Fichier image ou vidéo",
                                         "type": "string",
                                         "format": "binary"
                                     }
@@ -1464,16 +1490,21 @@
                     "201": {
                         "description": "Galerie créée"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
-        "/api/galeries-sites/{id}": {
+        "/api/galeries/sites/{id}": {
             "get": {
                 "tags": [
                     "Galeries Sites"
                 ],
                 "summary": "Afficher une galerie de site",
-                "operationId": "90df268ebd24f5cb6057fd8f7710e84d",
+                "operationId": "10e5c00b7e7f4516185fcedfb9139e37",
                 "parameters": [
                     {
                         "name": "id",
@@ -1489,13 +1520,15 @@
                         "description": "Galerie de site"
                     }
                 }
-            },
+            }
+        },
+        "/api/admin/galeries/sites/{id}": {
             "put": {
                 "tags": [
                     "Galeries Sites"
                 ],
-                "summary": "Mettre à jour une galerie de site",
-                "operationId": "a2fd56e0dfb5f32c97cf25dfc4cb21d1",
+                "summary": "Mettre à jour une galerie de site (admin)",
+                "operationId": "95aa260971f4db16b9fa7e67b7abdbcb",
                 "parameters": [
                     {
                         "name": "id",
@@ -1533,14 +1566,19 @@
                     "200": {
                         "description": "Galerie mise à jour"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
                     "Galeries Sites"
                 ],
-                "summary": "Supprimer une galerie de site",
-                "operationId": "c1b156b40f741af828d84034de92edb8",
+                "summary": "Supprimer une galerie de site (admin)",
+                "operationId": "6e0379580e7e5c9d4121ee63e2c4204e",
                 "parameters": [
                     {
                         "name": "id",
@@ -1555,16 +1593,21 @@
                     "200": {
                         "description": "Galerie supprimée"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
-        "/api/galeries-evenements": {
+        "/api/galeries/evenements": {
             "get": {
                 "tags": [
                     "Galeries Evenements"
                 ],
                 "summary": "Lister les galeries d'événements",
-                "operationId": "5de7b1f2ec081bef58ca9533fd7597b4",
+                "operationId": "50b1b8f5dd6e9487f44e10a6d96090fa",
                 "parameters": [
                     {
                         "name": "id_evnmt",
@@ -1593,13 +1636,15 @@
                         "description": "Liste des galeries d'événements"
                     }
                 }
-            },
+            }
+        },
+        "/api/admin/galeries/evenements": {
             "post": {
                 "tags": [
                     "Galeries Evenements"
                 ],
-                "summary": "Créer une galerie d'événement",
-                "operationId": "05716671abc2a88d18852f0ce879d79c",
+                "summary": "Créer une galerie d'événement (admin)",
+                "operationId": "abf32b0ffa5ae5ebcc56926f82eef634",
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
@@ -1611,6 +1656,7 @@
                                 ],
                                 "properties": {
                                     "libelle": {
+                                        "description": "Titre/description du média",
                                         "type": "string"
                                     },
                                     "type": {
@@ -1640,16 +1686,21 @@
                     "201": {
                         "description": "Galerie créée"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
-        "/api/galeries-evenements/{id}": {
+        "/api/galeries/evenements/{id}": {
             "get": {
                 "tags": [
                     "Galeries Evenements"
                 ],
                 "summary": "Afficher une galerie d'événement",
-                "operationId": "7af57bd866d05083d50afd391b3620c2",
+                "operationId": "6f50e2f479028486fffea1e02b60cfc1",
                 "parameters": [
                     {
                         "name": "id",
@@ -1665,13 +1716,15 @@
                         "description": "Galerie d'événement"
                     }
                 }
-            },
+            }
+        },
+        "/api/admin/galeries/evenements/{id}": {
             "put": {
                 "tags": [
                     "Galeries Evenements"
                 ],
-                "summary": "Mettre à jour une galerie d'événement",
-                "operationId": "77b0d321c4e4664d6619c9dcf346e7fc",
+                "summary": "Mettre à jour une galerie d'événement (admin)",
+                "operationId": "960f0be6ecaa086dfeac81bc0dc6f506",
                 "parameters": [
                     {
                         "name": "id",
@@ -1709,14 +1762,19 @@
                     "200": {
                         "description": "Galerie mise à jour"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
                     "Galeries Evenements"
                 ],
-                "summary": "Supprimer une galerie d'événement",
-                "operationId": "bfeb22d85e8d6df021a89f4f18812c7c",
+                "summary": "Supprimer une galerie d'événement (admin)",
+                "operationId": "e903cbe84c451f0aa8f25e4f28d3a678",
                 "parameters": [
                     {
                         "name": "id",
@@ -1731,7 +1789,12 @@
                     "200": {
                         "description": "Galerie supprimée"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/prix": {
@@ -1903,13 +1966,6 @@
                 "operationId": "fbc6050d9f7fdb07075d3aaeb157ffa9",
                 "parameters": [
                     {
-                        "name": "id_user",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
                         "name": "id_site",
                         "in": "query",
                         "schema": {
@@ -1939,7 +1995,12 @@
                     "200": {
                         "description": "Liste des réservations"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1954,8 +2015,7 @@
                                 "required": [
                                     "type",
                                     "prix",
-                                    "nombre",
-                                    "id_user"
+                                    "nombre"
                                 ],
                                 "properties": {
                                     "type": {
@@ -1976,9 +2036,6 @@
                                     },
                                     "id_evnmt": {
                                         "type": "integer"
-                                    },
-                                    "id_user": {
-                                        "type": "integer"
                                     }
                                 },
                                 "type": "object"
@@ -1990,7 +2047,12 @@
                     "201": {
                         "description": "Réservation créée"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/reservations/{id}": {
@@ -2014,7 +2076,12 @@
                     "200": {
                         "description": "Détails de la réservation"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -2065,13 +2132,18 @@
                     "200": {
                         "description": "Réservation mise à jour"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
                     "Reservations"
                 ],
-                "summary": "Supprimer une réservation",
+                "summary": "Annuler une réservation",
                 "operationId": "9b6641e4ded1ff7adfce352d589b85e9",
                 "parameters": [
                     {
@@ -2087,7 +2159,12 @@
                     "200": {
                         "description": "Réservation annulée"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/sites": {
@@ -2101,7 +2178,6 @@
                     {
                         "name": "libelle",
                         "in": "query",
-                        "description": "Filtrer par libelle",
                         "schema": {
                             "type": "string"
                         }
@@ -2109,7 +2185,6 @@
                     {
                         "name": "id_cat_site",
                         "in": "query",
-                        "description": "Filtrer par catégorie",
                         "schema": {
                             "type": "integer"
                         }
@@ -2117,7 +2192,6 @@
                     {
                         "name": "status",
                         "in": "query",
-                        "description": "Filtrer par status",
                         "schema": {
                             "type": "boolean"
                         }
@@ -2128,13 +2202,15 @@
                         "description": "Liste paginée des sites"
                     }
                 }
-            },
+            }
+        },
+        "/api/admin/sites": {
             "post": {
                 "tags": [
                     "Sites"
                 ],
-                "summary": "Créer un site",
-                "operationId": "4fe9547a6429a6b8f5b442d220939790",
+                "summary": "Créer un site (admin)",
+                "operationId": "ad56d71313fca6363ceb3f9cecd99297",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2145,8 +2221,7 @@
                                     "adresse",
                                     "longitude",
                                     "latitude",
-                                    "id_cat_site",
-                                    "id_admin"
+                                    "id_cat_site"
                                 ],
                                 "properties": {
                                     "libelle": {
@@ -2177,9 +2252,6 @@
                                     },
                                     "id_cat_site": {
                                         "type": "integer"
-                                    },
-                                    "id_admin": {
-                                        "type": "integer"
                                     }
                                 },
                                 "type": "object"
@@ -2191,7 +2263,12 @@
                     "201": {
                         "description": "Site créé"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/sites/{id}": {
@@ -2216,13 +2293,15 @@
                         "description": "Détails du site"
                     }
                 }
-            },
+            }
+        },
+        "/api/admin/sites/{id}": {
             "put": {
                 "tags": [
                     "Sites"
                 ],
-                "summary": "Mettre à jour un site",
-                "operationId": "a3231ef301930fefe403ab4a7b506612",
+                "summary": "Mettre à jour un site (admin)",
+                "operationId": "cf635db3a95242849e5fd94bb2e25e7d",
                 "parameters": [
                     {
                         "name": "id",
@@ -2266,9 +2345,6 @@
                                     },
                                     "id_cat_site": {
                                         "type": "integer"
-                                    },
-                                    "id_admin": {
-                                        "type": "integer"
                                     }
                                 },
                                 "type": "object"
@@ -2280,14 +2356,19 @@
                     "200": {
                         "description": "Site mis à jour"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
                     "Sites"
                 ],
-                "summary": "Supprimer un site",
-                "operationId": "d6cffc5b1111fb5ede331beb6ba025f3",
+                "summary": "Supprimer un site (admin)",
+                "operationId": "64e63f40dc3270374c834442741d710d",
                 "parameters": [
                     {
                         "name": "id",
@@ -2302,7 +2383,12 @@
                     "200": {
                         "description": "Site supprimé"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/health": {
