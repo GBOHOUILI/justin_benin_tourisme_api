@@ -12,11 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: "/up",
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(
-            prepend: [
-                \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            ],
-        );
+        // EnsureFrontendRequestsAreStateful supprimé — cause une récursion
+        // infinie dans Sanctum Guard pour une API Bearer token pure
 
         // Alias utilisable dans les routes : 'admin'
         $middleware->alias([

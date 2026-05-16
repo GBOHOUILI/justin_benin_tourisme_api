@@ -9,15 +9,13 @@ class Reservation extends Model
     protected $table = 'reservation';
 
     protected $fillable = [
-        'type',
-        'prix',
-        'nombre',
-        'total',
-        'description',
-        'id_site',
-        'id_evnmt',
-        'id_user',
+        'type', 'prix', 'nombre', 'total',
+        'description', 'id_site', 'id_evnmt', 'id_user',
     ];
+
+    // ─── CORRECTION CRITIQUE : sans = ['user'] empêche la récursion
+    // User → reservations → user → reservations → INFINI
+    protected $without = ['user'];
 
     public function site()
     {

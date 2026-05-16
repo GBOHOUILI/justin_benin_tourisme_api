@@ -29,7 +29,7 @@ return [
     // Si tu as des admins et des users, il est souvent préférable de laisser
     // Sanctum gérer via le guard 'web' par défaut, mais assure-toi que tes
     // providers sont bien définis dans config/auth.php.
-    "guard" => ["web", "admin"],
+    "guard" => ["web"],
 
     /*
     |--------------------------------------------------------------------------

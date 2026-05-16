@@ -86,7 +86,7 @@ Route::middleware("auth:sanctum")->group(function () {
 //  Le middleware 'admin' vérifie en plus que le compte
 //  n'est pas désactivé (status = false).
 // ══════════════════════════════════════════════════════
-Route::middleware(["auth:sanctum", "admin"])
+Route::middleware(["auth:admin", "admin"])
     ->prefix("admin")
     ->group(function () {
         // Profil admin connecté
