@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Avis;
+use App\Models\Utilisation;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
@@ -56,11 +57,6 @@ class AvisController extends Controller
                             type: "integer",
                         ),
                         new OA\Property(property: "message", type: "string"),
-                        new OA\Property(
-                            property: "status",
-                            type: "string",
-                            enum: ["en_attente", "approuve", "rejete"],
-                        ),
                     ],
                 ),
             ),
@@ -73,11 +69,18 @@ class AvisController extends Controller
     {
         $validated = $request->validate([
             "id_utilisation" =>
-                "required|exists:utilisations,id|unique:avis,id_utilisation",
+                "required|exists:utilisation,id|unique:avis,id_utilisation",
             "message" => "required|string|max:1000",
-            "status" => "nullable|string|in:en_attente,approuve,rejete",
         ]);
-        $validated["status"] = $validated["status"] ?? "en_attente";
+
+        $utilisation = Utilisation::with("ticket.reservation")->findOrFail(
+            $validated["id_utilisation"],
+        );
+        if ($utilisation->ticket->reservation->id_user !== $request->user()->id) {
+            return response()->json(["message" => "Accès refusé."], 403);
+        }
+
+        $validated["status"] = "en_attente";
         $avis = Avis::create($validated);
         return response()->json($avis->load("utilisation"), 201);
     }
@@ -127,11 +130,6 @@ class AvisController extends Controller
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: "message", type: "string"),
-                        new OA\Property(
-                            property: "status",
-                            type: "string",
-                            enum: ["en_attente", "approuve", "rejete"],
-                        ),
                     ],
                 ),
             ),
@@ -142,9 +140,13 @@ class AvisController extends Controller
     ]
     public function update(Request $request, Avis $avi)
     {
+        $avi->load("utilisation.ticket.reservation");
+        if ($avi->utilisation->ticket->reservation->id_user !== $request->user()->id) {
+            return response()->json(["message" => "Accès refusé."], 403);
+        }
+
         $validated = $request->validate([
             "message" => "sometimes|string|max:1000",
-            "status" => "sometimes|string|in:en_attente,approuve,rejete",
         ]);
         $avi->update($validated);
         return response()->json($avi);
@@ -216,8 +218,13 @@ class AvisController extends Controller
             ],
         ),
     ]
-    public function destroy(Avis $avi)
+    public function destroy(Request $request, Avis $avi)
     {
+        $avi->load("utilisation.ticket.reservation");
+        if ($avi->utilisation->ticket->reservation->id_user !== $request->user()->id) {
+            return response()->json(["message" => "Accès refusé."], 403);
+        }
+
         $avi->delete();
         return response()->json(["message" => "Avis supprimé"], 200);
     }

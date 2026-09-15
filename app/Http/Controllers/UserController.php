@@ -33,8 +33,12 @@ class UserController extends Controller
         return response()->json($user, 201);
     }
 
-    public function show(User $user)
+    public function show(Request $request, User $user)
     {
+        if ($user->id !== $request->user()->id) {
+            return response()->json(['message' => 'Accès refusé.'], 403);
+        }
+
         // CORRECTION : on ne charge plus reservations.tickets (récursion infinie)
         // On retourne juste le user sans relations lourdes
         return response()->json($user);
@@ -42,6 +46,10 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        if ($user->id !== $request->user()->id) {
+            return response()->json(['message' => 'Accès refusé.'], 403);
+        }
+
         $validated = $request->validate([
             'nom'         => 'sometimes|string|max:100',
             'prenom'      => 'sometimes|string|max:100',
@@ -61,8 +69,12 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function destroy(User $user)
+    public function destroy(Request $request, User $user)
     {
+        if ($user->id !== $request->user()->id) {
+            return response()->json(['message' => 'Accès refusé.'], 403);
+        }
+
         $user->delete();
         return response()->json(['message' => 'Utilisateur supprimé'], 200);
     }
