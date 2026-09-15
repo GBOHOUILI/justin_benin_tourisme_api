@@ -19,6 +19,7 @@ class Site extends Model
         'status',
         'id_cat_site',
         'id_admin',
+        'id_prestataire',
     ];
 
     protected $casts = [
@@ -34,6 +35,11 @@ class Site extends Model
     public function admin()
     {
         return $this->belongsTo(Admin::class, 'id_admin');
+    }
+
+    public function prestataire()
+    {
+        return $this->belongsTo(Prestataire::class, 'id_prestataire');
     }
 
     public function galeries()
