@@ -88,7 +88,7 @@ class UtilisationController extends Controller
         $validated = $request->validate([
             "date_visite" => "required|date",
             "heure" => "required|date_format:H:i",
-            "id_ticket" => "required|exists:tickets,id",
+            "id_ticket" => "required|exists:ticket,id",
         ]);
 
         if (
