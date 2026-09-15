@@ -33,7 +33,11 @@ class AvisController extends Controller
     ]
     public function index(Request $request)
     {
-        $query = Avis::with(["utilisation.ticket.reservation.user"]);
+        $query = Avis::with([
+            "utilisation.ticket.reservation.user",
+            "utilisation.ticket.reservation.site",
+            "utilisation.ticket.reservation.evenement",
+        ]);
         if ($request->filled("status")) {
             $query->where("status", $request->status);
         }
@@ -109,7 +113,11 @@ class AvisController extends Controller
     public function show(Avis $avi)
     {
         return response()->json(
-            $avi->load(["utilisation.ticket.reservation.user"]),
+            $avi->load([
+                "utilisation.ticket.reservation.user",
+                "utilisation.ticket.reservation.site",
+                "utilisation.ticket.reservation.evenement",
+            ]),
         );
     }
 

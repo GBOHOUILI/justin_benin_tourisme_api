@@ -71,7 +71,11 @@ class UserController extends Controller
 
     public function destroy(Request $request, User $user)
     {
-        if ($user->id !== $request->user()->id) {
+        // Route accessible sous 2 guards : sanctum (le user supprime son propre
+        // compte) et admin (guard 'admin' + middleware 'admin', déjà appliqués
+        // par la route /admin/users/{user} — un admin peut supprimer n'importe
+        // quel compte, pas de vérification de propriété dans ce cas).
+        if ($request->user() instanceof User && $user->id !== $request->user()->id) {
             return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
