@@ -29,8 +29,8 @@ Périmètre actuel : sites touristiques + événements (catégories, galeries, p
 
 ### Backend — fonctionnel
 
-- [ ] Recherche par proximité (géolocalisation) sur `GET /sites` et `GET /evenements` — actuellement listing brut sans filtre géographique
-- [ ] Recherche par budget (fourchette de prix) sur `GET /sites` et `GET /evenements`
+- [x] Recherche par proximité (géolocalisation) sur `GET /sites` et `GET /evenements` — filtres `lat`/`lng`/`radius`, formule Haversine en `whereRaw`/`orderByRaw` (pas de `having` sur alias, pour rester compatible avec `paginate()`), colonne `distance_km` exposée via `selectRaw`. Vérifié en réel avec 3 sites à distances connues (Cotonou/Porto-Novo/Natitingou) : rayon, tri et valeurs de distance corrects
+- [x] Recherche par budget (fourchette de prix) sur `GET /sites` et `GET /evenements` — filtres `prix_min`/`prix_max` via `whereHas('prix', ...)`. Vérifié en réel
 - [ ] Workflow de validation sur `Site` (actuellement `status` booléen simple) à aligner sur celui d'`Evenement` (`en_attente/valide/rejete/suspendu`)
 - [ ] Trancher le workflow Avis : aujourd'hui un avis exige une `Utilisation` (visite déjà enregistrée par un admin) préexistante — décider si c'est voulu ou si `Avis` doit pouvoir se rattacher directement à un service comme dans le MCD cible
 - [ ] QR code sur `Ticket` (colonne `code_qr` absente, aucune génération)
@@ -51,7 +51,7 @@ Périmètre actuel : sites touristiques + événements (catégories, galeries, p
 ### Frontend — flux manquants
 
 - [ ] Formulaire de dépôt d'avis côté public : aucun appel à `avisApi.create` dans `src/pages/public` — bloqué par le workflow Avis backend à clarifier
-- [ ] UI de recherche par proximité/budget — en attente des filtres backend correspondants
+- [x] UI de recherche par proximité/budget sur `Sites.jsx`/`Evenements.jsx` : bouton "Près de moi" (`navigator.geolocation`) + select de rayon, inputs prix min/max. Distance affichée sur `SiteCard`/`EventCard` (`· X km`) quand `distance_km` est présent dans la réponse. Vérifié par `npm run build` (compile OK) — pas de vérification visuelle navigateur (pas d'outil disponible dans cette session)
 - [ ] Affichage QR code / ticket électronique — en attente de la fonctionnalité backend
 
 ### Frontend — à vérifier

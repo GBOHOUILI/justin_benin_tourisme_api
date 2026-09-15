@@ -34,11 +34,41 @@ class EvenementController extends Controller
                     in: "query",
                     schema: new OA\Schema(type: "string", format: "date"),
                 ),
+                new OA\Parameter(
+                    name: "lat",
+                    in: "query",
+                    description: "Latitude de référence (recherche par proximité)",
+                    schema: new OA\Schema(type: "number"),
+                ),
+                new OA\Parameter(
+                    name: "lng",
+                    in: "query",
+                    description: "Longitude de référence (recherche par proximité)",
+                    schema: new OA\Schema(type: "number"),
+                ),
+                new OA\Parameter(
+                    name: "radius",
+                    in: "query",
+                    description: "Rayon de recherche en km (nécessite lat/lng)",
+                    schema: new OA\Schema(type: "number"),
+                ),
+                new OA\Parameter(
+                    name: "prix_min",
+                    in: "query",
+                    description: "Prix minimum (filtre sur les tarifs de l'événement)",
+                    schema: new OA\Schema(type: "number"),
+                ),
+                new OA\Parameter(
+                    name: "prix_max",
+                    in: "query",
+                    description: "Prix maximum (filtre sur les tarifs de l'événement)",
+                    schema: new OA\Schema(type: "number"),
+                ),
             ],
             responses: [
                 new OA\Response(
                     response: 200,
-                    description: "Liste des événements",
+                    description: "Liste des événements, triée par distance si lat/lng fournis",
                 ),
             ],
         ),
@@ -58,6 +88,41 @@ class EvenementController extends Controller
         }
         if ($request->filled("date_debut")) {
             $query->whereDate("date_debut", ">=", $request->date_debut);
+        }
+
+        if ($request->filled("prix_min") || $request->filled("prix_max")) {
+            $query->whereHas("prix", function ($q) use ($request) {
+                if ($request->filled("prix_min")) {
+                    $q->where("montant", ">=", $request->prix_min);
+                }
+                if ($request->filled("prix_max")) {
+                    $q->where("montant", "<=", $request->prix_max);
+                }
+            });
+        }
+
+        if ($request->filled("lat") && $request->filled("lng")) {
+            $lat = (float) $request->lat;
+            $lng = (float) $request->lng;
+            $haversine =
+                "6371 * acos(least(1, greatest(-1, cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))))";
+
+            $query->selectRaw("evenement.*, ($haversine) as distance_km", [
+                $lat,
+                $lng,
+                $lat,
+            ]);
+
+            if ($request->filled("radius")) {
+                $query->whereRaw("$haversine <= ?", [
+                    $lat,
+                    $lng,
+                    $lat,
+                    (float) $request->radius,
+                ]);
+            }
+
+            $query->orderByRaw($haversine, [$lat, $lng, $lat]);
         }
 
         return response()->json($query->paginate(12));
