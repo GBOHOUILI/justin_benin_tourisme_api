@@ -16,6 +16,8 @@ use App\Http\Controllers\UtilisationController;
 use App\Http\Controllers\AvisController;
 use App\Http\Controllers\FonctionnaliteController;
 use App\Http\Controllers\PrixController;
+use App\Http\Controllers\CommandeController;
+use App\Http\Controllers\PaiementController;
 
 // ══════════════════════════════════════════════════════
 //  ROUTES PUBLIQUES — aucun token requis
@@ -59,6 +61,10 @@ Route::get("/avis/{avi}", [AvisController::class, "show"]);
 
 Route::post("/tickets/verifier", [TicketController::class, "verifier"]);
 
+// Webhook Kkiapay : pas de token Sanctum possible côté serveur-à-serveur,
+// l'authenticité est vérifiée via le header x-kkiapay-secret (cf. PaiementController::webhook).
+Route::post("/webhooks/kkiapay", [PaiementController::class, "webhook"]);
+
 // ══════════════════════════════════════════════════════
 //  ROUTES UTILISATEURS — token User (auth:sanctum)
 // ══════════════════════════════════════════════════════
@@ -79,6 +85,12 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::post("/avis", [AvisController::class, "store"]);
     Route::put("/avis/{avi}", [AvisController::class, "update"]);
     Route::delete("/avis/{avi}", [AvisController::class, "destroy"]);
+
+    // Commandes & paiements Kkiapay
+    Route::get("/commandes", [CommandeController::class, "index"]);
+    Route::post("/commandes", [CommandeController::class, "store"]);
+    Route::get("/commandes/{commande}", [CommandeController::class, "show"]);
+    Route::patch("/paiements/{paiement}/verifier", [PaiementController::class, "verifier"]);
 });
 
 // ══════════════════════════════════════════════════════

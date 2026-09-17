@@ -11,6 +11,7 @@ class Reservation extends Model
     protected $fillable = [
         'type', 'prix', 'nombre', 'total',
         'description', 'id_site', 'id_evnmt', 'id_user',
+        'id_prix', 'id_commande', 'statut',
     ];
 
     // ─── CORRECTION CRITIQUE : sans = ['user'] empêche la récursion
@@ -35,5 +36,15 @@ class Reservation extends Model
     public function tickets()
     {
         return $this->hasMany(Ticket::class, 'id_reservation');
+    }
+
+    public function tarif()
+    {
+        return $this->belongsTo(Prix::class, 'id_prix');
+    }
+
+    public function commande()
+    {
+        return $this->belongsTo(Commande::class, 'id_commande');
     }
 }
