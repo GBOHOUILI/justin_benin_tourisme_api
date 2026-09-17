@@ -69,3 +69,11 @@ Core entities: `Site` / `CatSite` (categories), `Evenement` / `CatEvenmt`, `Prix
 ### File uploads
 
 Uploaded media (galerie images/videos) are stored via `Storage::disk('public')->store(...)` under `galeries/sites` or `galeries/evenements`, with the resulting relative path saved in the `url_fichier` column — not the human-readable `libelle`/title field. Controllers that delete a gallery entry must also delete the physical file (`Storage::disk('public')->exists(...)` / `->delete(...)`) — see `GalerieSiteController::destroy` as the reference pattern. Requires `php artisan storage:link` (already run automatically by the Docker entrypoint).
+
+# Vérification frontend
+
+Pour toute modification frontend (totche-front) : utiliser Playwright pour naviguer vers 
+la page concernée, prendre un snapshot/screenshot avant et après, vérifier la console pour 
+les erreurs JS, et confirmer le comportement réel (clic, formulaire) avant de considérer 
+la tâche terminée. Ne jamais se contenter de "le code compile" comme critère de succès 
+côté UI.

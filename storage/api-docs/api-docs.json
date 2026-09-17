@@ -167,242 +167,6 @@
                 }
             }
         },
-        "/api/register": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Inscription d'un nouvel utilisateur",
-                "operationId": "8a56853624e025573120a09a4c75d468",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "nom",
-                                    "prenom",
-                                    "tel",
-                                    "email",
-                                    "password",
-                                    "password_confirmation"
-                                ],
-                                "properties": {
-                                    "nom": {
-                                        "type": "string",
-                                        "example": "Doe"
-                                    },
-                                    "prenom": {
-                                        "type": "string",
-                                        "example": "John"
-                                    },
-                                    "tel": {
-                                        "type": "string",
-                                        "example": "+22901000000"
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "example": "john@example.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "password123"
-                                    },
-                                    "password_confirmation": {
-                                        "type": "string",
-                                        "example": "password123"
-                                    },
-                                    "nationalite": {
-                                        "type": "string",
-                                        "example": "Béninoise"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Inscription réussie"
-                    },
-                    "422": {
-                        "description": "Erreur de validation"
-                    }
-                }
-            }
-        },
-        "/api/login": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Connexion utilisateur",
-                "operationId": "a3b306d14572d1f4bd6c064b3233e7b8",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "email",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "example": "john@example.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "password123"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Connexion réussie"
-                    },
-                    "422": {
-                        "description": "Identifiants incorrects"
-                    }
-                }
-            }
-        },
-        "/api/admin/login": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Connexion administrateur",
-                "operationId": "bddbac6d4dfe7ae52db274728f5024be",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "tel",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "tel": {
-                                        "type": "string",
-                                        "example": "+22901000000"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "admin123"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Connexion admin réussie"
-                    },
-                    "422": {
-                        "description": "Identifiants incorrects"
-                    }
-                }
-            }
-        },
-        "/api/logout": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Déconnexion (user ou admin)",
-                "operationId": "fe8f3429cd6979b3b4517e186505f9f9",
-                "responses": {
-                    "200": {
-                        "description": "Déconnexion réussie"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/me": {
-            "get": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Profil de l'utilisateur ou admin connecté",
-                "operationId": "9d9bc556f927575aa492a88c28fe5908",
-                "responses": {
-                    "200": {
-                        "description": "Profil retourné"
-                    },
-                    "401": {
-                        "description": "Non authentifié"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/update-password": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Mise à jour du mot de passe",
-                "operationId": "b0d1434f194356ab3b59cc8abbed505e",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "current_password",
-                                    "password",
-                                    "password_confirmation"
-                                ],
-                                "properties": {
-                                    "current_password": {
-                                        "type": "string"
-                                    },
-                                    "password": {
-                                        "type": "string"
-                                    },
-                                    "password_confirmation": {
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Mot de passe mis à jour"
-                    },
-                    "422": {
-                        "description": "Mot de passe actuel incorrect"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/api/avis": {
             "get": {
                 "tags": [
@@ -452,14 +216,6 @@
                                     },
                                     "message": {
                                         "type": "string"
-                                    },
-                                    "status": {
-                                        "type": "string",
-                                        "enum": [
-                                            "en_attente",
-                                            "approuve",
-                                            "rejete"
-                                        ]
                                     }
                                 },
                                 "type": "object"
@@ -520,14 +276,6 @@
                                 "properties": {
                                     "message": {
                                         "type": "string"
-                                    },
-                                    "status": {
-                                        "type": "string",
-                                        "enum": [
-                                            "en_attente",
-                                            "approuve",
-                                            "rejete"
-                                        ]
                                     }
                                 },
                                 "type": "object"
@@ -612,26 +360,29 @@
                 }
             }
         },
-        "/api/cat-evenmts": {
+        "/api/categories/evenements": {
             "get": {
                 "tags": [
                     "Categories Evenements"
                 ],
                 "summary": "Lister les catégories d'événements",
-                "operationId": "7a64e5c063f9c133f679ed8a9295f394",
+                "operationId": "fae6fe09156a34c298b0ae281a257a5c",
                 "responses": {
                     "200": {
                         "description": "Liste des catégories"
                     }
                 }
-            },
+            }
+        },
+        "/api/admin/categories/evenements": {
             "post": {
                 "tags": [
                     "Categories Evenements"
                 ],
-                "summary": "Créer une catégorie d'événement",
-                "operationId": "a9a00b35d59226c9e112df062862ca3f",
+                "summary": "Créer une catégorie d'événement (admin)",
+                "operationId": "d871d18545686ba0192b9ee516047688",
                 "requestBody": {
+                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
@@ -640,7 +391,8 @@
                                 ],
                                 "properties": {
                                     "libelle": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Festival"
                                     }
                                 },
                                 "type": "object"
@@ -652,16 +404,21 @@
                     "201": {
                         "description": "Catégorie créée"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
-        "/api/cat-evenmts/{id}": {
+        "/api/categories/evenements/{id}": {
             "get": {
                 "tags": [
                     "Categories Evenements"
                 ],
                 "summary": "Afficher une catégorie d'événement",
-                "operationId": "616d0e133c6a804badd083f9d6d269a4",
+                "operationId": "454f3b52cd1c6b490617853ce28ab051",
                 "parameters": [
                     {
                         "name": "id",
@@ -677,13 +434,15 @@
                         "description": "Détails de la catégorie"
                     }
                 }
-            },
+            }
+        },
+        "/api/admin/categories/evenements/{id}": {
             "put": {
                 "tags": [
                     "Categories Evenements"
                 ],
-                "summary": "Mettre à jour une catégorie d'événement",
-                "operationId": "c6ef2290bbb75789e4bc5ae96985b267",
+                "summary": "Mettre à jour une catégorie d'événement (admin)",
+                "operationId": "7a78c6e34440829c562bbaf1bdd2cd7f",
                 "parameters": [
                     {
                         "name": "id",
@@ -712,14 +471,19 @@
                     "200": {
                         "description": "Catégorie mise à jour"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
                     "Categories Evenements"
                 ],
-                "summary": "Supprimer une catégorie d'événement",
-                "operationId": "d9a823eec080b1299b759619235da235",
+                "summary": "Supprimer une catégorie d'événement (admin)",
+                "operationId": "1e957f1533555c30b0690ca4f4386989",
                 "parameters": [
                     {
                         "name": "id",
@@ -734,29 +498,37 @@
                     "200": {
                         "description": "Catégorie supprimée"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
-        "/api/cat-sites": {
+        "/api/categories/sites": {
             "get": {
                 "tags": [
                     "Categories Sites"
                 ],
                 "summary": "Lister les catégories de sites",
-                "operationId": "402f1c68ad5ee925f353bb3a60d5940f",
+                "operationId": "032dab29eeadd28b61598d2b486a9ade",
                 "responses": {
                     "200": {
                         "description": "Liste des catégories"
                     }
                 }
-            },
+            }
+        },
+        "/api/admin/categories/sites": {
             "post": {
                 "tags": [
                     "Categories Sites"
                 ],
-                "summary": "Créer une catégorie de site",
-                "operationId": "991e323e4ee8eca4d973b350f775d539",
+                "summary": "Créer une catégorie de site (admin)",
+                "operationId": "71dab319764527738a41c493830f227d",
                 "requestBody": {
+                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
@@ -765,7 +537,8 @@
                                 ],
                                 "properties": {
                                     "libelle": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Patrimoine Historique"
                                     }
                                 },
                                 "type": "object"
@@ -777,16 +550,21 @@
                     "201": {
                         "description": "Catégorie créée"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
-        "/api/cat-sites/{id}": {
+        "/api/categories/sites/{id}": {
             "get": {
                 "tags": [
                     "Categories Sites"
                 ],
                 "summary": "Afficher une catégorie de site",
-                "operationId": "0badaee12091336bbb71db4368e2e3c6",
+                "operationId": "48566f02e569a30cd0e57b0ad1fb2b6c",
                 "parameters": [
                     {
                         "name": "id",
@@ -802,13 +580,15 @@
                         "description": "Détails de la catégorie"
                     }
                 }
-            },
+            }
+        },
+        "/api/admin/categories/sites/{id}": {
             "put": {
                 "tags": [
                     "Categories Sites"
                 ],
-                "summary": "Mettre à jour une catégorie de site",
-                "operationId": "547ce2d418a1200178388bbcb12a104e",
+                "summary": "Mettre à jour une catégorie de site (admin)",
+                "operationId": "8336d13445d3d789fc9d6003b8719204",
                 "parameters": [
                     {
                         "name": "id",
@@ -837,14 +617,19 @@
                     "200": {
                         "description": "Catégorie mise à jour"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
                     "Categories Sites"
                 ],
-                "summary": "Supprimer une catégorie de site",
-                "operationId": "92b5cbc3b0c85022487e7f739c899287",
+                "summary": "Supprimer une catégorie de site (admin)",
+                "operationId": "80c6db8e0f995c5be41d0dbe7b9863af",
                 "parameters": [
                     {
                         "name": "id",
@@ -859,7 +644,463 @@
                     "200": {
                         "description": "Catégorie supprimée"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/circuits": {
+            "get": {
+                "tags": [
+                    "Circuits"
+                ],
+                "summary": "Lister mes circuits",
+                "operationId": "18901b350080d773acf3dc512bb2538f",
+                "responses": {
+                    "200": {
+                        "description": "Liste des circuits de l'utilisateur connecté"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Circuits"
+                ],
+                "summary": "Créer un circuit (itinéraire personnalisé, construit manuellement — pas d'IA pour l'instant)",
+                "operationId": "b30e55037a8c729b170fdb384fc29dd7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "libelle"
+                                ],
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Circuit créé (genere_par_ia toujours false)"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/circuits/{id}": {
+            "get": {
+                "tags": [
+                    "Circuits"
+                ],
+                "summary": "Afficher un circuit avec ses étapes ordonnées",
+                "operationId": "ef9f7b8e640c7015d2d7cc996d2a5f40",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails du circuit"
+                    },
+                    "403": {
+                        "description": "Accès refusé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Circuits"
+                ],
+                "summary": "Mettre à jour un circuit",
+                "operationId": "dc3f3e3d3eb3bb2f6487911a82ff724c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Circuit mis à jour"
+                    },
+                    "403": {
+                        "description": "Accès refusé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Circuits"
+                ],
+                "summary": "Supprimer un circuit (les réservations liées à ses étapes ne sont jamais supprimées)",
+                "operationId": "892ab5a3607cffe438aab36d253bcb91",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Circuit supprimé"
+                    },
+                    "403": {
+                        "description": "Accès refusé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/commandes": {
+            "get": {
+                "tags": [
+                    "Commandes"
+                ],
+                "summary": "Lister mes commandes",
+                "operationId": "6a11b062792d6b0aed3816592a638d6c",
+                "responses": {
+                    "200": {
+                        "description": "Liste des commandes de l'utilisateur connecté"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Commandes"
+                ],
+                "summary": "Regrouper une ou plusieurs réservations payantes en une commande",
+                "operationId": "a4d695163e79084fc1ca65e77e325909",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reservation_ids"
+                                ],
+                                "properties": {
+                                    "reservation_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "echelonner": {
+                                        "description": "Demande un paiement échelonné — refusé si le tarif ne le permet pas",
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Commande créée avec son (ses) paiement(s) en attente"
+                    },
+                    "422": {
+                        "description": "Réservations invalides ou échelonnement non éligible"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/commandes/{id}": {
+            "get": {
+                "tags": [
+                    "Commandes"
+                ],
+                "summary": "Afficher une commande",
+                "operationId": "700d31135d2d0bcc8efcda92ca45ae8a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails de la commande"
+                    },
+                    "403": {
+                        "description": "Accès refusé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/circuits/{circuit}/etapes": {
+            "post": {
+                "tags": [
+                    "Circuits"
+                ],
+                "summary": "Ajouter une étape à un circuit (site XOR événement, ordre auto si omis)",
+                "operationId": "04c800a882fbe06680a30d3b432b5578",
+                "parameters": [
+                    {
+                        "name": "circuit",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_site": {
+                                        "type": "integer"
+                                    },
+                                    "id_evnmt": {
+                                        "type": "integer"
+                                    },
+                                    "ordre": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Étape ajoutée"
+                    },
+                    "422": {
+                        "description": "Ni site ni événement, ou les deux à la fois"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/etapes/{id}": {
+            "put": {
+                "tags": [
+                    "Circuits"
+                ],
+                "summary": "Mettre à jour une étape (ordre unitaire, ou lier une Reservation existante)",
+                "operationId": "7f9fee9949afdf3fe5a0236adbac713c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "ordre": {
+                                        "type": "integer"
+                                    },
+                                    "id_reservation": {
+                                        "description": "Doit appartenir à l'utilisateur et référencer le même site/événement que l'étape",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Étape mise à jour"
+                    },
+                    "403": {
+                        "description": "Accès refusé ou réservation appartenant à un autre utilisateur"
+                    },
+                    "422": {
+                        "description": "La réservation ne correspond pas au site/événement de l'étape"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Circuits"
+                ],
+                "summary": "Retirer une étape du circuit (la Reservation liée n'est jamais supprimée)",
+                "operationId": "bde5786552aac632d7219b476d4d9020",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Étape retirée"
+                    },
+                    "403": {
+                        "description": "Accès refusé"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/circuits/{circuit}/etapes/reordonner": {
+            "patch": {
+                "tags": [
+                    "Circuits"
+                ],
+                "summary": "Réordonner les étapes d'un circuit",
+                "operationId": "ea632999bdbf25fadf7059e2a0659a8b",
+                "parameters": [
+                    {
+                        "name": "circuit",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "ordre"
+                                ],
+                                "properties": {
+                                    "ordre": {
+                                        "description": "Liste des id d'étapes dans le nouvel ordre souhaité — doit contenir exactement toutes les étapes du circuit",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Circuit avec ses étapes réordonnées"
+                    },
+                    "422": {
+                        "description": "La liste ne correspond pas exactement aux étapes du circuit"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/api/evenements": {
@@ -898,11 +1139,51 @@
                             "type": "string",
                             "format": "date"
                         }
+                    },
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "description": "Latitude de référence (recherche par proximité)",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "description": "Longitude de référence (recherche par proximité)",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "radius",
+                        "in": "query",
+                        "description": "Rayon de recherche en km (nécessite lat/lng)",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "prix_min",
+                        "in": "query",
+                        "description": "Prix minimum (filtre sur les tarifs de l'événement)",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "prix_max",
+                        "in": "query",
+                        "description": "Prix maximum (filtre sur les tarifs de l'événement)",
+                        "schema": {
+                            "type": "number"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Liste des événements"
+                        "description": "Liste des événements, triée par distance si lat/lng fournis"
                     }
                 }
             }
@@ -1797,61 +2078,34 @@
                 ]
             }
         },
-        "/api/prix": {
-            "get": {
+        "/api/paiements/{id}/verifier": {
+            "patch": {
                 "tags": [
-                    "Prix"
+                    "Paiements"
                 ],
-                "summary": "Lister les prix",
-                "operationId": "fee5da546673b4198261bf8e6cd8c981",
+                "summary": "Confirmer un paiement Kkiapay via son transactionId (appelé côté client après le widget)",
+                "operationId": "c60dc07f07f6a91173f82c01c439176f",
                 "parameters": [
                     {
-                        "name": "id_site",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "id_evnmt",
-                        "in": "query",
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "Liste des prix"
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "Prix"
-                ],
-                "summary": "Créer un prix",
-                "operationId": "426255c3e1e411dae88a3581fb1497af",
                 "requestBody": {
+                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "libelle",
-                                    "montant"
+                                    "transaction_id"
                                 ],
                                 "properties": {
-                                    "libelle": {
+                                    "transaction_id": {
                                         "type": "string"
-                                    },
-                                    "montant": {
-                                        "type": "number"
-                                    },
-                                    "id_site": {
-                                        "type": "integer"
-                                    },
-                                    "id_evnmt": {
-                                        "type": "integer"
                                     }
                                 },
                                 "type": "object"
@@ -1860,173 +2114,67 @@
                     }
                 },
                 "responses": {
-                    "201": {
-                        "description": "Prix créé"
+                    "200": {
+                        "description": "Paiement confirmé ou déjà traité"
+                    },
+                    "403": {
+                        "description": "Accès refusé"
+                    },
+                    "422": {
+                        "description": "Transaction non confirmée par Kkiapay"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
-        "/api/prix/{id}": {
-            "get": {
+        "/api/webhooks/kkiapay": {
+            "post": {
                 "tags": [
-                    "Prix"
+                    "Paiements"
                 ],
-                "summary": "Afficher un prix",
-                "operationId": "bf5b97aa3b33843ea3e80c67c2226fab",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "summary": "Webhook de confirmation Kkiapay (appelé par Kkiapay, vérifié via le header x-kkiapay-secret)",
+                "operationId": "742d33e44aebe3ab2ce7e9ab6a2f5a26",
                 "responses": {
                     "200": {
-                        "description": "Détails du prix"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Prix"
-                ],
-                "summary": "Mettre à jour un prix",
-                "operationId": "db3b0435e0d1f758ccdf542d1e14e55d",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "libelle": {
-                                        "type": "string"
-                                    },
-                                    "montant": {
-                                        "type": "number"
-                                    },
-                                    "id_site": {
-                                        "type": "integer"
-                                    },
-                                    "id_evnmt": {
-                                        "type": "integer"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Prix mis à jour"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Prix"
-                ],
-                "summary": "Supprimer un prix",
-                "operationId": "8f8f5a30ecb435fdffca8866b405a8bc",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Prix supprimé"
+                        "description": "Événement traité (ou ignoré si non exploitable)"
+                    },
+                    "401": {
+                        "description": "Signature (secret) invalide"
                     }
                 }
             }
         },
         "/api/reservations": {
-            "get": {
-                "tags": [
-                    "Reservations"
-                ],
-                "summary": "Lister les réservations",
-                "operationId": "fbc6050d9f7fdb07075d3aaeb157ffa9",
-                "parameters": [
-                    {
-                        "name": "id_site",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "id_evnmt",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "type",
-                        "in": "query",
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "site",
-                                "evenement"
-                            ]
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Liste des réservations"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
             "post": {
                 "tags": [
-                    "Reservations"
+                    "Réservations"
                 ],
-                "summary": "Créer une réservation",
+                "summary": "Créer une réservation — gratuite (tarif à 0 ou absent) ou payante (statut en_attente_paiement, ticket différé au paiement)",
                 "operationId": "01e3d21dc330a31de025203bc142ffa3",
                 "requestBody": {
+                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
                                     "type",
-                                    "prix",
                                     "nombre"
                                 ],
                                 "properties": {
                                     "type": {
                                         "type": "string",
-                                        "example": "site"
-                                    },
-                                    "prix": {
-                                        "type": "number"
+                                        "enum": [
+                                            "site",
+                                            "evenement"
+                                        ]
                                     },
                                     "nombre": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "minimum": 1
                                     },
                                     "description": {
                                         "type": "string"
@@ -2035,6 +2183,10 @@
                                         "type": "integer"
                                     },
                                     "id_evnmt": {
+                                        "type": "integer"
+                                    },
+                                    "id_prix": {
+                                        "description": "Tarif choisi (table Prix) — le montant n'est jamais fourni par le client, il est résolu côté serveur depuis ce tarif",
                                         "type": "integer"
                                     }
                                 },
@@ -2045,124 +2197,15 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Réservation créée"
+                        "description": "Réservation créée (ticket immédiat si gratuite, en attente de paiement sinon)"
+                    },
+                    "422": {
+                        "description": "Erreur de validation ou tarif ne correspondant pas au site/événement"
                     }
                 },
                 "security": [
                     {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/reservations/{id}": {
-            "get": {
-                "tags": [
-                    "Reservations"
-                ],
-                "summary": "Afficher une réservation",
-                "operationId": "a226b43b2a6a846245e658d01bf00720",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Détails de la réservation"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "put": {
-                "tags": [
-                    "Reservations"
-                ],
-                "summary": "Mettre à jour une réservation",
-                "operationId": "02fa683a9f80a0563596fb06685bcbc7",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "type": {
-                                        "type": "string"
-                                    },
-                                    "prix": {
-                                        "type": "number"
-                                    },
-                                    "nombre": {
-                                        "type": "integer"
-                                    },
-                                    "description": {
-                                        "type": "string"
-                                    },
-                                    "id_site": {
-                                        "type": "integer"
-                                    },
-                                    "id_evnmt": {
-                                        "type": "integer"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Réservation mise à jour"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Reservations"
-                ],
-                "summary": "Annuler une réservation",
-                "operationId": "9b6641e4ded1ff7adfce352d589b85e9",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Réservation annulée"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
+                        "sanctum": []
                     }
                 ]
             }
@@ -2195,11 +2238,51 @@
                         "schema": {
                             "type": "boolean"
                         }
+                    },
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "description": "Latitude de référence (recherche par proximité)",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "description": "Longitude de référence (recherche par proximité)",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "radius",
+                        "in": "query",
+                        "description": "Rayon de recherche en km (nécessite lat/lng)",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "prix_min",
+                        "in": "query",
+                        "description": "Prix minimum (filtre sur les tarifs du site)",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "prix_max",
+                        "in": "query",
+                        "description": "Prix maximum (filtre sur les tarifs du site)",
+                        "schema": {
+                            "type": "number"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Liste paginée des sites"
+                        "description": "Liste paginée des sites, triée par distance si lat/lng fournis"
                     }
                 }
             }
@@ -2631,195 +2714,6 @@
                 }
             }
         },
-        "/api/users": {
-            "get": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Liste des utilisateurs",
-                "operationId": "c457726701591d1183b53aa71fc13441",
-                "responses": {
-                    "200": {
-                        "description": "Liste des utilisateurs paginée"
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Créer un utilisateur",
-                "operationId": "592819a0265360b2014512d6dbfaf0e7",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "nom",
-                                    "prenom",
-                                    "tel",
-                                    "email",
-                                    "password",
-                                    "password_confirmation"
-                                ],
-                                "properties": {
-                                    "nom": {
-                                        "type": "string",
-                                        "example": "Doe"
-                                    },
-                                    "prenom": {
-                                        "type": "string",
-                                        "example": "John"
-                                    },
-                                    "tel": {
-                                        "type": "string",
-                                        "example": "+22901000000"
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "example": "john@example.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "password123"
-                                    },
-                                    "password_confirmation": {
-                                        "type": "string",
-                                        "example": "password123"
-                                    },
-                                    "nationalite": {
-                                        "type": "string",
-                                        "example": "Béninoise"
-                                    },
-                                    "longitude": {
-                                        "type": "number"
-                                    },
-                                    "latitude": {
-                                        "type": "number"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Utilisateur créé"
-                    },
-                    "422": {
-                        "description": "Erreur de validation"
-                    }
-                }
-            }
-        },
-        "/api/users/{id}": {
-            "get": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Afficher un utilisateur",
-                "operationId": "36a33ff774d5cba33c039dec2c3e0287",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Utilisateur affiché"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Mettre à jour un utilisateur",
-                "operationId": "b9091397c8b25f12c6adb74be6ce3a5a",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "nom": {
-                                        "type": "string"
-                                    },
-                                    "prenom": {
-                                        "type": "string"
-                                    },
-                                    "tel": {
-                                        "type": "string"
-                                    },
-                                    "email": {
-                                        "type": "string"
-                                    },
-                                    "password": {
-                                        "type": "string"
-                                    },
-                                    "password_confirmation": {
-                                        "type": "string"
-                                    },
-                                    "nationalite": {
-                                        "type": "string"
-                                    },
-                                    "longitude": {
-                                        "type": "number"
-                                    },
-                                    "latitude": {
-                                        "type": "number"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Utilisateur mis à jour"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Supprimer un utilisateur",
-                "operationId": "fa56cffde745d3f152f95cbacd936c0b",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Utilisateur supprimé"
-                    }
-                }
-            }
-        },
         "/api/utilisations": {
             "get": {
                 "tags": [
@@ -2996,10 +2890,6 @@
     },
     "tags": [
         {
-            "name": "Auth",
-            "description": "Authentification"
-        },
-        {
             "name": "Admins",
             "description": "Administrateurs"
         },
@@ -3012,14 +2902,6 @@
             "description": "Événements culturels"
         },
         {
-            "name": "Prix",
-            "description": "Tarifs"
-        },
-        {
-            "name": "Reservations",
-            "description": "Réservations"
-        },
-        {
             "name": "Tickets",
             "description": "Tickets de visite"
         },
@@ -3030,10 +2912,6 @@
         {
             "name": "Avis",
             "description": "Avis et commentaires"
-        },
-        {
-            "name": "Users",
-            "description": "Utilisateurs"
         },
         {
             "name": "Fonctionnalites",
@@ -3052,12 +2930,28 @@
             "description": "Categories Sites"
         },
         {
+            "name": "Circuits",
+            "description": "Circuits"
+        },
+        {
+            "name": "Commandes",
+            "description": "Commandes"
+        },
+        {
             "name": "Galeries Sites",
             "description": "Galeries Sites"
         },
         {
             "name": "Galeries Evenements",
             "description": "Galeries Evenements"
+        },
+        {
+            "name": "Paiements",
+            "description": "Paiements"
+        },
+        {
+            "name": "Réservations",
+            "description": "Réservations"
         }
     ],
     "security": [
