@@ -40,6 +40,11 @@ class User extends Authenticatable
         return $this->hasMany(Reservation::class, 'id_user');
     }
 
+    public function commandes()
+    {
+        return $this->hasMany(Commande::class, 'id_user');
+    }
+
     /**
      * Fonctionnalités visibles par cet utilisateur (table pivot voir).
      */

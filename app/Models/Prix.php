@@ -13,6 +13,12 @@ class Prix extends Model
         'montant',
         'id_site',
         'id_evnmt',
+        'echelonnable',
+        'nombre_echeances',
+    ];
+
+    protected $casts = [
+        'echelonnable' => 'boolean',
     ];
 
     public function site()
@@ -23,5 +29,10 @@ class Prix extends Model
     public function evenement()
     {
         return $this->belongsTo(Evenement::class, 'id_evnmt');
+    }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'id_prix');
     }
 }
