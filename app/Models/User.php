@@ -45,6 +45,11 @@ class User extends Authenticatable
         return $this->hasMany(Commande::class, 'id_user');
     }
 
+    public function circuits()
+    {
+        return $this->hasMany(Circuit::class, 'id_user');
+    }
+
     /**
      * Fonctionnalités visibles par cet utilisateur (table pivot voir).
      */

@@ -18,6 +18,8 @@ use App\Http\Controllers\FonctionnaliteController;
 use App\Http\Controllers\PrixController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\PaiementController;
+use App\Http\Controllers\CircuitController;
+use App\Http\Controllers\EtapeCircuitController;
 
 // ══════════════════════════════════════════════════════
 //  ROUTES PUBLIQUES — aucun token requis
@@ -91,6 +93,13 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::post("/commandes", [CommandeController::class, "store"]);
     Route::get("/commandes/{commande}", [CommandeController::class, "show"]);
     Route::patch("/paiements/{paiement}/verifier", [PaiementController::class, "verifier"]);
+
+    // Circuits (itinéraires personnalisés)
+    Route::apiResource("circuits", CircuitController::class);
+    Route::post("/circuits/{circuit}/etapes", [EtapeCircuitController::class, "store"]);
+    Route::patch("/circuits/{circuit}/etapes/reordonner", [EtapeCircuitController::class, "reordonner"]);
+    Route::put("/etapes/{etape}", [EtapeCircuitController::class, "update"]);
+    Route::delete("/etapes/{etape}", [EtapeCircuitController::class, "destroy"]);
 });
 
 // ══════════════════════════════════════════════════════
