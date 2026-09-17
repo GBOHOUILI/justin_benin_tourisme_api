@@ -1,5 +1,4 @@
 services:
-
   # ─── Base de données MySQL ─────────────────────────────────
   db:
     image: mysql:8.0
@@ -17,26 +16,27 @@ services:
     networks:
       - benin_network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      test:
+        ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
       interval: 5s
       timeout: 5s
       retries: 10
 
   # ─── phpMyAdmin ────────────────────────────────────────────
-  phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: benin_tourisme_pma
-    restart: unless-stopped
-    environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - "8080:80"
-    depends_on:
-      - db
-    networks:
-      - benin_network
+  # phpmyadmin:
+  #   image: phpmyadmin:latest
+  #   container_name: benin_tourisme_pma
+  #   restart: unless-stopped
+  #   environment:
+  #     PMA_HOST: db
+  #     PMA_PORT: 3306
+  #     MYSQL_ROOT_PASSWORD: root
+  #   ports:
+  #     - "8080:80"
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - benin_network
 
   # ─── Application Laravel (Apache) ──────────────────────────
   app:
@@ -47,7 +47,7 @@ services:
     restart: unless-stopped
     working_dir: /var/www
     ports:
-      - "8000:80"   # Apache écoute sur 80, on expose sur 8000
+      - "8000:80" # Apache écoute sur 80, on expose sur 8000
     depends_on:
       db:
         condition: service_healthy
@@ -55,7 +55,7 @@ services:
       - benin_network
     volumes:
       - .:/var/www
-      - /var/www/vendor  # vendor isolé dans le container
+      ##- /var/www/vendor # vendor isolé dans le container
       - ./storage:/var/www/storage
     # Pas de 'command' — Apache démarre automatiquement via Dockerfile CMD
 

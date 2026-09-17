@@ -14,13 +14,13 @@ RUN echo '<VirtualHost *:80>\n\
     ServerAdmin webmaster@localhost\n\
     DocumentRoot /var/www/public\n\
     <Directory /var/www/public>\n\
-        Options Indexes FollowSymLinks\n\
-        AllowOverride All\n\
-        Require all granted\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride All\n\
+    Require all granted\n\
     </Directory>\n\
     ErrorLog ${APACHE_LOG_DIR}/error.log\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
-</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+    </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
 # ── OPcache ──────────────────────────────────────────────────
 RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
@@ -34,20 +34,20 @@ RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
 # ── PHP Memory ───────────────────────────────────────────────
 RUN echo "memory_limit=512M" > /usr/local/etc/php/conf.d/memory-limit.ini
 
-# ── Composer ─────────────────────────────────────────────────
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# # ── Composer ─────────────────────────────────────────────────
+# COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-# ── Dépendances PHP (cache layer séparé) ─────────────────────
-COPY composer.json composer.lock ./
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+# # ── Dépendances PHP (cache layer séparé) ─────────────────────
+# COPY composer.json composer.lock ./
+# RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
-# ── Code source ──────────────────────────────────────────────
+# # ── Code source ──────────────────────────────────────────────
 COPY . .
 
-# ── Autoload ─────────────────────────────────────────────────
-RUN composer dump-autoload --optimize
+# # ── Autoload ─────────────────────────────────────────────────
+# RUN composer dump-autoload --optimize
 
 # ── Permissions ──────────────────────────────────────────────
 RUN mkdir -p storage/framework/cache storage/framework/sessions \
