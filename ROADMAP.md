@@ -149,9 +149,9 @@ Périmètre actuel : sites touristiques + événements (catégories, galeries, p
 
 - [x] Recherche par proximité (géolocalisation) sur `GET /sites` et `GET /evenements` — filtres `lat`/`lng`/`radius`, formule Haversine en `whereRaw`/`orderByRaw` (pas de `having` sur alias, pour rester compatible avec `paginate()`), colonne `distance_km` exposée via `selectRaw`. Vérifié en réel avec 3 sites à distances connues (Cotonou/Porto-Novo/Natitingou) : rayon, tri et valeurs de distance corrects
 - [x] Recherche par budget (fourchette de prix) sur `GET /sites` et `GET /evenements` — filtres `prix_min`/`prix_max` via `whereHas('prix', ...)`. Vérifié en réel
-- [ ] Workflow de validation sur `Site` (actuellement `status` booléen simple) à aligner sur celui d'`Evenement` (`en_attente/valide/rejete/suspendu`)
+- [x] **Correction (2026-09-18)** : cette case était restée non cochée par oubli — le workflow `Site` a bien été aligné sur `Evenement` (`en_attente/valide/rejete/suspendu`) pendant le module Responsable régional (voir plus haut, migration avec conversion actif→valide/inactif→en_attente)
 - [ ] Trancher le workflow Avis : aujourd'hui un avis exige une `Utilisation` (visite déjà enregistrée par un admin) préexistante — décider si c'est voulu ou si `Avis` doit pouvoir se rattacher directement à un service comme dans le MCD cible
-- [ ] QR code sur `Ticket` (colonne `code_qr` absente, aucune génération)
+- [x] **Correction (2026-09-18)** : case obsolète — décision produit actée dans le module Billetterie (voir plus bas) de générer le QR **côté frontend uniquement** (`qrcode.react`, encode `ticket.numero`), sans colonne ni génération backend. Le besoin initial est donc résolu par un choix d'architecture différent, pas par l'implémentation décrite ici
 
 ### Backend — tests
 
@@ -369,6 +369,14 @@ Dernier étage du module Prestataire (voir `id_plan`, `id_abonnement`, `id_factu
 - [x] Widget Kkiapay mirroré sur `MesReservations.jsx` (`PayerButton`) : `data` porte l'id de la `FactureAbonnement`, résolu côté serveur via `stateData.data` (même mécanisme que `Paiement`). Aucun montant recalculé côté client
 - [x] Portail Admin : `AdminPlans.jsx` (CRUD complet, mirroir `AdminResponsables.jsx`), `AdminAbonnements.jsx` (liste en lecture seule - la gestion se fait côté portail Prestataire)
 - [x] Vérifié en réel (Playwright, 0 erreur console à chaque étape) : création d'un plan admin → inscription prestataire → bannière "abonnement inactif" sur le dashboard → souscription → **paiement sandbox réel via le widget Kkiapay** (numéro de test MTN, piloté par Playwright) → "Paiement confirmé, abonnement activé !" → statut "Actif" avec date d'expiration affichée → création d'un site débloquée immédiatement depuis l'UI (sans rechargement manuel) → abonnement visible dans `AdminAbonnements.jsx`. Toutes les données de test supprimées après vérification
+
+### Écart assumé : acteur "Administrateur SaaS / Commercial" (2026-09-18)
+
+Le document de référence liste cet acteur comme **distinct** de l'"Administrateur du site" : "Gère les abonnements des prestataires, la facturation, l'activation/désactivation des comptes professionnels selon leur plan." Discuté avec l'utilisateur après audit du code réel.
+
+- ⚠️ **Non implémenté comme acteur séparé, décision assumée** : `AdminPlans.jsx`/`AdminAbonnements.jsx` (ci-dessus) et le blocage de création de fiche par `abonnementActif()` tournent sous le même guard `admin` générique que la supervision de contenu — aucun guard/rôle "commercial" dédié, aucun cloisonnement des droits. La table `Fonctionnalite` (permissions assignables à un Admin) existe déjà en base mais n'est branchée sur aucun middleware — pas utilisée pour distinguer ces deux casquettes.
+- Le point "activation/désactivation des comptes professionnels selon leur plan" est aussi couvert partiellement : la **création de fiche** est bloquée sans abonnement actif (403), mais le compte Prestataire lui-même reste actif/connectable — pas de suspension de compte.
+- **Raison de ne pas séparer maintenant** : un seul admin existe à ce jour, pas de besoin réel d'isoler un rôle commercial. Si ce besoin apparaît (ex. une personne dédiée à la facturation sans accès à la modération de contenu), le chemin le moins coûteux est de brancher `Fonctionnalite` sur les routes `/admin/plans`/`/admin/abonnements` plutôt que de créer un guard complet (mirroir Admin/Prestataire/Responsable) pour un seul usage pas encore avéré.
 
 ## Module Hôtel/Restaurant/Transport (2026-09-18)
 
