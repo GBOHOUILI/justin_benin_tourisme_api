@@ -153,11 +153,13 @@ Périmètre actuel : sites touristiques + événements (catégories, galeries, p
 - [ ] Trancher le workflow Avis : aujourd'hui un avis exige une `Utilisation` (visite déjà enregistrée par un admin) préexistante — décider si c'est voulu ou si `Avis` doit pouvoir se rattacher directement à un service comme dans le MCD cible
 - [x] **Correction (2026-09-18)** : case obsolète — décision produit actée dans le module Billetterie (voir plus bas) de générer le QR **côté frontend uniquement** (`qrcode.react`, encode `ticket.numero`), sans colonne ni génération backend. Le besoin initial est donc résolu par un choix d'architecture différent, pas par l'implémentation décrite ici
 
-### Backend — tests
+### Backend — tests (2026-09-18)
 
-- [ ] Aucun test automatisé au-delà des 2 stubs Laravel par défaut
-- [ ] Test de non-régression sur le fix IDOR (`UserController`, `AvisController`)
-- [ ] Couverture feature minimale : Auth (register/login/admin login), Reservation (ownership), Avis (ownership + statut)
+- [x] 27 tests Feature écrits (`tests/Feature/Auth/AuthenticationTest.php`, `ReservationOwnershipTest.php`, `AvisOwnershipTest.php`, `UserOwnershipTest.php`) — Auth (register/login/login admin + cas d'erreur), Reservation (création gratuite + ownership show/update/destroy/index), Avis (création via Utilisation propriétaire, anti-auto-validation, ownership update/destroy)
+- [x] Test de non-régression sur le fix IDOR `UserController`/`AvisController` — inclus dans les fichiers ci-dessus
+- [x] **Prérequis découverts et corrigés en cours de route** : aucun modèle (`Admin`/`Site`/`Prix`/`Reservation`/`Ticket`/`Utilisation`/`Avis`/`CatSite`) n'avait le trait `HasFactory` — `Model::factory()` était utilisable nulle part avant cette session. `UserFactory` par défaut de Laravel référençait aussi des colonnes inexistantes sur `users` (`name` au lieu de `nom`/`prenom`) — jamais adaptée au schéma réel, donc jamais fonctionnelle
+- [x] Suite complète vérifiée en réel (`docker-compose exec app php artisan test`) : 27 passed, 57 assertions, 0 échec. **Doit tourner via Docker** : `bootstrap/cache/config.php` est généré avec les chemins `/var/www` du container (root/www-data) — `php artisan test` en local (hors container) échoue sur des erreurs de permissions de chemin, sans rapport avec le code applicatif
+- [ ] Reste à couvrir : Site/Evenement (workflow validation multi-acteurs), Prestataire/ResponsableRegional (ownership), Commande/Paiement (webhook Kkiapay), Circuit — hors du périmètre minimal acté, à faire dans une passe ultérieure
 
 ### Frontend (totche-front) — bugs bloquants (dette existante)
 
