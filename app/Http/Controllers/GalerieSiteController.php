@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\GalerieSite;
 use App\Models\Prestataire;
+use App\Models\ResponsableRegional;
 use App\Models\Site;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -116,8 +117,10 @@ class GalerieSiteController extends Controller
                 "nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov|max:51200",
         ]);
 
-        if ($request->user() instanceof Prestataire
-            && !Site::where('id', $validated['id_site'])->where('id_prestataire', $request->user()->id)->exists()) {
+        $user = $request->user();
+        $colonne = $user instanceof ResponsableRegional ? 'id_responsable' : 'id_prestataire';
+        if (($user instanceof Prestataire || $user instanceof ResponsableRegional)
+            && !Site::where('id', $validated['id_site'])->where($colonne, $user->id)->exists()) {
             return response()->json(["message" => "Ce site ne vous appartient pas."], 403);
         }
 
@@ -191,7 +194,11 @@ class GalerieSiteController extends Controller
     ]
     public function update(Request $request, GalerieSite $galerieSite)
     {
-        if ($request->user() instanceof Prestataire && $galerieSite->site?->id_prestataire !== $request->user()->id) {
+        $user = $request->user();
+        if ($user instanceof Prestataire && $galerieSite->site?->id_prestataire !== $user->id) {
+            return response()->json(["message" => "Cette galerie ne vous appartient pas."], 403);
+        }
+        if ($user instanceof ResponsableRegional && $galerieSite->site?->id_responsable !== $user->id) {
             return response()->json(["message" => "Cette galerie ne vous appartient pas."], 403);
         }
 
@@ -231,7 +238,11 @@ class GalerieSiteController extends Controller
     ]
     public function destroy(Request $request, GalerieSite $galerieSite)
     {
-        if ($request->user() instanceof Prestataire && $galerieSite->site?->id_prestataire !== $request->user()->id) {
+        $user = $request->user();
+        if ($user instanceof Prestataire && $galerieSite->site?->id_prestataire !== $user->id) {
+            return response()->json(["message" => "Cette galerie ne vous appartient pas."], 403);
+        }
+        if ($user instanceof ResponsableRegional && $galerieSite->site?->id_responsable !== $user->id) {
             return response()->json(["message" => "Cette galerie ne vous appartient pas."], 403);
         }
 

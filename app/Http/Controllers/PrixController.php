@@ -2,22 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Evenement;
 use App\Models\Prestataire;
 use App\Models\Prix;
+use App\Models\ResponsableRegional;
+use App\Models\Site;
 use Illuminate\Http\Request;
 
 class PrixController extends Controller
 {
-    /** Vrai si le tarif (existant ou ciblé par site/evnmt) appartient à ce prestataire. */
-    private function appartientAuPrestataire(Prestataire $prestataire, ?int $idSite, ?int $idEvnmt): bool
+    /** Vrai si le tarif (existant ou ciblé par site/evnmt) appartient à ce Prestataire/ResponsableRegional. */
+    private function appartientAuCreateur($user, ?int $idSite, ?int $idEvnmt): bool
     {
+        $colonne = $user instanceof ResponsableRegional ? 'id_responsable' : 'id_prestataire';
+
         if ($idSite) {
-            return \App\Models\Site::where('id', $idSite)->where('id_prestataire', $prestataire->id)->exists();
+            return Site::where('id', $idSite)->where($colonne, $user->id)->exists();
         }
         if ($idEvnmt) {
-            return \App\Models\Evenement::where('id', $idEvnmt)->where('id_prestataire', $prestataire->id)->exists();
+            return Evenement::where('id', $idEvnmt)->where($colonne, $user->id)->exists();
         }
         return false;
+    }
+
+    private function doitVerifierOwnership($user): bool
+    {
+        return $user instanceof Prestataire || $user instanceof ResponsableRegional;
     }
 
     public function index(Request $request)
@@ -45,8 +55,8 @@ class PrixController extends Controller
             );
         }
 
-        if ($request->user() instanceof Prestataire
-            && !$this->appartientAuPrestataire($request->user(), $validated['id_site'] ?? null, $validated['id_evnmt'] ?? null)) {
+        if ($this->doitVerifierOwnership($request->user())
+            && !$this->appartientAuCreateur($request->user(), $validated['id_site'] ?? null, $validated['id_evnmt'] ?? null)) {
             return response()->json(['message' => "Ce site/événement ne vous appartient pas."], 403);
         }
 
@@ -61,8 +71,8 @@ class PrixController extends Controller
 
     public function update(Request $request, Prix $prix)
     {
-        if ($request->user() instanceof Prestataire
-            && !$this->appartientAuPrestataire($request->user(), $prix->id_site, $prix->id_evnmt)) {
+        if ($this->doitVerifierOwnership($request->user())
+            && !$this->appartientAuCreateur($request->user(), $prix->id_site, $prix->id_evnmt)) {
             return response()->json(['message' => "Ce tarif ne vous appartient pas."], 403);
         }
 
@@ -79,8 +89,8 @@ class PrixController extends Controller
 
     public function destroy(Request $request, Prix $prix)
     {
-        if ($request->user() instanceof Prestataire
-            && !$this->appartientAuPrestataire($request->user(), $prix->id_site, $prix->id_evnmt)) {
+        if ($this->doitVerifierOwnership($request->user())
+            && !$this->appartientAuCreateur($request->user(), $prix->id_site, $prix->id_evnmt)) {
             return response()->json(['message' => "Ce tarif ne vous appartient pas."], 403);
         }
 

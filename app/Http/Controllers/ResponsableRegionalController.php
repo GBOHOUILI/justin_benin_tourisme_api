@@ -161,13 +161,18 @@ class ResponsableRegionalController extends Controller
     {
         $responsable = $request->user();
 
+        // Une fiche créée par un responsable régional (id_responsable renseigné)
+        // n'apparaît jamais dans la file d'un responsable — seul un admin la
+        // valide (cf. SiteController/EvenementController::refuserSiHorsPerimetre).
         $sites = Site::with(['categorie', 'region', 'prestataire', 'admin'])
             ->where('status', 'en_attente')
+            ->whereNull('id_responsable')
             ->when(!$responsable->estGlobal(), fn ($q) => $q->where('id_region', $responsable->id_region))
             ->get();
 
         $evenements = Evenement::with(['categorie', 'region', 'prestataire', 'admin'])
             ->where('status', 'en_attente')
+            ->whereNull('id_responsable')
             ->when(!$responsable->estGlobal(), fn ($q) => $q->where('id_region', $responsable->id_region))
             ->get();
 

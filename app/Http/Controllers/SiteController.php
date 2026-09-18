@@ -90,7 +90,7 @@ class SiteController extends Controller
     ]
     public function index(Request $request)
     {
-        $query = Site::with(["categorie", "galeries", "prix", "region", "prestataire"]);
+        $query = Site::with(["categorie", "galeries", "prix", "region", "prestataire", "responsable"]);
 
         if ($request->filled("libelle")) {
             $query->where("libelle", "like", "%" . $request->libelle . "%");
@@ -204,21 +204,32 @@ class SiteController extends Controller
             "id_region" => "nullable|exists:region,id",
         ]);
 
-        // id_admin OU id_prestataire selon le guard connecté — jamais les deux,
-        // jamais fourni par le client (déduit du token).
-        if ($request->user() instanceof Prestataire) {
-            $validated["id_prestataire"] = $request->user()->id;
+        // id_admin OU id_prestataire OU id_responsable selon le guard connecté —
+        // jamais deux à la fois, jamais fourni par le client (déduit du token).
+        $user = $request->user();
+        if ($user instanceof Prestataire) {
+            $validated["id_prestataire"] = $user->id;
             // Un prestataire ne décide jamais lui-même que son site est validé :
             // en_attente à la création, quoi que le client envoie (même logique
             // que pour Evenement::store).
             $validated["status"] = "en_attente";
+        } elseif ($user instanceof ResponsableRegional) {
+            $validated["id_responsable"] = $user->id;
+            // Un responsable connaît sa région mais ne peut pas non plus s'auto-
+            // valider — seul un Admin valide une fiche créée par un responsable.
+            $validated["status"] = "en_attente";
+            // Région forcée à la sienne s'il est scopé (jamais celle envoyée par
+            // le client) ; un responsable global doit en choisir une explicitement.
+            if (!$user->estGlobal()) {
+                $validated["id_region"] = $user->id_region;
+            }
         } else {
-            $validated["id_admin"] = $request->user()->id;
+            $validated["id_admin"] = $user->id;
         }
 
         $site = Site::create($validated);
 
-        return response()->json($site->load(["categorie", "admin", "prestataire", "region"]), 201);
+        return response()->json($site->load(["categorie", "admin", "prestataire", "responsable", "region"]), 201);
     }
 
     #[
@@ -246,6 +257,7 @@ class SiteController extends Controller
                 "categorie",
                 "admin",
                 "prestataire",
+                "responsable",
                 "region",
                 "galeries",
                 "prix",
@@ -304,9 +316,14 @@ class SiteController extends Controller
     ]
     public function update(Request $request, Site $site)
     {
-        $estPrestataire = $request->user() instanceof Prestataire;
+        $user = $request->user();
+        $estPrestataire = $user instanceof Prestataire;
+        $estResponsable = $user instanceof ResponsableRegional;
 
-        if ($estPrestataire && $site->id_prestataire !== $request->user()->id) {
+        if ($estPrestataire && $site->id_prestataire !== $user->id) {
+            return response()->json(["message" => "Ce site ne vous appartient pas."], 403);
+        }
+        if ($estResponsable && $site->id_responsable !== $user->id) {
             return response()->json(["message" => "Ce site ne vous appartient pas."], 403);
         }
 
@@ -323,25 +340,38 @@ class SiteController extends Controller
             "id_region" => "nullable|exists:region,id",
         ]);
 
-        // Même règle qu'à la création : un prestataire ne s'auto-valide jamais
-        // lui-même (cf. EvenementController::update, même logique) — seuls
-        // valider()/rejeter() (admin/responsable) changent le statut.
-        if ($estPrestataire) {
+        // Même règle qu'à la création : ni un prestataire ni un responsable ne
+        // s'auto-valident (cf. EvenementController::update) — seul valider()/
+        // rejeter() (réservés à l'admin pour une fiche de responsable) change le statut.
+        if ($estPrestataire || $estResponsable) {
             unset($validated["status"]);
+        }
+        // Un responsable régional scopé ne déplace pas sa fiche hors de sa région.
+        if ($estResponsable && !$user->estGlobal()) {
+            unset($validated["id_region"]);
         }
 
         $site->update($validated);
 
-        return response()->json($site->load(["categorie", "admin", "prestataire", "region"]));
+        return response()->json($site->load(["categorie", "admin", "prestataire", "responsable", "region"]));
     }
 
-    /** 403 si un ResponsableRegional non global tente de valider hors de sa région ; sinon null. */
+    /**
+     * 403 si un ResponsableRegional tente de valider une fiche créée par un
+     * responsable (lui ou un autre — seul un Admin valide ces fiches-là, un
+     * responsable connaît sa région mais ne s'auto-valide/ne valide jamais un
+     * pair), ou une fiche hors de sa région (sauf responsable global).
+     */
     private function refuserSiHorsPerimetre(Request $request, Site $site)
     {
         $responsable = $request->user();
-        if ($responsable instanceof ResponsableRegional
-            && !$responsable->estGlobal()
-            && $site->id_region !== $responsable->id_region) {
+        if (!($responsable instanceof ResponsableRegional)) {
+            return null;
+        }
+        if ($site->id_responsable !== null) {
+            return response()->json(["message" => "Cette fiche a été créée par un responsable régional — seul un admin peut la valider."], 403);
+        }
+        if (!$responsable->estGlobal() && $site->id_region !== $responsable->id_region) {
             return response()->json(["message" => "Ce site est hors de votre région."], 403);
         }
         return null;
@@ -416,7 +446,11 @@ class SiteController extends Controller
     ]
     public function destroy(Request $request, Site $site)
     {
-        if ($request->user() instanceof Prestataire && $site->id_prestataire !== $request->user()->id) {
+        $user = $request->user();
+        if ($user instanceof Prestataire && $site->id_prestataire !== $user->id) {
+            return response()->json(["message" => "Ce site ne vous appartient pas."], 403);
+        }
+        if ($user instanceof ResponsableRegional && $site->id_responsable !== $user->id) {
             return response()->json(["message" => "Ce site ne vous appartient pas."], 403);
         }
 
