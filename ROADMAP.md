@@ -412,3 +412,12 @@ Mirroring exact du pattern Site/Evenement — mêmes 4 tiers (public/admin/prest
 - [x] Nav : sidebars Admin/Prestataire/Responsable + navbar publique (`Hôtels`/`Restaurants`/`Transports`) + routeur — le lien `/hotels` déjà présent dans le CTA de `Home.jsx` ("Hôtels & Restaurants") pointait dans le vide avant cette session, résolu par la nouvelle route
 - [x] Bug trouvé et corrigé pendant la vérification Playwright : `<Stars>` (rendu `<div>`) imbriqué dans un `<p>`/`<span>` dans `HotelCard`/`HotelDetail` → warning React `validateDOMNesting` ; corrigé en retirant le wrapper `p`/`span` superflu
 - [x] Vérifié en réel (Playwright, 0 erreur console à chaque étape) sur les 4 portails : liste publique → détail avec chambres affichées → connexion admin → sidebar + table + modale Chambres fonctionnelles → connexion prestataire → création d'hôtel (statut "En Attente" affiché) → connexion responsable → file "À valider" affiche le restaurant en attente de sa région → validation → disparaît de la file. Toutes les données de test supprimées
+
+## Module Fiches détail enrichies + Témoignages plateforme (2026-09-18)
+
+Démarré le 2026-09-18, suite à la demande de l'utilisateur de s'inspirer d'une page eventravel.fr pour rendre les fiches Site/Événement/Hôtel/Restaurant/Transport plus complètes (points forts, inclus/non-inclus, infos pratiques, itinéraire, localisation cliquable) et ajouter des témoignages sur la plateforme elle-même en page d'accueil. Brainstormé avec l'utilisateur (three chantiers validés séparément), spec écrite et commitée : [`docs/superpowers/specs/2026-09-18-fiches-detail-enrichies-design.md`](docs/superpowers/specs/2026-09-18-fiches-detail-enrichies-design.md).
+
+- [ ] Chantier 1 : contenu enrichi (points forts, inclus/non-inclus, infos pratiques, champs contextuels par type) + sélecteur de localisation (carte Leaflet + parsing lien Google Maps) sur les 5 entités
+- [ ] Chantier 2 : hero + nouvelles sections sur les 5 pages détail publiques
+- [ ] Chantier 3 : entité Temoignage (saisie admin) + section "Ce que pensent nos utilisateurs" sur l'Accueil
+- [ ] Hors scope explicite (voir spec) : hero des autres pages, avis Hôtel/Restaurant/Transport (pas de flux de réservation), témoignages liés à un vrai compte
