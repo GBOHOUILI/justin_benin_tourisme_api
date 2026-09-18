@@ -3,11 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Evenement;
+use App\Models\Prestataire;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 class EvenementController extends Controller
 {
+    #[
+        OA\Get(
+            path: "/api/prestataire/evenements",
+            tags: ["Prestataires"],
+            summary: "Lister mes propres événements (prestataire connecté)",
+            security: [["bearerAuth" => []]],
+            responses: [
+                new OA\Response(response: 200, description: "Liste paginée de mes événements"),
+            ],
+        ),
+    ]
+    public function mine(Request $request)
+    {
+        return response()->json(
+            $request->user()->evenements()->with(["categorie", "galeries", "prix"])->latest()->paginate(15)
+        );
+    }
+
     #[
         OA\Get(
             path: "/api/evenements",
@@ -201,12 +220,20 @@ class EvenementController extends Controller
             "id_cat_evenmt" => "required|exists:cat_evenmt,id",
         ]);
 
-        // CORRECTION : l'id_admin est toujours celui de l'admin connecté
-        $validated["id_admin"] = $request->user()->id;
+        // id_admin OU id_prestataire selon le guard connecté — jamais les deux,
+        // jamais fourni par le client (déduit du token).
+        if ($request->user() instanceof Prestataire) {
+            $validated["id_prestataire"] = $request->user()->id;
+            // Un prestataire ne décide jamais lui-même que son événement est "valide" :
+            // toujours en_attente à la création, quoi que le client envoie.
+            $validated["status"] = "en_attente";
+        } else {
+            $validated["id_admin"] = $request->user()->id;
+        }
 
         $evenement = Evenement::create($validated);
 
-        return response()->json($evenement->load(["categorie", "admin"]), 201);
+        return response()->json($evenement->load(["categorie", "admin", "prestataire"]), 201);
     }
 
     #[
@@ -305,6 +332,12 @@ class EvenementController extends Controller
     ]
     public function update(Request $request, Evenement $evenement)
     {
+        $estPrestataire = $request->user() instanceof Prestataire;
+
+        if ($estPrestataire && $evenement->id_prestataire !== $request->user()->id) {
+            return response()->json(["message" => "Cet événement ne vous appartient pas."], 403);
+        }
+
         $validated = $request->validate([
             "libelle" => "sometimes|string|max:200",
             "adresse" => "sometimes|string|max:255",
@@ -316,6 +349,12 @@ class EvenementController extends Controller
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_cat_evenmt" => "sometimes|exists:cat_evenmt,id",
         ]);
+
+        // Un prestataire ne peut pas se revalider lui-même après une modif —
+        // seuls valider()/rejeter() (admin) changent le statut depuis ce compte.
+        if ($estPrestataire) {
+            unset($validated["status"]);
+        }
 
         $evenement->update($validated);
 
@@ -402,8 +441,12 @@ class EvenementController extends Controller
             ],
         ),
     ]
-    public function destroy(Evenement $evenement)
+    public function destroy(Request $request, Evenement $evenement)
     {
+        if ($request->user() instanceof Prestataire && $evenement->id_prestataire !== $request->user()->id) {
+            return response()->json(["message" => "Cet événement ne vous appartient pas."], 403);
+        }
+
         $evenement->delete();
 
         return response()->json(["message" => "Événement supprimé"], 200);

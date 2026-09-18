@@ -2,11 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Prestataire;
 use App\Models\Prix;
 use Illuminate\Http\Request;
 
 class PrixController extends Controller
 {
+    /** Vrai si le tarif (existant ou ciblé par site/evnmt) appartient à ce prestataire. */
+    private function appartientAuPrestataire(Prestataire $prestataire, ?int $idSite, ?int $idEvnmt): bool
+    {
+        if ($idSite) {
+            return \App\Models\Site::where('id', $idSite)->where('id_prestataire', $prestataire->id)->exists();
+        }
+        if ($idEvnmt) {
+            return \App\Models\Evenement::where('id', $idEvnmt)->where('id_prestataire', $prestataire->id)->exists();
+        }
+        return false;
+    }
+
     public function index(Request $request)
     {
         $query = Prix::query();
@@ -32,6 +45,11 @@ class PrixController extends Controller
             );
         }
 
+        if ($request->user() instanceof Prestataire
+            && !$this->appartientAuPrestataire($request->user(), $validated['id_site'] ?? null, $validated['id_evnmt'] ?? null)) {
+            return response()->json(['message' => "Ce site/événement ne vous appartient pas."], 403);
+        }
+
         $prix = Prix::create($validated);
         return response()->json($prix, 201);
     }
@@ -43,6 +61,11 @@ class PrixController extends Controller
 
     public function update(Request $request, Prix $prix)
     {
+        if ($request->user() instanceof Prestataire
+            && !$this->appartientAuPrestataire($request->user(), $prix->id_site, $prix->id_evnmt)) {
+            return response()->json(['message' => "Ce tarif ne vous appartient pas."], 403);
+        }
+
         $validated = $request->validate([
             'libelle'  => 'sometimes|string|max:200',
             'montant'  => 'sometimes|numeric|min:0',
@@ -54,8 +77,13 @@ class PrixController extends Controller
         return response()->json($prix);
     }
 
-    public function destroy(Prix $prix)
+    public function destroy(Request $request, Prix $prix)
     {
+        if ($request->user() instanceof Prestataire
+            && !$this->appartientAuPrestataire($request->user(), $prix->id_site, $prix->id_evnmt)) {
+            return response()->json(['message' => "Ce tarif ne vous appartient pas."], 403);
+        }
+
         $prix->delete();
         return response()->json(['message' => 'Prix supprimé'], 200);
     }

@@ -167,6 +167,102 @@
                 }
             }
         },
+        "/api/prestataire/register": {
+            "post": {
+                "tags": [
+                    "Prestataires"
+                ],
+                "summary": "Créer un compte prestataire (hôtel, restaurant, transport, site, événement)",
+                "operationId": "294c94d78a2c2fdfcda78b2f8d0a4fac",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom_entreprise",
+                                    "type_prestataire",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "nom_entreprise": {
+                                        "type": "string"
+                                    },
+                                    "type_prestataire": {
+                                        "type": "string",
+                                        "enum": [
+                                            "site",
+                                            "evenement",
+                                            "hotel",
+                                            "restaurant",
+                                            "transport"
+                                        ]
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "tel": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Compte prestataire créé, actif immédiatement (pas de workflow de validation pour l'instant)"
+                    }
+                }
+            }
+        },
+        "/api/prestataire/login": {
+            "post": {
+                "tags": [
+                    "Prestataires"
+                ],
+                "summary": "Connexion prestataire",
+                "operationId": "caeb6a498063e61963740386dc771060",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie"
+                    },
+                    "422": {
+                        "description": "Identifiants incorrects ou compte désactivé"
+                    }
+                }
+            }
+        },
         "/api/avis": {
             "get": {
                 "tags": [
@@ -1099,6 +1195,25 @@
                 "security": [
                     {
                         "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/prestataire/evenements": {
+            "get": {
+                "tags": [
+                    "Prestataires"
+                ],
+                "summary": "Lister mes propres événements (prestataire connecté)",
+                "operationId": "a96dd00c1ae8d9448dbb233b4c7f8d74",
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée de mes événements"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
                     }
                 ]
             }
@@ -2148,6 +2263,75 @@
                 }
             }
         },
+        "/api/prestataire/profil": {
+            "put": {
+                "tags": [
+                    "Prestataires"
+                ],
+                "summary": "Mettre à jour son propre profil prestataire",
+                "operationId": "2551b342f7747c6f1a9183ab048eabc9",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nom_entreprise": {
+                                        "type": "string"
+                                    },
+                                    "type_prestataire": {
+                                        "type": "string",
+                                        "enum": [
+                                            "site",
+                                            "evenement",
+                                            "hotel",
+                                            "restaurant",
+                                            "transport"
+                                        ]
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "tel": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profil mis à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/prestataire/dashboard": {
+            "get": {
+                "tags": [
+                    "Prestataires"
+                ],
+                "summary": "Statistiques du tableau de bord prestataire (nombre de fiches, réservations reçues)",
+                "operationId": "eee7bf2546867b844c44421e65138238",
+                "responses": {
+                    "200": {
+                        "description": "Statistiques"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/reservations": {
             "post": {
                 "tags": [
@@ -2206,6 +2390,25 @@
                 "security": [
                     {
                         "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/prestataire/sites": {
+            "get": {
+                "tags": [
+                    "Prestataires"
+                ],
+                "summary": "Lister mes propres sites (prestataire connecté)",
+                "operationId": "58c96c12f3e7dd5f367b87dc27f1a5ff",
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée de mes sites"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
                     }
                 ]
             }
@@ -2920,6 +3123,10 @@
         {
             "name": "Test",
             "description": "Endpoints de diagnostic"
+        },
+        {
+            "name": "Prestataires",
+            "description": "Prestataires"
         },
         {
             "name": "Categories Evenements",
