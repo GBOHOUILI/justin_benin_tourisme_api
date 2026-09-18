@@ -59,4 +59,17 @@ class ContenuEnrichiEntitesTest extends TestCase
 
         $this->assertSame('12:00:00', $evenement->fresh()->date_debut->format('H:i:s'));
     }
+
+    public function test_site_round_trips_duree_visite_et_difficulte(): void
+    {
+        $site = Site::factory()->create([
+            'duree_visite' => '2h',
+            'difficulte' => 'facile',
+        ]);
+
+        $fresh = $site->fresh();
+
+        $this->assertSame('2h', $fresh->duree_visite);
+        $this->assertSame('facile', $fresh->difficulte);
+    }
 }

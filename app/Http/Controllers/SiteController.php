@@ -234,6 +234,16 @@ class SiteController extends Controller
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_cat_site" => "required|exists:cat_site,id",
             "id_region" => "nullable|exists:region,id",
+            "points_forts" => "nullable|array",
+            "points_forts.*" => "string|max:200",
+            "inclus" => "nullable|array",
+            "inclus.*" => "string|max:200",
+            "non_inclus" => "nullable|array",
+            "non_inclus.*" => "string|max:200",
+            "infos_pratiques" => "nullable|string",
+            "recommandations" => "nullable|string",
+            "duree_visite" => "nullable|string|max:100",
+            "difficulte" => "nullable|in:facile,moderee,difficile",
         ]);
 
         // id_admin OU id_prestataire OU id_responsable selon le guard connecté -
@@ -385,6 +395,16 @@ class SiteController extends Controller
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_cat_site" => "sometimes|exists:cat_site,id",
             "id_region" => "nullable|exists:region,id",
+            "points_forts" => "nullable|array",
+            "points_forts.*" => "string|max:200",
+            "inclus" => "nullable|array",
+            "inclus.*" => "string|max:200",
+            "non_inclus" => "nullable|array",
+            "non_inclus.*" => "string|max:200",
+            "infos_pratiques" => "nullable|string",
+            "recommandations" => "nullable|string",
+            "duree_visite" => "nullable|string|max:100",
+            "difficulte" => "nullable|in:facile,moderee,difficile",
         ]);
 
         // Même règle qu'à la création : ni un prestataire ni un responsable ne

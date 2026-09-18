@@ -22,6 +22,8 @@ class Site extends Model
         'non_inclus',
         'infos_pratiques',
         'recommandations',
+        'duree_visite',
+        'difficulte',
         'ouverture',
         'fermeture',
         'status',
