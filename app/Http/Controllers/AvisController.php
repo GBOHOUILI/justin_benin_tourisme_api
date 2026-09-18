@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\AuthorizesOwnership;
 use App\Models\Avis;
-use App\Models\Utilisation;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
@@ -24,8 +24,15 @@ class AvisController extends Controller
                     schema: new OA\Schema(type: "string"),
                 ),
                 new OA\Parameter(
-                    name: "id_utilisation",
+                    name: "id_site",
                     in: "query",
+                    description: "Avis laissés sur ce site (via la réservation)",
+                    schema: new OA\Schema(type: "integer"),
+                ),
+                new OA\Parameter(
+                    name: "id_evnmt",
+                    in: "query",
+                    description: "Avis laissés sur cet événement (via la réservation)",
                     schema: new OA\Schema(type: "integer"),
                 ),
             ],
@@ -36,16 +43,15 @@ class AvisController extends Controller
     ]
     public function index(Request $request)
     {
-        $query = Avis::with([
-            "utilisation.ticket.reservation.user",
-            "utilisation.ticket.reservation.site",
-            "utilisation.ticket.reservation.evenement",
-        ]);
+        $query = Avis::with(["reservation.user", "reservation.site", "reservation.evenement"]);
         if ($request->filled("status")) {
             $query->where("status", $request->status);
         }
-        if ($request->filled("id_utilisation")) {
-            $query->where("id_utilisation", $request->id_utilisation);
+        if ($request->filled("id_site")) {
+            $query->whereHas("reservation", fn($q) => $q->where("id_site", $request->id_site));
+        }
+        if ($request->filled("id_evnmt")) {
+            $query->whereHas("reservation", fn($q) => $q->where("id_evnmt", $request->id_evnmt));
         }
         return response()->json($query->latest()->paginate(20));
     }
@@ -57,11 +63,12 @@ class AvisController extends Controller
             summary: "Créer un avis",
             requestBody: new OA\RequestBody(
                 content: new OA\JsonContent(
-                    required: ["id_utilisation", "message"],
+                    required: ["id_reservation", "message"],
                     properties: [
                         new OA\Property(
-                            property: "id_utilisation",
+                            property: "id_reservation",
                             type: "integer",
+                            description: "Réservation confirmée du touriste sur laquelle porte l'avis",
                         ),
                         new OA\Property(property: "message", type: "string"),
                     ],
@@ -69,25 +76,31 @@ class AvisController extends Controller
             ),
             responses: [
                 new OA\Response(response: 201, description: "Avis créé"),
+                new OA\Response(response: 422, description: "Réservation non confirmée, ou déjà notée"),
             ],
         ),
     ]
     public function store(Request $request)
     {
         $validated = $request->validate([
-            "id_utilisation" =>
-                "required|exists:utilisation,id|unique:avis,id_utilisation",
+            "id_reservation" =>
+                "required|exists:reservation,id|unique:avis,id_reservation",
             "message" => "required|string|max:1000",
         ]);
 
-        $utilisation = Utilisation::with("ticket.reservation")->findOrFail(
-            $validated["id_utilisation"],
-        );
-        $this->authorizeOwner($utilisation->ticket->reservation->id_user, $request);
+        $reservation = Reservation::findOrFail($validated["id_reservation"]);
+        $this->authorizeOwner($reservation->id_user, $request);
+
+        if ($reservation->statut !== "confirmee") {
+            return response()->json(
+                ["message" => "Cette réservation n'est pas confirmée, impossible de laisser un avis."],
+                422,
+            );
+        }
 
         $validated["status"] = "en_attente";
         $avis = Avis::create($validated);
-        return response()->json($avis->load("utilisation"), 201);
+        return response()->json($avis->load("reservation"), 201);
     }
 
     #[
@@ -114,11 +127,7 @@ class AvisController extends Controller
     public function show(Avis $avi)
     {
         return response()->json(
-            $avi->load([
-                "utilisation.ticket.reservation.user",
-                "utilisation.ticket.reservation.site",
-                "utilisation.ticket.reservation.evenement",
-            ]),
+            $avi->load(["reservation.user", "reservation.site", "reservation.evenement"]),
         );
     }
 
@@ -149,8 +158,8 @@ class AvisController extends Controller
     ]
     public function update(Request $request, Avis $avi)
     {
-        $avi->load("utilisation.ticket.reservation");
-        $this->authorizeOwner($avi->utilisation->ticket->reservation->id_user, $request);
+        $avi->load("reservation");
+        $this->authorizeOwner($avi->reservation->id_user, $request);
 
         $validated = $request->validate([
             "message" => "sometimes|string|max:1000",
@@ -227,8 +236,8 @@ class AvisController extends Controller
     ]
     public function destroy(Request $request, Avis $avi)
     {
-        $avi->load("utilisation.ticket.reservation");
-        $this->authorizeOwner($avi->utilisation->ticket->reservation->id_user, $request);
+        $avi->load("reservation");
+        $this->authorizeOwner($avi->reservation->id_user, $request);
 
         $avi->delete();
         return response()->json(["message" => "Avis supprimé"], 200);

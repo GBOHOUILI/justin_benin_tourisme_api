@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Avis;
-use App\Models\Utilisation;
+use App\Models\Reservation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,7 +16,7 @@ class AvisFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_utilisation' => Utilisation::factory(),
+            'id_reservation' => Reservation::factory()->state(['statut' => 'confirmee']),
             'message' => fake()->sentence(),
             'status' => 'en_attente',
         ];
