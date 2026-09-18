@@ -322,6 +322,22 @@ Démarré et terminé le 2026-09-18, juste après le compte Prestataire. Décisi
 - [x] `AdminSites.jsx` migré du badge booléen Actif/Inactif vers le même enum 4 états qu'`AdminEvenements.jsx`, boutons Valider/Rejeter ajoutés, colonne + select Région. Même ajout (colonne + select Région seulement, statut déjà correct) sur `AdminEvenements.jsx`, `PrestataireSites.jsx`, `PrestataireEvenements.jsx`. **`PrestataireSites.jsx` avait aussi un bug de badge resté sur l'ancien format booléen** (`site.status ? 'Actif' : 'En attente'`) — aurait affiché "En attente" en permanence pour un site validé ; corrigé avec les mêmes helpers `statusColor`/`statusLabel` que les autres pages.
 - [x] Vérifié en réel (Playwright, 0 erreur console à chaque étape) : création d'un responsable régional (Littoral) → création d'un site en_attente région Littoral (AdminSites.jsx) → connexion responsable → sa file montre le site → validation → file vide, `valide` confirmé en base → déconnexion → accès direct à `/responsable` sans session redirige vers le login → select Région confirmé fonctionnel sur `PrestataireSites.jsx`. Toutes les données de test supprimées.
 
+### Le responsable régional peut aussi créer ses propres fiches (2026-09-18)
+
+Suite à la discussion avec l'utilisateur : le responsable régional connaît son territoire mieux que quiconque, donc il peut créer un Site/Evenement pour sa région — mais ne le valide jamais lui-même (ni un pair). Seul un **Admin** valide une fiche créée par un responsable. Hiérarchie à trois niveaux : Prestataire (validé par responsable régional ou admin) → Responsable régional (créateur, validé uniquement par admin) → Admin (auto-validé, comme avant).
+
+**Backend** :
+- [x] `id_responsable` nullable ajouté à `site`/`evenement` (même pattern que `id_prestataire`), relations `responsable()`/`sites()`/`evenements()` ajoutées aux modèles concernés
+- [x] `SiteController`/`EvenementController::store` : troisième branche pour l'acteur ResponsableRegional — `status` forcé à `en_attente`, `id_region` forcé à la sienne s'il est scopé (un responsable global doit en choisir une explicitement). `update()` : même ownership check que Prestataire, `id_region` non déplaçable par un responsable scopé
+- [x] `refuserSiHorsPerimetre` étendu : un responsable ne peut valider/rejeter une fiche portant un `id_responsable` non nul, peu importe la région — réservée à l'admin
+- [x] `ResponsableRegionalController::aValider` exclut les fiches `id_responsable` non nul de la file de **tout** responsable (pas seulement du créateur) — visibles uniquement dans les vues admin existantes
+- [x] `PrixController`/`GalerieSiteController`/`GallerieEvnmtController` : ownership généralisé à Prestataire OU ResponsableRegional. Routes `/responsable/{sites,evenements,prix,galeries/*}` ajoutées, mirroir exact de `/prestataire/*`
+- [x] Vérifié en réel via de vraies requêtes HTTP : responsable envoie `status=valide` et une région différente de la sienne → les deux forcés (en_attente, sa région) → absent de sa propre file → auto-validation → 403 → admin valide → 200 → second responsable (global) ne peut ni modifier ni ajouter un tarif sur la fiche du premier → 403 → responsable 1 gère bien sa propre fiche → 200. Données de test supprimées
+
+**Frontend** :
+- [x] `ResponsableSites.jsx`/`ResponsableEvenements.jsx` (mirroir des pages Prestataire équivalentes, tarifs + galerie en modales) ; champ Région en lecture seule (pré-rempli à sa propre région) pour un responsable scopé, select pour un responsable global. Navigation `ResponsableLayout` étendue de "À valider" à "Mes Sites"/"Mes Événements"
+- [x] Vérifié en réel (Playwright, 0 erreur console) : région forcée "Littoral" affichée en lecture seule → site créé en attente → absent de la propre file du responsable → visible et validable dans `AdminSites.jsx` (aucune régression) → validation admin réussie. Données de test supprimées
+
 ### Reste à faire (étape 3, non commencée)
 
 - [ ] `Plan`/`Abonnement`/`FactureAbonnement`, blocage de création de fiche si abonnement expiré
