@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\AuthorizesOwnership;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -9,6 +10,8 @@ use OpenApi\Attributes as OA;
 
 class UserController extends Controller
 {
+    use AuthorizesOwnership;
+
     public function index()
     {
         // Retourne sans relations pour éviter la récursion
@@ -35,9 +38,7 @@ class UserController extends Controller
 
     public function show(Request $request, User $user)
     {
-        if ($user->id !== $request->user()->id) {
-            return response()->json(['message' => 'Accès refusé.'], 403);
-        }
+        $this->authorizeOwner($user->id, $request);
 
         // CORRECTION : on ne charge plus reservations.tickets (récursion infinie)
         // On retourne juste le user sans relations lourdes
@@ -46,9 +47,7 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        if ($user->id !== $request->user()->id) {
-            return response()->json(['message' => 'Accès refusé.'], 403);
-        }
+        $this->authorizeOwner($user->id, $request);
 
         $validated = $request->validate([
             'nom'         => 'sometimes|string|max:100',
@@ -75,8 +74,8 @@ class UserController extends Controller
         // compte) et admin (guard 'admin' + middleware 'admin', déjà appliqués
         // par la route /admin/users/{user} - un admin peut supprimer n'importe
         // quel compte, pas de vérification de propriété dans ce cas).
-        if ($request->user() instanceof User && $user->id !== $request->user()->id) {
-            return response()->json(['message' => 'Accès refusé.'], 403);
+        if ($request->user() instanceof User) {
+            $this->authorizeOwner($user->id, $request);
         }
 
         $user->delete();
