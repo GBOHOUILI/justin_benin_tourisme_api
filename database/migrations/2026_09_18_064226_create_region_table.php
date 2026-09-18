@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Unité territoriale du Responsable régional — département (12 au Bénin),
+ * Unité territoriale du Responsable régional - département (12 au Bénin),
  * pas la commune (77, trop granulaire pour un poste de supervision).
  */
 return new class extends Migration

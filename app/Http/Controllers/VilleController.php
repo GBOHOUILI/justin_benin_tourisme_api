@@ -8,7 +8,7 @@ use OpenApi\Attributes as OA;
 
 /**
  * Contrairement à Region (12 départements fixes, seedés), la liste des
- * villes est ouverte — un admin en ajoute au fil de l'eau (nécessaires
+ * villes est ouverte - un admin en ajoute au fil de l'eau (nécessaires
  * pour définir un Trajet entre deux villes).
  */
 class VilleController extends Controller

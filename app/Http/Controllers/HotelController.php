@@ -26,13 +26,19 @@ class HotelController extends Controller
         );
     }
 
-    /** Filtres communs (recherche, proximité) — pas le statut, géré différemment par index()/adminIndex(). */
+    /** Filtres communs (recherche, proximité) - pas le statut, géré différemment par index()/adminIndex(). */
     private function requeteFiltree(Request $request)
     {
         $query = Hotel::with(["galeries", "chambres", "region", "prestataire", "responsable"]);
 
         if ($request->filled("libelle")) {
             $query->where("libelle", "like", "%" . $request->libelle . "%");
+        }
+        if ($request->filled("id_region")) {
+            $query->where("id_region", $request->id_region);
+        }
+        if ($request->filled("nombre_etoiles")) {
+            $query->where("nombre_etoiles", ">=", $request->nombre_etoiles);
         }
 
         if ($request->filled("lat") && $request->filled("lng")) {
@@ -222,7 +228,7 @@ class HotelController extends Controller
             return null;
         }
         if ($hotel->id_responsable !== null) {
-            return response()->json(["message" => "Cette fiche a été créée par un responsable régional — seul un admin peut la valider."], 403);
+            return response()->json(["message" => "Cette fiche a été créée par un responsable régional - seul un admin peut la valider."], 403);
         }
         if (!$responsable->estGlobal() && $hotel->id_region !== $responsable->id_region) {
             return response()->json(["message" => "Cet hôtel est hors de votre région."], 403);

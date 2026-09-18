@@ -6,7 +6,7 @@ use App\Models\Region;
 use OpenApi\Attributes as OA;
 
 /**
- * Les 12 départements du Bénin — liste fixe, seedée, aucune mutation exposée
+ * Les 12 départements du Bénin - liste fixe, seedée, aucune mutation exposée
  * (pas de cas d'usage identifié pour en ajouter/modifier depuis l'app).
  */
 class RegionController extends Controller

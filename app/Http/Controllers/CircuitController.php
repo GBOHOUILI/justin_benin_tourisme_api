@@ -38,7 +38,7 @@ class CircuitController extends Controller
         OA\Post(
             path: "/api/circuits",
             tags: ["Circuits"],
-            summary: "Créer un circuit (itinéraire personnalisé, construit manuellement — pas d'IA pour l'instant)",
+            summary: "Créer un circuit (itinéraire personnalisé, construit manuellement - pas d'IA pour l'instant)",
             security: [["sanctum" => []]],
             requestBody: new OA\RequestBody(
                 required: true,

@@ -28,7 +28,7 @@ class ReservationController extends Controller
         OA\Post(
             path: "/api/reservations",
             tags: ["Réservations"],
-            summary: "Créer une réservation — gratuite (tarif à 0 ou absent) ou payante (statut en_attente_paiement, ticket différé au paiement)",
+            summary: "Créer une réservation - gratuite (tarif à 0 ou absent) ou payante (statut en_attente_paiement, ticket différé au paiement)",
             security: [["sanctum" => []]],
             requestBody: new OA\RequestBody(
                 required: true,
@@ -43,7 +43,7 @@ class ReservationController extends Controller
                         new OA\Property(
                             property: "id_prix",
                             type: "integer",
-                            description: "Tarif choisi (table Prix) — le montant n'est jamais fourni par le client, il est résolu côté serveur depuis ce tarif",
+                            description: "Tarif choisi (table Prix) - le montant n'est jamais fourni par le client, il est résolu côté serveur depuis ce tarif",
                         ),
                     ],
                 ),

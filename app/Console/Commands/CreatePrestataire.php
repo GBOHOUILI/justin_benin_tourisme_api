@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 /**
  * Outil CLI temporaire pour peupler la table prestataire en attendant
  * le module Prestataire (inscription, compte, dashboard). Réservé à
- * qui a accès au serveur/à la CLI — aucune route HTTP correspondante.
+ * qui a accès au serveur/à la CLI - aucune route HTTP correspondante.
  */
 class CreatePrestataire extends Command
 {
@@ -25,7 +25,7 @@ class CreatePrestataire extends Command
 
         $nom = $this->option('nom') ?: $this->ask('Nom de l\'entreprise');
         $type = $this->option('type') ?: $this->ask(
-            'Type de prestataire (' . implode(', ', $valeurs) . ') — laisser vide si inconnu',
+            'Type de prestataire (' . implode(', ', $valeurs) . ') - laisser vide si inconnu',
             null,
         );
 

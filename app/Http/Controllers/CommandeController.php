@@ -52,7 +52,7 @@ class CommandeController extends Controller
                         new OA\Property(
                             property: "echelonner",
                             type: "boolean",
-                            description: "Demande un paiement échelonné — refusé si le tarif ne le permet pas",
+                            description: "Demande un paiement échelonné - refusé si le tarif ne le permet pas",
                         ),
                     ],
                 ),

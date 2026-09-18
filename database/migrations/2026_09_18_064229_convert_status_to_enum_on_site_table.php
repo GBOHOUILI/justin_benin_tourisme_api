@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Site.status passe de booléen (actif/inactif) au même enum qu'Evenement
- * (en_attente/valide/rejete/suspendu) — nécessaire pour que le Responsable
+ * (en_attente/valide/rejete/suspendu) - nécessaire pour que le Responsable
  * régional puisse valider/rejeter un Site comme il le fait déjà pour un
  * Evenement (un booléen ne distingue pas "en attente" de "rejeté").
  * Site actif (1) -> valide ; inactif (0) -> en_attente (c'est déjà le bucket

@@ -174,7 +174,7 @@ class EtapeCircuitController extends Controller
                             property: "ordre",
                             type: "array",
                             items: new OA\Items(type: "integer"),
-                            description: "Liste des id d'étapes dans le nouvel ordre souhaité — doit contenir exactement toutes les étapes du circuit",
+                            description: "Liste des id d'étapes dans le nouvel ordre souhaité - doit contenir exactement toutes les étapes du circuit",
                         ),
                     ],
                 ),

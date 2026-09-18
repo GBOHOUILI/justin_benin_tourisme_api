@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Même forme que `site` (dans son état final, pas sa forme d'origine) :
  * propriétaire (admin OU prestataire OU responsable, jamais deux à la fois),
- * statut à 4 états, région optionnelle. Pas de catégorie (id_cat_x) — le
+ * statut à 4 états, région optionnelle. Pas de catégorie (id_cat_x) - le
  * document ne prévoit pas de taxonomie pour hôtel/restaurant/transport,
  * contrairement à site/événement.
  */

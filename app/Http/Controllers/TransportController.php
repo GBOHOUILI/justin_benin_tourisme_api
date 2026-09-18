@@ -36,6 +36,9 @@ class TransportController extends Controller
         if ($request->filled("type_transport")) {
             $query->where("type_transport", "like", "%" . $request->type_transport . "%");
         }
+        if ($request->filled("id_region")) {
+            $query->where("id_region", $request->id_region);
+        }
 
         if ($request->filled("lat") && $request->filled("lng")) {
             $lat = (float) $request->lat;
@@ -228,7 +231,7 @@ class TransportController extends Controller
             return null;
         }
         if ($transport->id_responsable !== null) {
-            return response()->json(["message" => "Cette fiche a été créée par un responsable régional — seul un admin peut la valider."], 403);
+            return response()->json(["message" => "Cette fiche a été créée par un responsable régional - seul un admin peut la valider."], 403);
         }
         if (!$responsable->estGlobal() && $transport->id_region !== $responsable->id_region) {
             return response()->json(["message" => "Ce transport est hors de votre région."], 403);

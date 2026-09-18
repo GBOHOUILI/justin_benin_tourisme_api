@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Compte créé par un Admin (pas d'auto-inscription — c'est un poste officiel,
+ * Compte créé par un Admin (pas d'auto-inscription - c'est un poste officiel,
  * même logique que Admin). id_region NULL = responsable global, valide
  * n'importe où (couvre les régions sans titulaire pour l'instant).
  */

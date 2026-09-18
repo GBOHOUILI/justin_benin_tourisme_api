@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Ville (commune) — distincte de Region (département) : granularité fine
+ * Ville (commune) - distincte de Region (département) : granularité fine
  * nécessaire pour un Trajet ("Cotonou → Parakou"), contrairement au
  * Responsable régional qui supervise au niveau département. Liste ouverte
  * (contrairement aux 12 régions fixes), gérée par les admins au fil de l'eau.
