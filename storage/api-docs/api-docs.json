@@ -15,6 +15,154 @@
         }
     ],
     "paths": {
+        "/api/prestataire/abonnement": {
+            "get": {
+                "tags": [
+                    "Abonnements"
+                ],
+                "summary": "Abonnement en cours du prestataire connecté (statut, plan, factures)",
+                "operationId": "6311570832b1d8ba27248cb3ef0736e6",
+                "responses": {
+                    "200": {
+                        "description": "Abonnement courant, ou null si aucun"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/prestataire/abonnements": {
+            "post": {
+                "tags": [
+                    "Abonnements"
+                ],
+                "summary": "Souscrire à un plan (ou générer une nouvelle facture pour un abonnement en attente de paiement)",
+                "operationId": "5fe9a4621679b2c3cf52ff45c2b24869",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id_plan"
+                                ],
+                                "properties": {
+                                    "id_plan": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Abonnement (nouveau ou existant en attente) avec sa facture à payer"
+                    },
+                    "422": {
+                        "description": "Un abonnement déjà actif couvre encore la période en cours"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/prestataire/factures-abonnement/{id}/verifier": {
+            "patch": {
+                "tags": [
+                    "Abonnements"
+                ],
+                "summary": "Confirmer le paiement Kkiapay d'une facture d'abonnement via son transactionId",
+                "operationId": "71b1f79c9601eb44086d9f202dd64e5f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "transaction_id"
+                                ],
+                                "properties": {
+                                    "transaction_id": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Paiement confirmé (ou déjà traité), abonnement activé"
+                    },
+                    "403": {
+                        "description": "Accès refusé"
+                    },
+                    "422": {
+                        "description": "Transaction non confirmée par Kkiapay"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/webhooks/kkiapay-abonnement": {
+            "post": {
+                "tags": [
+                    "Abonnements"
+                ],
+                "summary": "Webhook de confirmation Kkiapay pour les factures d'abonnement (vérifié via x-kkiapay-secret)",
+                "operationId": "4ab72a06e9925164c911ca1ec9628ca4",
+                "responses": {
+                    "200": {
+                        "description": "Événement traité (ou ignoré si non exploitable)"
+                    },
+                    "401": {
+                        "description": "Signature (secret) invalide"
+                    }
+                }
+            }
+        },
+        "/api/admin/abonnements": {
+            "get": {
+                "tags": [
+                    "Abonnements"
+                ],
+                "summary": "Lister tous les abonnements (admin)",
+                "operationId": "1c84c797a76356043600916b9e2745b1",
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée des abonnements"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/admin/admins": {
             "get": {
                 "tags": [
@@ -2599,6 +2747,130 @@
                 }
             }
         },
+        "/api/plans": {
+            "get": {
+                "tags": [
+                    "Plans"
+                ],
+                "summary": "Lister les plans d'abonnement disponibles",
+                "operationId": "72a21e2f57730b17bc379570c2355d3d",
+                "responses": {
+                    "200": {
+                        "description": "Liste des plans"
+                    }
+                }
+            }
+        },
+        "/api/admin/plans": {
+            "post": {
+                "tags": [
+                    "Plans"
+                ],
+                "summary": "Créer un plan d'abonnement (admin)",
+                "operationId": "382439c6ca70e4d068607623fc0bcc34",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "prix_mensuel"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string"
+                                    },
+                                    "prix_mensuel": {
+                                        "type": "number"
+                                    },
+                                    "nombre_fiches_max": {
+                                        "description": "Null = illimité",
+                                        "type": "integer"
+                                    },
+                                    "fonctionnalites": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Plan créé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/plans/{id}": {
+            "put": {
+                "tags": [
+                    "Plans"
+                ],
+                "summary": "Mettre à jour un plan d'abonnement (admin)",
+                "operationId": "5ca6b5e4cbdaf5f9146f783a95ffb0c6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Plan mis à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Plans"
+                ],
+                "summary": "Supprimer un plan d'abonnement (admin)",
+                "operationId": "99e4726aca831a93a429697b519ac3f5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Plan supprimé"
+                    },
+                    "422": {
+                        "description": "Des abonnements référencent encore ce plan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/prestataire/profil": {
             "put": {
                 "tags": [
@@ -4375,6 +4647,10 @@
             "description": "Endpoints de diagnostic"
         },
         {
+            "name": "Abonnements",
+            "description": "Abonnements"
+        },
+        {
             "name": "Prestataires",
             "description": "Prestataires"
         },
@@ -4413,6 +4689,10 @@
         {
             "name": "Paiements",
             "description": "Paiements"
+        },
+        {
+            "name": "Plans",
+            "description": "Plans"
         },
         {
             "name": "Régions",
