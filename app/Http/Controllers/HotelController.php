@@ -134,6 +134,16 @@ class HotelController extends Controller
             "nombre_etoiles" => "nullable|integer|min:1|max:5",
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_region" => "nullable|exists:region,id",
+            "points_forts" => "nullable|array",
+            "points_forts.*" => "string|max:200",
+            "inclus" => "nullable|array",
+            "inclus.*" => "string|max:200",
+            "non_inclus" => "nullable|array",
+            "non_inclus.*" => "string|max:200",
+            "infos_pratiques" => "nullable|string",
+            "recommandations" => "nullable|string",
+            "heure_arrivee" => "nullable|date_format:H:i",
+            "heure_depart" => "nullable|date_format:H:i",
         ]);
 
         $user = $request->user();
@@ -215,6 +225,16 @@ class HotelController extends Controller
             "nombre_etoiles" => "nullable|integer|min:1|max:5",
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_region" => "nullable|exists:region,id",
+            "points_forts" => "nullable|array",
+            "points_forts.*" => "string|max:200",
+            "inclus" => "nullable|array",
+            "inclus.*" => "string|max:200",
+            "non_inclus" => "nullable|array",
+            "non_inclus.*" => "string|max:200",
+            "infos_pratiques" => "nullable|string",
+            "recommandations" => "nullable|string",
+            "heure_arrivee" => "nullable|date_format:H:i",
+            "heure_depart" => "nullable|date_format:H:i",
         ]);
 
         if ($estPrestataire || $estResponsable) {

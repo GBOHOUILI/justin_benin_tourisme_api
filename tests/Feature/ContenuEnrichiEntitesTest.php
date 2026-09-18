@@ -1,0 +1,160 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Admin;
+use App\Models\CatEvenmt;
+use App\Models\Evenement;
+use App\Models\Hotel;
+use App\Models\Restaurant;
+use App\Models\Site;
+use App\Models\Transport;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class ContenuEnrichiEntitesTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_site_round_trips_points_forts_inclus_non_inclus_as_arrays(): void
+    {
+        $site = Site::factory()->create([
+            'points_forts' => ['Vue imprenable', 'Guide inclus'],
+            'inclus' => ['Accès au site', 'Parking'],
+            'non_inclus' => ['Transport', 'Repas'],
+            'infos_pratiques' => 'Prévoir de bonnes chaussures.',
+            'recommandations' => 'Venir tôt le matin pour éviter la foule.',
+        ]);
+
+        $fresh = $site->fresh();
+
+        $this->assertSame(['Vue imprenable', 'Guide inclus'], $fresh->points_forts);
+        $this->assertSame(['Accès au site', 'Parking'], $fresh->inclus);
+        $this->assertSame(['Transport', 'Repas'], $fresh->non_inclus);
+        $this->assertSame('Prévoir de bonnes chaussures.', $fresh->infos_pratiques);
+        $this->assertSame('Venir tôt le matin pour éviter la foule.', $fresh->recommandations);
+    }
+
+    public function test_evenement_round_trips_itineraire_groupe_langue_difficulte(): void
+    {
+        $evenement = Evenement::factory()->create([
+            'itineraire' => [
+                ['titre' => 'Jour 1 - Arrivée', 'description' => 'Accueil à Ouidah.'],
+                ['titre' => 'Jour 2 - Cérémonies', 'description' => 'Immersion Vodun.'],
+            ],
+            'groupe_min' => 2,
+            'groupe_max' => 10,
+            'langue' => 'Français, Anglais',
+            'difficulte' => 'moderee',
+        ]);
+
+        $fresh = $evenement->fresh();
+
+        $this->assertSame('Jour 1 - Arrivée', $fresh->itineraire[0]['titre']);
+        $this->assertSame(2, $fresh->groupe_min);
+        $this->assertSame(10, $fresh->groupe_max);
+        $this->assertSame('Français, Anglais', $fresh->langue);
+        $this->assertSame('moderee', $fresh->difficulte);
+    }
+
+    public function test_evenement_date_debut_stores_time_of_day(): void
+    {
+        $evenement = Evenement::factory()->create([
+            'date_debut' => '2027-01-02 12:00:00',
+        ]);
+
+        $this->assertSame('12:00:00', $evenement->fresh()->date_debut->format('H:i:s'));
+    }
+
+    public function test_site_round_trips_duree_visite_et_difficulte(): void
+    {
+        $site = Site::factory()->create([
+            'duree_visite' => '2h',
+            'difficulte' => 'facile',
+        ]);
+
+        $fresh = $site->fresh();
+
+        $this->assertSame('2h', $fresh->duree_visite);
+        $this->assertSame('facile', $fresh->difficulte);
+    }
+
+    public function test_hotel_round_trips_contenu_enrichi_et_heures_arrivee_depart(): void
+    {
+        $hotel = Hotel::factory()->create([
+            'points_forts' => ['Piscine', 'Vue mer'],
+            'heure_arrivee' => '14:00',
+            'heure_depart' => '11:00',
+        ]);
+
+        $fresh = $hotel->fresh();
+
+        $this->assertSame(['Piscine', 'Vue mer'], $fresh->points_forts);
+        $this->assertSame('14:00:00', $fresh->heure_arrivee);
+        $this->assertSame('11:00:00', $fresh->heure_depart);
+    }
+
+    public function test_restaurant_round_trips_contenu_enrichi_et_horaires(): void
+    {
+        $restaurant = Restaurant::factory()->create([
+            'inclus' => ['Menu dégustation'],
+            'horaires' => '12h-15h, 19h-23h',
+        ]);
+
+        $fresh = $restaurant->fresh();
+
+        $this->assertSame(['Menu dégustation'], $fresh->inclus);
+        $this->assertSame('12h-15h, 19h-23h', $fresh->horaires);
+    }
+
+    public function test_transport_round_trips_contenu_enrichi_et_duree_trajet(): void
+    {
+        $transport = Transport::factory()->create([
+            'non_inclus' => ['Bagages en soute'],
+            'duree_trajet_estimee' => '45 min',
+        ]);
+
+        $fresh = $transport->fresh();
+
+        $this->assertSame(['Bagages en soute'], $fresh->non_inclus);
+        $this->assertSame('45 min', $fresh->duree_trajet_estimee);
+    }
+
+    public function test_evenement_rejects_invalid_difficulte_value(): void
+    {
+        $admin = Admin::factory()->create();
+        $categorie = CatEvenmt::factory()->create();
+
+        $response = $this->actingAs($admin, 'admin')->postJson('/api/admin/evenements', [
+            'libelle' => 'Festival test',
+            'adresse' => 'Cotonou',
+            'longitude' => 2.42,
+            'latitude' => 6.37,
+            'date_debut' => '2027-01-02',
+            'date_fin' => '2027-01-05',
+            'id_cat_evenmt' => $categorie->id,
+            'difficulte' => 'impossible',
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('difficulte');
+    }
+
+    public function test_evenement_rejects_groupe_max_out_of_tinyint_range(): void
+    {
+        $admin = Admin::factory()->create();
+        $categorie = CatEvenmt::factory()->create();
+
+        $response = $this->actingAs($admin, 'admin')->postJson('/api/admin/evenements', [
+            'libelle' => 'Festival test',
+            'adresse' => 'Cotonou',
+            'longitude' => 2.42,
+            'latitude' => 6.37,
+            'date_debut' => '2027-01-02',
+            'date_fin' => '2027-01-05',
+            'id_cat_evenmt' => $categorie->id,
+            'groupe_max' => 300,
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('groupe_max');
+    }
+}

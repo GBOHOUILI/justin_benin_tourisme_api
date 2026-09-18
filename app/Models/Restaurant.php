@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Restaurant extends Model
 {
+    use HasFactory;
     protected $table = 'restaurant';
 
     protected $fillable = [
@@ -21,6 +23,18 @@ class Restaurant extends Model
         'id_prestataire',
         'id_responsable',
         'id_region',
+        'points_forts',
+        'inclus',
+        'non_inclus',
+        'infos_pratiques',
+        'recommandations',
+        'horaires',
+    ];
+
+    protected $casts = [
+        'points_forts' => 'array',
+        'inclus' => 'array',
+        'non_inclus' => 'array',
     ];
 
     public function admin()

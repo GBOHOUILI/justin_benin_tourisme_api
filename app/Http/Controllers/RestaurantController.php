@@ -139,6 +139,15 @@ class RestaurantController extends Controller
             "gamme_prix" => "nullable|string|in:economique,moyen,eleve",
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_region" => "nullable|exists:region,id",
+            "points_forts" => "nullable|array",
+            "points_forts.*" => "string|max:200",
+            "inclus" => "nullable|array",
+            "inclus.*" => "string|max:200",
+            "non_inclus" => "nullable|array",
+            "non_inclus.*" => "string|max:200",
+            "infos_pratiques" => "nullable|string",
+            "recommandations" => "nullable|string",
+            "horaires" => "nullable|string|max:255",
         ]);
 
         $user = $request->user();
@@ -221,6 +230,15 @@ class RestaurantController extends Controller
             "gamme_prix" => "nullable|string|in:economique,moyen,eleve",
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_region" => "nullable|exists:region,id",
+            "points_forts" => "nullable|array",
+            "points_forts.*" => "string|max:200",
+            "inclus" => "nullable|array",
+            "inclus.*" => "string|max:200",
+            "non_inclus" => "nullable|array",
+            "non_inclus.*" => "string|max:200",
+            "infos_pratiques" => "nullable|string",
+            "recommandations" => "nullable|string",
+            "horaires" => "nullable|string|max:255",
         ]);
 
         if ($estPrestataire || $estResponsable) {

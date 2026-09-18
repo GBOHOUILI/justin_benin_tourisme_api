@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Evenement extends Model
 {
+    use HasFactory;
+
     protected $table = 'evenement';
 
     protected $fillable = [
@@ -14,6 +17,16 @@ class Evenement extends Model
         'longitude',
         'latitude',
         'description',
+        'points_forts',
+        'inclus',
+        'non_inclus',
+        'infos_pratiques',
+        'recommandations',
+        'itineraire',
+        'groupe_min',
+        'groupe_max',
+        'langue',
+        'difficulte',
         'date_debut',
         'date_fin',
         'status',
@@ -27,6 +40,10 @@ class Evenement extends Model
     protected $casts = [
         'date_debut' => 'datetime',
         'date_fin'   => 'datetime',
+        'points_forts' => 'array',
+        'inclus' => 'array',
+        'non_inclus' => 'array',
+        'itineraire' => 'array',
     ];
 
     public function categorie()

@@ -58,11 +58,21 @@ RUN mkdir -p storage/framework/cache storage/framework/sessions \
 EXPOSE 80
 
 # ── Démarrage ────────────────────────────────────────────────
-# Ordre recommandé :
-# 1. migrate --force   → crée/met à jour les tables
-# 2. storage:link      → lien public/storage pour les uploads
-# 3. config:cache      → cache la config pour les perfs
+# Ordre :
+# 1. config:clear      → purge tout cache de config résiduel (voir avertissement ci-dessous)
+# 2. migrate --force   → crée/met à jour les tables
+# 3. storage:link      → lien public/storage pour les uploads
 # 4. route:cache       → cache les routes
 # 5. view:cache        → cache les vues Blade
 # 6. apache2-foreground → démarre le serveur web
-CMD ["sh", "-c", "php artisan migrate --force && php artisan storage:link || true && php artisan route:cache && php artisan view:cache && apache2-foreground"]
+#
+# ATTENTION : ne JAMAIS ajouter `config:cache` ici. Une fois le config Laravel
+# mis en cache, env() n'est plus jamais rappelé au runtime - les variables
+# d'environnement de PHPUnit (DB_CONNECTION=mysql/benin_tourisme_test pour les
+# tests) sont alors silencieusement ignorées et l'app retombe sur les valeurs
+# de .env figées au moment du cache (mysql/benin_tourisme, la vraie base de
+# dev). C'est ce qui a causé la destruction répétée de la base de dev par
+# RefreshDatabase (migrate:fresh) avant d'être diagnostiqué - voir le commit
+# "fix(critique): les tests détruisaient la vraie base de dev à chaque
+# exécution" pour le détail complet.
+CMD ["sh", "-c", "php artisan config:clear && php artisan migrate --force && php artisan storage:link || true && php artisan route:cache && php artisan view:cache && apache2-foreground"]

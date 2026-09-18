@@ -17,6 +17,13 @@ class Site extends Model
         'longitude',
         'latitude',
         'description',
+        'points_forts',
+        'inclus',
+        'non_inclus',
+        'infos_pratiques',
+        'recommandations',
+        'duree_visite',
+        'difficulte',
         'ouverture',
         'fermeture',
         'status',
@@ -30,6 +37,9 @@ class Site extends Model
     protected $casts = [
         'ouverture' => 'datetime',
         'fermeture' => 'datetime',
+        'points_forts' => 'array',
+        'inclus' => 'array',
+        'non_inclus' => 'array',
     ];
 
     public function categorie()

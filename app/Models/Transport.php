@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Transport extends Model
 {
+    use HasFactory;
+
     protected $table = 'transport';
 
     protected $fillable = [
@@ -21,6 +24,18 @@ class Transport extends Model
         'id_prestataire',
         'id_responsable',
         'id_region',
+        'points_forts',
+        'inclus',
+        'non_inclus',
+        'infos_pratiques',
+        'recommandations',
+        'duree_trajet_estimee',
+    ];
+
+    protected $casts = [
+        'points_forts' => 'array',
+        'inclus' => 'array',
+        'non_inclus' => 'array',
     ];
 
     public function admin()

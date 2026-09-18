@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Hotel extends Model
 {
+    use HasFactory;
+
     protected $table = 'hotel';
 
     protected $fillable = [
@@ -20,6 +23,19 @@ class Hotel extends Model
         'id_prestataire',
         'id_responsable',
         'id_region',
+        'points_forts',
+        'inclus',
+        'non_inclus',
+        'infos_pratiques',
+        'recommandations',
+        'heure_arrivee',
+        'heure_depart',
+    ];
+
+    protected $casts = [
+        'points_forts' => 'array',
+        'inclus' => 'array',
+        'non_inclus' => 'array',
     ];
 
     public function admin()
