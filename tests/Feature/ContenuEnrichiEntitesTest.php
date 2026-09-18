@@ -2,7 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\Admin;
+use App\Models\CatEvenmt;
+use App\Models\Evenement;
+use App\Models\Hotel;
+use App\Models\Restaurant;
 use App\Models\Site;
+use App\Models\Transport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -31,7 +37,7 @@ class ContenuEnrichiEntitesTest extends TestCase
 
     public function test_evenement_round_trips_itineraire_groupe_langue_difficulte(): void
     {
-        $evenement = \App\Models\Evenement::factory()->create([
+        $evenement = Evenement::factory()->create([
             'itineraire' => [
                 ['titre' => 'Jour 1 - Arrivée', 'description' => 'Accueil à Ouidah.'],
                 ['titre' => 'Jour 2 - Cérémonies', 'description' => 'Immersion Vodun.'],
@@ -53,7 +59,7 @@ class ContenuEnrichiEntitesTest extends TestCase
 
     public function test_evenement_date_debut_stores_time_of_day(): void
     {
-        $evenement = \App\Models\Evenement::factory()->create([
+        $evenement = Evenement::factory()->create([
             'date_debut' => '2027-01-02 12:00:00',
         ]);
 
@@ -75,7 +81,7 @@ class ContenuEnrichiEntitesTest extends TestCase
 
     public function test_hotel_round_trips_contenu_enrichi_et_heures_arrivee_depart(): void
     {
-        $hotel = \App\Models\Hotel::factory()->create([
+        $hotel = Hotel::factory()->create([
             'points_forts' => ['Piscine', 'Vue mer'],
             'heure_arrivee' => '14:00',
             'heure_depart' => '11:00',
@@ -90,7 +96,7 @@ class ContenuEnrichiEntitesTest extends TestCase
 
     public function test_restaurant_round_trips_contenu_enrichi_et_horaires(): void
     {
-        $restaurant = \App\Models\Restaurant::factory()->create([
+        $restaurant = Restaurant::factory()->create([
             'inclus' => ['Menu dégustation'],
             'horaires' => '12h-15h, 19h-23h',
         ]);
@@ -103,7 +109,7 @@ class ContenuEnrichiEntitesTest extends TestCase
 
     public function test_transport_round_trips_contenu_enrichi_et_duree_trajet(): void
     {
-        $transport = \App\Models\Transport::factory()->create([
+        $transport = Transport::factory()->create([
             'non_inclus' => ['Bagages en soute'],
             'duree_trajet_estimee' => '45 min',
         ]);
@@ -112,5 +118,43 @@ class ContenuEnrichiEntitesTest extends TestCase
 
         $this->assertSame(['Bagages en soute'], $fresh->non_inclus);
         $this->assertSame('45 min', $fresh->duree_trajet_estimee);
+    }
+
+    public function test_evenement_rejects_invalid_difficulte_value(): void
+    {
+        $admin = Admin::factory()->create();
+        $categorie = CatEvenmt::factory()->create();
+
+        $response = $this->actingAs($admin, 'admin')->postJson('/api/admin/evenements', [
+            'libelle' => 'Festival test',
+            'adresse' => 'Cotonou',
+            'longitude' => 2.42,
+            'latitude' => 6.37,
+            'date_debut' => '2027-01-02',
+            'date_fin' => '2027-01-05',
+            'id_cat_evenmt' => $categorie->id,
+            'difficulte' => 'impossible',
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('difficulte');
+    }
+
+    public function test_evenement_rejects_groupe_max_out_of_tinyint_range(): void
+    {
+        $admin = Admin::factory()->create();
+        $categorie = CatEvenmt::factory()->create();
+
+        $response = $this->actingAs($admin, 'admin')->postJson('/api/admin/evenements', [
+            'libelle' => 'Festival test',
+            'adresse' => 'Cotonou',
+            'longitude' => 2.42,
+            'latitude' => 6.37,
+            'date_debut' => '2027-01-02',
+            'date_fin' => '2027-01-05',
+            'id_cat_evenmt' => $categorie->id,
+            'groupe_max' => 300,
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('groupe_max');
     }
 }

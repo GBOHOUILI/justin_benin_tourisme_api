@@ -263,8 +263,8 @@ class EvenementController extends Controller
             "itineraire" => "nullable|array",
             "itineraire.*.titre" => "required_with:itineraire|string|max:150",
             "itineraire.*.description" => "required_with:itineraire|string",
-            "groupe_min" => "nullable|integer|min:1",
-            "groupe_max" => "nullable|integer|min:1|gte:groupe_min",
+            "groupe_min" => "nullable|integer|min:1|max:255",
+            "groupe_max" => "nullable|integer|min:1|max:255|gte:groupe_min",
             "langue" => "nullable|string|max:100",
             "difficulte" => "nullable|in:facile,moderee,difficile",
         ]);
@@ -440,8 +440,8 @@ class EvenementController extends Controller
             "itineraire" => "nullable|array",
             "itineraire.*.titre" => "required_with:itineraire|string|max:150",
             "itineraire.*.description" => "required_with:itineraire|string",
-            "groupe_min" => "nullable|integer|min:1",
-            "groupe_max" => "nullable|integer|min:1|gte:groupe_min",
+            "groupe_min" => "nullable|integer|min:1|max:255",
+            "groupe_max" => "nullable|integer|min:1|max:255|gte:groupe_min",
             "langue" => "nullable|string|max:100",
             "difficulte" => "nullable|in:facile,moderee,difficile",
         ]);
