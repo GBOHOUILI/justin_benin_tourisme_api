@@ -136,6 +136,15 @@ class TransportController extends Controller
             "capacite" => "nullable|integer|min:1",
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_region" => "nullable|exists:region,id",
+            "points_forts" => "nullable|array",
+            "points_forts.*" => "string|max:200",
+            "inclus" => "nullable|array",
+            "inclus.*" => "string|max:200",
+            "non_inclus" => "nullable|array",
+            "non_inclus.*" => "string|max:200",
+            "infos_pratiques" => "nullable|string",
+            "recommandations" => "nullable|string",
+            "duree_trajet_estimee" => "nullable|string|max:100",
         ]);
 
         $user = $request->user();
@@ -218,6 +227,15 @@ class TransportController extends Controller
             "capacite" => "nullable|integer|min:1",
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_region" => "nullable|exists:region,id",
+            "points_forts" => "nullable|array",
+            "points_forts.*" => "string|max:200",
+            "inclus" => "nullable|array",
+            "inclus.*" => "string|max:200",
+            "non_inclus" => "nullable|array",
+            "non_inclus.*" => "string|max:200",
+            "infos_pratiques" => "nullable|string",
+            "recommandations" => "nullable|string",
+            "duree_trajet_estimee" => "nullable|string|max:100",
         ]);
 
         if ($estPrestataire || $estResponsable) {

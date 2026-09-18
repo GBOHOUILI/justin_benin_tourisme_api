@@ -100,4 +100,17 @@ class ContenuEnrichiEntitesTest extends TestCase
         $this->assertSame(['Menu dégustation'], $fresh->inclus);
         $this->assertSame('12h-15h, 19h-23h', $fresh->horaires);
     }
+
+    public function test_transport_round_trips_contenu_enrichi_et_duree_trajet(): void
+    {
+        $transport = \App\Models\Transport::factory()->create([
+            'non_inclus' => ['Bagages en soute'],
+            'duree_trajet_estimee' => '45 min',
+        ]);
+
+        $fresh = $transport->fresh();
+
+        $this->assertSame(['Bagages en soute'], $fresh->non_inclus);
+        $this->assertSame('45 min', $fresh->duree_trajet_estimee);
+    }
 }
