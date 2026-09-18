@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\AuthorizesOwnership;
 use App\Models\Prix;
 use App\Models\Reservation;
 use App\Models\Ticket;
@@ -11,6 +12,8 @@ use OpenApi\Attributes as OA;
 
 class ReservationController extends Controller
 {
+    use AuthorizesOwnership;
+
     public function index(Request $request)
     {
         // CORRECTION : on charge site et evenement SANS user (évite récursion)
@@ -109,9 +112,7 @@ class ReservationController extends Controller
 
     public function show(Request $request, Reservation $reservation)
     {
-        if ($reservation->id_user !== $request->user()->id) {
-            return response()->json(['message' => 'Accès refusé.'], 403);
-        }
+        $this->authorizeOwner($reservation->id_user, $request);
 
         return response()->json(
             $reservation->load(['site', 'evenement', 'tickets'])
@@ -120,9 +121,7 @@ class ReservationController extends Controller
 
     public function update(Request $request, Reservation $reservation)
     {
-        if ($reservation->id_user !== $request->user()->id) {
-            return response()->json(['message' => 'Accès refusé.'], 403);
-        }
+        $this->authorizeOwner($reservation->id_user, $request);
 
         $validated = $request->validate([
             'type'        => 'sometimes|string|in:site,evenement',
@@ -145,9 +144,7 @@ class ReservationController extends Controller
 
     public function destroy(Request $request, Reservation $reservation)
     {
-        if ($reservation->id_user !== $request->user()->id) {
-            return response()->json(['message' => 'Accès refusé.'], 403);
-        }
+        $this->authorizeOwner($reservation->id_user, $request);
 
         $reservation->delete();
         return response()->json(['message' => 'Réservation annulée'], 200);

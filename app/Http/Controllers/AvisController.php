@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\AuthorizesOwnership;
 use App\Models\Avis;
 use App\Models\Utilisation;
 use Illuminate\Http\Request;
@@ -9,6 +10,8 @@ use OpenApi\Attributes as OA;
 
 class AvisController extends Controller
 {
+    use AuthorizesOwnership;
+
     #[
         OA\Get(
             path: "/api/avis",
@@ -80,9 +83,7 @@ class AvisController extends Controller
         $utilisation = Utilisation::with("ticket.reservation")->findOrFail(
             $validated["id_utilisation"],
         );
-        if ($utilisation->ticket->reservation->id_user !== $request->user()->id) {
-            return response()->json(["message" => "Accès refusé."], 403);
-        }
+        $this->authorizeOwner($utilisation->ticket->reservation->id_user, $request);
 
         $validated["status"] = "en_attente";
         $avis = Avis::create($validated);
@@ -149,9 +150,7 @@ class AvisController extends Controller
     public function update(Request $request, Avis $avi)
     {
         $avi->load("utilisation.ticket.reservation");
-        if ($avi->utilisation->ticket->reservation->id_user !== $request->user()->id) {
-            return response()->json(["message" => "Accès refusé."], 403);
-        }
+        $this->authorizeOwner($avi->utilisation->ticket->reservation->id_user, $request);
 
         $validated = $request->validate([
             "message" => "sometimes|string|max:1000",
@@ -229,9 +228,7 @@ class AvisController extends Controller
     public function destroy(Request $request, Avis $avi)
     {
         $avi->load("utilisation.ticket.reservation");
-        if ($avi->utilisation->ticket->reservation->id_user !== $request->user()->id) {
-            return response()->json(["message" => "Accès refusé."], 403);
-        }
+        $this->authorizeOwner($avi->utilisation->ticket->reservation->id_user, $request);
 
         $avi->delete();
         return response()->json(["message" => "Avis supprimé"], 200);
