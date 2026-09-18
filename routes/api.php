@@ -21,6 +21,8 @@ use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\CircuitController;
 use App\Http\Controllers\EtapeCircuitController;
 use App\Http\Controllers\PrestataireController;
+use App\Http\Controllers\RegionController;
+use App\Http\Controllers\ResponsableRegionalController;
 
 // ══════════════════════════════════════════════════════
 //  ROUTES PUBLIQUES — aucun token requis
@@ -31,6 +33,9 @@ Route::post("/login", [AuthController::class, "login"]);
 Route::post("/admin/login", [AuthController::class, "loginAdmin"]);
 Route::post("/prestataire/register", [AuthController::class, "registerPrestataire"]);
 Route::post("/prestataire/login", [AuthController::class, "loginPrestataire"]);
+Route::post("/responsable/login", [AuthController::class, "loginResponsable"]);
+
+Route::get("/regions", [RegionController::class, "index"]);
 
 // Consultation publique
 Route::get("/sites", [SiteController::class, "index"]);
@@ -157,6 +162,8 @@ Route::middleware(["auth:admin", "admin"])
         Route::post("/sites", [SiteController::class, "store"]);
         Route::put("/sites/{site}", [SiteController::class, "update"]);
         Route::delete("/sites/{site}", [SiteController::class, "destroy"]);
+        Route::patch("/sites/{site}/valider", [SiteController::class, "valider"]);
+        Route::patch("/sites/{site}/rejeter", [SiteController::class, "rejeter"]);
 
         // Événements
         Route::post("/evenements", [EvenementController::class, "store"]);
@@ -176,6 +183,9 @@ Route::middleware(["auth:admin", "admin"])
             EvenementController::class,
             "rejeter",
         ]);
+
+        // Responsables régionaux (poste officiel — créé par un admin, pas d'auto-inscription)
+        Route::apiResource("responsables", ResponsableRegionalController::class);
 
         // Galeries
         Route::post("/galeries/sites", [GalerieSiteController::class, "store"]);
@@ -267,4 +277,24 @@ Route::middleware(["auth:prestataire", "prestataire"])
         Route::post("/galeries/evenements", [GallerieEvnmtController::class, "store"]);
         Route::put("/galeries/evenements/{gallerieEvnmt}", [GallerieEvnmtController::class, "update"]);
         Route::delete("/galeries/evenements/{gallerieEvnmt}", [GallerieEvnmtController::class, "destroy"]);
+    });
+
+// ══════════════════════════════════════════════════════
+//  ROUTES RESPONSABLE RÉGIONAL — token Responsable (auth:responsable)
+//  Valide/rejette les Site/Evenement de sa région (ou de toutes les
+//  régions si id_region est NULL — responsable "global").
+// ══════════════════════════════════════════════════════
+Route::middleware(["auth:responsable", "responsable"])
+    ->prefix("responsable")
+    ->group(function () {
+        Route::get("/me", [AuthController::class, "me"]);
+        Route::post("/logout", [AuthController::class, "logout"]);
+        Route::post("/update-password", [AuthController::class, "updatePassword"]);
+
+        Route::get("/a-valider", [ResponsableRegionalController::class, "aValider"]);
+
+        Route::patch("/sites/{site}/valider", [SiteController::class, "valider"]);
+        Route::patch("/sites/{site}/rejeter", [SiteController::class, "rejeter"]);
+        Route::patch("/evenements/{evenement}/valider", [EvenementController::class, "valider"]);
+        Route::patch("/evenements/{evenement}/rejeter", [EvenementController::class, "rejeter"]);
     });

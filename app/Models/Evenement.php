@@ -20,6 +20,7 @@ class Evenement extends Model
         'id_cat_evenmt',
         'id_admin',
         'id_prestataire',
+        'id_region',
     ];
 
     protected $casts = [
@@ -40,6 +41,11 @@ class Evenement extends Model
     public function prestataire()
     {
         return $this->belongsTo(Prestataire::class, 'id_prestataire');
+    }
+
+    public function region()
+    {
+        return $this->belongsTo(Region::class, 'id_region');
     }
 
     public function galeries()

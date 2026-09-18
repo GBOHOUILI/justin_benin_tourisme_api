@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Evenement;
 use App\Models\Prestataire;
+use App\Models\ResponsableRegional;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
@@ -23,7 +24,7 @@ class EvenementController extends Controller
     public function mine(Request $request)
     {
         return response()->json(
-            $request->user()->evenements()->with(["categorie", "galeries", "prix"])->latest()->paginate(15)
+            $request->user()->evenements()->with(["categorie", "galeries", "prix", "region"])->latest()->paginate(15)
         );
     }
 
@@ -218,6 +219,7 @@ class EvenementController extends Controller
             "date_fin" => "required|date|after_or_equal:date_debut",
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_cat_evenmt" => "required|exists:cat_evenmt,id",
+            "id_region" => "nullable|exists:region,id",
         ]);
 
         // id_admin OU id_prestataire selon le guard connecté — jamais les deux,
@@ -233,7 +235,7 @@ class EvenementController extends Controller
 
         $evenement = Evenement::create($validated);
 
-        return response()->json($evenement->load(["categorie", "admin", "prestataire"]), 201);
+        return response()->json($evenement->load(["categorie", "admin", "prestataire", "region"]), 201);
     }
 
     #[
@@ -348,24 +350,37 @@ class EvenementController extends Controller
             "date_fin" => "sometimes|date|after_or_equal:date_debut",
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_cat_evenmt" => "sometimes|exists:cat_evenmt,id",
+            "id_region" => "nullable|exists:region,id",
         ]);
 
         // Un prestataire ne peut pas se revalider lui-même après une modif —
-        // seuls valider()/rejeter() (admin) changent le statut depuis ce compte.
+        // seuls valider()/rejeter() (admin/responsable) changent le statut.
         if ($estPrestataire) {
             unset($validated["status"]);
         }
 
         $evenement->update($validated);
 
-        return response()->json($evenement->load(["categorie", "admin"]));
+        return response()->json($evenement->load(["categorie", "admin", "region"]));
+    }
+
+    /** 403 si un ResponsableRegional non global tente de valider hors de sa région ; sinon null. */
+    private function refuserSiHorsPerimetre(Request $request, Evenement $evenement)
+    {
+        $responsable = $request->user();
+        if ($responsable instanceof ResponsableRegional
+            && !$responsable->estGlobal()
+            && $evenement->id_region !== $responsable->id_region) {
+            return response()->json(["message" => "Cet événement est hors de votre région."], 403);
+        }
+        return null;
     }
 
     #[
         OA\Patch(
             path: "/api/admin/evenements/{id}/valider",
             tags: ["Evenements"],
-            summary: "Valider un événement (admin)",
+            summary: "Valider un événement (admin ou responsable régional de sa zone)",
             security: [["bearerAuth" => []]],
             parameters: [
                 new OA\Parameter(
@@ -377,11 +392,14 @@ class EvenementController extends Controller
             ],
             responses: [
                 new OA\Response(response: 200, description: "Événement validé"),
+                new OA\Response(response: 403, description: "Événement hors de la région du responsable"),
             ],
         ),
     ]
-    public function valider(Evenement $evenement)
+    public function valider(Request $request, Evenement $evenement)
     {
+        if ($refus = $this->refuserSiHorsPerimetre($request, $evenement)) return $refus;
+
         $evenement->update(["status" => "valide"]);
 
         return response()->json([
@@ -394,7 +412,7 @@ class EvenementController extends Controller
         OA\Patch(
             path: "/api/admin/evenements/{id}/rejeter",
             tags: ["Evenements"],
-            summary: "Rejeter un événement (admin)",
+            summary: "Rejeter un événement (admin ou responsable régional de sa zone)",
             security: [["bearerAuth" => []]],
             parameters: [
                 new OA\Parameter(
@@ -406,11 +424,14 @@ class EvenementController extends Controller
             ],
             responses: [
                 new OA\Response(response: 200, description: "Événement rejeté"),
+                new OA\Response(response: 403, description: "Événement hors de la région du responsable"),
             ],
         ),
     ]
-    public function rejeter(Evenement $evenement)
+    public function rejeter(Request $request, Evenement $evenement)
     {
+        if ($refus = $this->refuserSiHorsPerimetre($request, $evenement)) return $refus;
+
         $evenement->update(["status" => "rejete"]);
 
         return response()->json([

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Prestataire;
+use App\Models\ResponsableRegional;
 use App\Models\Site;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
@@ -23,7 +24,7 @@ class SiteController extends Controller
     public function mine(Request $request)
     {
         return response()->json(
-            $request->user()->sites()->with(["categorie", "galeries", "prix"])->latest()->paginate(15)
+            $request->user()->sites()->with(["categorie", "galeries", "prix", "region"])->latest()->paginate(15)
         );
     }
 
@@ -46,7 +47,7 @@ class SiteController extends Controller
                 new OA\Parameter(
                     name: "status",
                     in: "query",
-                    schema: new OA\Schema(type: "boolean"),
+                    schema: new OA\Schema(type: "string", enum: ["en_attente", "valide", "rejete", "suspendu"]),
                 ),
                 new OA\Parameter(
                     name: "lat",
@@ -198,25 +199,26 @@ class SiteController extends Controller
             "description" => "nullable|string",
             "ouverture" => "nullable|date_format:H:i",
             "fermeture" => "nullable|date_format:H:i",
-            "status" => "nullable|boolean",
+            "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_cat_site" => "required|exists:cat_site,id",
+            "id_region" => "nullable|exists:region,id",
         ]);
 
         // id_admin OU id_prestataire selon le guard connecté — jamais les deux,
         // jamais fourni par le client (déduit du token).
         if ($request->user() instanceof Prestataire) {
             $validated["id_prestataire"] = $request->user()->id;
-            // Un prestataire ne décide jamais lui-même que son site est actif :
-            // inactif à la création, quoi que le client envoie (même logique
-            // que le statut "en_attente" forcé sur Evenement::store).
-            $validated["status"] = false;
+            // Un prestataire ne décide jamais lui-même que son site est validé :
+            // en_attente à la création, quoi que le client envoie (même logique
+            // que pour Evenement::store).
+            $validated["status"] = "en_attente";
         } else {
             $validated["id_admin"] = $request->user()->id;
         }
 
         $site = Site::create($validated);
 
-        return response()->json($site->load(["categorie", "admin", "prestataire"]), 201);
+        return response()->json($site->load(["categorie", "admin", "prestataire", "region"]), 201);
     }
 
     #[
@@ -314,19 +316,81 @@ class SiteController extends Controller
             "description" => "nullable|string",
             "ouverture" => "nullable|date_format:H:i",
             "fermeture" => "nullable|date_format:H:i",
-            "status" => "nullable|boolean",
+            "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_cat_site" => "sometimes|exists:cat_site,id",
+            "id_region" => "nullable|exists:region,id",
         ]);
 
-        // Même règle qu'à la création : un prestataire ne s'auto-active jamais
-        // lui-même (cf. EvenementController::update, même logique).
+        // Même règle qu'à la création : un prestataire ne s'auto-valide jamais
+        // lui-même (cf. EvenementController::update, même logique) — seuls
+        // valider()/rejeter() (admin/responsable) changent le statut.
         if ($estPrestataire) {
             unset($validated["status"]);
         }
 
         $site->update($validated);
 
-        return response()->json($site->load(["categorie", "admin", "prestataire"]));
+        return response()->json($site->load(["categorie", "admin", "prestataire", "region"]));
+    }
+
+    /** 403 si un ResponsableRegional non global tente de valider hors de sa région ; sinon null. */
+    private function refuserSiHorsPerimetre(Request $request, Site $site)
+    {
+        $responsable = $request->user();
+        if ($responsable instanceof ResponsableRegional
+            && !$responsable->estGlobal()
+            && $site->id_region !== $responsable->id_region) {
+            return response()->json(["message" => "Ce site est hors de votre région."], 403);
+        }
+        return null;
+    }
+
+    #[
+        OA\Patch(
+            path: "/api/admin/sites/{id}/valider",
+            tags: ["Sites"],
+            summary: "Valider un site (admin ou responsable régional de sa zone)",
+            security: [["bearerAuth" => []]],
+            parameters: [
+                new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer")),
+            ],
+            responses: [
+                new OA\Response(response: 200, description: "Site validé"),
+                new OA\Response(response: 403, description: "Site hors de la région du responsable"),
+            ],
+        ),
+    ]
+    public function valider(Request $request, Site $site)
+    {
+        if ($refus = $this->refuserSiHorsPerimetre($request, $site)) return $refus;
+
+        $site->update(["status" => "valide"]);
+
+        return response()->json(["message" => "Site validé", "site" => $site]);
+    }
+
+    #[
+        OA\Patch(
+            path: "/api/admin/sites/{id}/rejeter",
+            tags: ["Sites"],
+            summary: "Rejeter un site (admin ou responsable régional de sa zone)",
+            security: [["bearerAuth" => []]],
+            parameters: [
+                new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer")),
+            ],
+            responses: [
+                new OA\Response(response: 200, description: "Site rejeté"),
+                new OA\Response(response: 403, description: "Site hors de la région du responsable"),
+            ],
+        ),
+    ]
+    public function rejeter(Request $request, Site $site)
+    {
+        if ($refus = $this->refuserSiHorsPerimetre($request, $site)) return $refus;
+
+        $site->update(["status" => "rejete"]);
+
+        return response()->json(["message" => "Site rejeté", "site" => $site]);
     }
 
     #[

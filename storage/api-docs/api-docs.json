@@ -263,6 +263,45 @@
                 }
             }
         },
+        "/api/responsable/login": {
+            "post": {
+                "tags": [
+                    "Responsables régionaux"
+                ],
+                "summary": "Connexion responsable régional",
+                "operationId": "882db00a0e82039bd5d60ba33f65c80c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tel",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "tel": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie"
+                    },
+                    "422": {
+                        "description": "Identifiants incorrects ou compte désactivé"
+                    }
+                }
+            }
+        },
         "/api/avis": {
             "get": {
                 "tags": [
@@ -1508,7 +1547,7 @@
                 "tags": [
                     "Evenements"
                 ],
-                "summary": "Valider un événement (admin)",
+                "summary": "Valider un événement (admin ou responsable régional de sa zone)",
                 "operationId": "b6b5ac5674956aa2b212d08adced2ce0",
                 "parameters": [
                     {
@@ -1523,6 +1562,9 @@
                 "responses": {
                     "200": {
                         "description": "Événement validé"
+                    },
+                    "403": {
+                        "description": "Événement hors de la région du responsable"
                     }
                 },
                 "security": [
@@ -1537,7 +1579,7 @@
                 "tags": [
                     "Evenements"
                 ],
-                "summary": "Rejeter un événement (admin)",
+                "summary": "Rejeter un événement (admin ou responsable régional de sa zone)",
                 "operationId": "85182d14a933adcf671d1109bf7dc95e",
                 "parameters": [
                     {
@@ -1552,6 +1594,9 @@
                 "responses": {
                     "200": {
                         "description": "Événement rejeté"
+                    },
+                    "403": {
+                        "description": "Événement hors de la région du responsable"
                     }
                 },
                 "security": [
@@ -2332,6 +2377,20 @@
                 ]
             }
         },
+        "/api/regions": {
+            "get": {
+                "tags": [
+                    "Régions"
+                ],
+                "summary": "Lister les régions (départements du Bénin)",
+                "operationId": "2ea4e3f793fcf34f100e4d8b03ede681",
+                "responses": {
+                    "200": {
+                        "description": "Liste des régions"
+                    }
+                }
+            }
+        },
         "/api/reservations": {
             "post": {
                 "tags": [
@@ -2394,6 +2453,178 @@
                 ]
             }
         },
+        "/api/admin/responsables": {
+            "get": {
+                "tags": [
+                    "Responsables régionaux"
+                ],
+                "summary": "Lister les responsables régionaux (admin)",
+                "operationId": "fa03777d594364ce48582b4fb3773500",
+                "responses": {
+                    "200": {
+                        "description": "Liste des responsables"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Responsables régionaux"
+                ],
+                "summary": "Créer un responsable régional (admin) — pas d'auto-inscription, poste officiel",
+                "operationId": "df8c8fd8dd76d84c9024270808e78b11",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "prenom",
+                                    "tel",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string"
+                                    },
+                                    "prenom": {
+                                        "type": "string"
+                                    },
+                                    "tel": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "id_region": {
+                                        "description": "Laisser vide pour un responsable global (valide dans toutes les régions)",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Responsable créé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/responsables/{id}": {
+            "get": {
+                "tags": [
+                    "Responsables régionaux"
+                ],
+                "summary": "Afficher un responsable régional (admin)",
+                "operationId": "eb46dedf73fbafdb5726476f60eee001",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails du responsable"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Responsables régionaux"
+                ],
+                "summary": "Mettre à jour un responsable régional (admin)",
+                "operationId": "2c1cfb7db3c9c915d87f35309a692e36",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Responsable mis à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Responsables régionaux"
+                ],
+                "summary": "Supprimer un responsable régional (admin)",
+                "operationId": "c89e19df5a2d5e41e5b36588f3b3aa7e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Responsable supprimé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/responsable/a-valider": {
+            "get": {
+                "tags": [
+                    "Responsables régionaux"
+                ],
+                "summary": "Lister les sites/événements en attente dans mon périmètre (ma région, ou toutes si responsable global)",
+                "operationId": "055006b7d0652d1730aff40e88011940",
+                "responses": {
+                    "200": {
+                        "description": "Sites et événements en attente"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/prestataire/sites": {
             "get": {
                 "tags": [
@@ -2439,7 +2670,13 @@
                         "name": "status",
                         "in": "query",
                         "schema": {
-                            "type": "boolean"
+                            "type": "string",
+                            "enum": [
+                                "en_attente",
+                                "valide",
+                                "rejete",
+                                "suspendu"
+                            ]
                         }
                     },
                     {
@@ -2668,6 +2905,70 @@
                 "responses": {
                     "200": {
                         "description": "Site supprimé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/sites/{id}/valider": {
+            "patch": {
+                "tags": [
+                    "Sites"
+                ],
+                "summary": "Valider un site (admin ou responsable régional de sa zone)",
+                "operationId": "6fe12e9a210a70e9b04e26905c856920",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Site validé"
+                    },
+                    "403": {
+                        "description": "Site hors de la région du responsable"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/sites/{id}/rejeter": {
+            "patch": {
+                "tags": [
+                    "Sites"
+                ],
+                "summary": "Rejeter un site (admin ou responsable régional de sa zone)",
+                "operationId": "54fb65c6589ee7ad92b0350b6f8c1561",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Site rejeté"
+                    },
+                    "403": {
+                        "description": "Site hors de la région du responsable"
                     }
                 },
                 "security": [
@@ -3129,6 +3430,10 @@
             "description": "Prestataires"
         },
         {
+            "name": "Responsables régionaux",
+            "description": "Responsables régionaux"
+        },
+        {
             "name": "Categories Evenements",
             "description": "Categories Evenements"
         },
@@ -3155,6 +3460,10 @@
         {
             "name": "Paiements",
             "description": "Paiements"
+        },
+        {
+            "name": "Régions",
+            "description": "Régions"
         },
         {
             "name": "Réservations",

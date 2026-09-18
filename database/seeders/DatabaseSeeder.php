@@ -30,6 +30,14 @@ class DatabaseSeeder extends Seeder
             \App\Models\CatEvenmt::firstOrCreate(['libelle' => $libelle]);
         }
 
-        $this->command->info('✅ Admin + catégories créés.');
+        // ─── Régions (départements du Bénin) ────────────────────
+        foreach ([
+            'Alibori', 'Atacora', 'Atlantique', 'Borgou', 'Collines', 'Couffo',
+            'Donga', 'Littoral', 'Mono', 'Ouémé', 'Plateau', 'Zou',
+        ] as $nom) {
+            \App\Models\Region::firstOrCreate(['nom' => $nom]);
+        }
+
+        $this->command->info('✅ Admin + catégories + régions créés.');
     }
 }
