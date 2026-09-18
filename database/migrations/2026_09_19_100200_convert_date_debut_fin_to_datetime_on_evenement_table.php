@@ -22,6 +22,9 @@ return new class extends Migration
 
     public function down(): void
     {
+        // ATTENTION : cette conversion DATETIME -> DATE tronque silencieusement
+        // l'heure de toutes les lignes existantes (perte de données, inhérente
+        // au rollback de cette conversion de type).
         DB::statement('ALTER TABLE evenement MODIFY date_debut DATE NOT NULL');
         DB::statement('ALTER TABLE evenement MODIFY date_fin DATE NOT NULL');
     }

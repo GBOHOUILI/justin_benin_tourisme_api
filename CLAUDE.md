@@ -16,7 +16,7 @@ docker-compose exec app php artisan <cmd>
 docker-compose exec app composer <cmd>
 ```
 
-Container entrypoint auto-runs on every start: `migrate --force`, `storage:link`, `config:cache`, `route:cache`, `view:cache` (see `Dockerfile` CMD). Restart the `app` container after route/controller/config changes to pick them up, or run the equivalent `artisan` commands manually inside the container during active development.
+Container entrypoint auto-runs on every start: `config:clear`, `migrate --force`, `storage:link`, `route:cache`, `view:cache` (see `Dockerfile` CMD) — deliberately **no** `config:cache` (see the warning above the CMD line in `Dockerfile`: caching config makes `env()` stop being re-read at runtime, which silently breaks PHPUnit's DB env overrides). Restart the `app` container after route/controller/config changes to pick them up, or run the equivalent `artisan` commands manually inside the container during active development.
 
 Common artisan commands (run inside the container):
 ```bash
@@ -27,7 +27,7 @@ php artisan test --filter=TestName      # run a single test
 php artisan l5-swagger:generate         # regenerate OpenAPI docs from PHP attributes
 ```
 
-Test suite is effectively empty (`tests/Feature/ExampleTest.php`, `tests/Unit/ExampleTest.php` are the default Laravel stubs) — there is no real coverage to rely on yet. Tests run against in-memory SQLite (`phpunit.xml`), not MySQL.
+There are 5 Feature test files (~40 tests as of this branch) covering Auth, Reservation ownership, Avis ownership, User ownership, and the "contenu enrichi" fields (round-trips + HTTP validation). Not yet covered: Site/Hotel/Restaurant/Transport workflow-validation and Prestataire/Responsable ownership paths. Tests run against a dedicated MySQL database `benin_tourisme_test` (see `phpunit.xml`), separate from the dev database `benin_tourisme` — several migrations use raw MySQL-specific SQL incompatible with SQLite.
 
 ## API documentation (Swagger)
 
