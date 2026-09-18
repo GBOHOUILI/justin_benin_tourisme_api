@@ -95,7 +95,7 @@ class EvenementController extends Controller
     ]
     public function index(Request $request)
     {
-        $query = Evenement::with(["categorie", "galeries", "prix"]);
+        $query = Evenement::with(["categorie", "galeries", "prix", "region", "prestataire"]);
 
         if ($request->filled("libelle")) {
             $query->where("libelle", "like", "%" . $request->libelle . "%");
@@ -265,6 +265,8 @@ class EvenementController extends Controller
             $evenement->load([
                 "categorie",
                 "admin",
+                "prestataire",
+                "region",
                 "galeries",
                 "prix",
                 "sites",
