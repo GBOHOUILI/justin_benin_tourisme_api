@@ -252,6 +252,21 @@ class EvenementController extends Controller
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_cat_evenmt" => "required|exists:cat_evenmt,id",
             "id_region" => "nullable|exists:region,id",
+            "points_forts" => "nullable|array",
+            "points_forts.*" => "string|max:200",
+            "inclus" => "nullable|array",
+            "inclus.*" => "string|max:200",
+            "non_inclus" => "nullable|array",
+            "non_inclus.*" => "string|max:200",
+            "infos_pratiques" => "nullable|string",
+            "recommandations" => "nullable|string",
+            "itineraire" => "nullable|array",
+            "itineraire.*.titre" => "required_with:itineraire|string|max:150",
+            "itineraire.*.description" => "required_with:itineraire|string",
+            "groupe_min" => "nullable|integer|min:1",
+            "groupe_max" => "nullable|integer|min:1|gte:groupe_min",
+            "langue" => "nullable|string|max:100",
+            "difficulte" => "nullable|in:facile,moderee,difficile",
         ]);
 
         // id_admin OU id_prestataire OU id_responsable selon le guard connecté -
@@ -414,6 +429,21 @@ class EvenementController extends Controller
             "status" => "nullable|string|in:en_attente,valide,rejete,suspendu",
             "id_cat_evenmt" => "sometimes|exists:cat_evenmt,id",
             "id_region" => "nullable|exists:region,id",
+            "points_forts" => "nullable|array",
+            "points_forts.*" => "string|max:200",
+            "inclus" => "nullable|array",
+            "inclus.*" => "string|max:200",
+            "non_inclus" => "nullable|array",
+            "non_inclus.*" => "string|max:200",
+            "infos_pratiques" => "nullable|string",
+            "recommandations" => "nullable|string",
+            "itineraire" => "nullable|array",
+            "itineraire.*.titre" => "required_with:itineraire|string|max:150",
+            "itineraire.*.description" => "required_with:itineraire|string",
+            "groupe_min" => "nullable|integer|min:1",
+            "groupe_max" => "nullable|integer|min:1|gte:groupe_min",
+            "langue" => "nullable|string|max:100",
+            "difficulte" => "nullable|in:facile,moderee,difficile",
         ]);
 
         // Ni un prestataire ni un responsable ne peuvent se revalider après une
