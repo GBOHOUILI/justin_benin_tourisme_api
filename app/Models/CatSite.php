@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CatSite extends Model
 {
+    use HasFactory;
+
     protected $table = 'cat_site';
 
     protected $fillable = ['libelle'];
