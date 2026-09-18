@@ -350,5 +350,33 @@ Trou de sécurité laissé ouvert dans la section précédente, résolu avant d'
 ### Reste à faire (étape 3, non commencée)
 
 - [ ] `Plan`/`Abonnement`/`FactureAbonnement`, blocage de création de fiche si abonnement expiré
-- [ ] Hôtel/Chambre, Restaurant/Plat, Transport/Trajet — entités du document jamais commencées, `type_prestataire` les anticipe déjà (enum `hotel`/`restaurant`/`transport`) mais seuls Site/Evenement existent comme "Service" concret. Décision actée : tables indépendantes, pas de `Service` générique (cf. en-tête de section)
 - [ ] Favoris, notifications (push/SMS/email), blog, marketing — modules du document jamais commencés, hors du périmètre prestataire
+
+## Module Hôtel/Restaurant/Transport (2026-09-18)
+
+Mirroring exact du pattern Site/Evenement — mêmes 4 tiers (public/admin/prestataire/responsable), même règle de statut forcé, même scoping régional, mêmes contrôles anti-auto-validation. Tables indépendantes (pas de `Service` générique), conforme à la décision actée en tête de section Responsable régional. Sous-entités propres à chaque type : Chambre (Hôtel), Plat (Restaurant), Trajet (Transport, avec Ville comme référentiel ouvert géré par l'admin — contrairement à Region, fixe/seedée).
+
+### Backend
+
+- [x] Migrations `hotel`/`restaurant`/`transport` (même forme que `site` dans son état final : `id_admin`/`id_prestataire`/`id_responsable`/`id_region` nullables, `status` enum 4 états défaut `en_attente`) + `chambre`/`plat`/`trajet` (FK cascadeOnDelete vers leur parent) + `galerie_hotel`/`galerie_restaurant`/`galerie_transport` (mirroir `galerie_site`) + `ville` (référentiel ouvert, `id_region` nullable, nécessaire pour un `Trajet` ville-à-ville — contrairement à `Region`, pas de liste fixe)
+- [x] Modèles + relations `hotels()`/`restaurants()`/`transports()` ajoutées à `Prestataire`/`ResponsableRegional`/`Region`
+- [x] `HotelController`/`RestaurantController`/`TransportController` : mirroir exact de `SiteController` (`requeteFiltree()` partagée, `index()` public forcé `status=valide`, `adminIndex()` sans restriction, `store()` à 3 branches actor, `show()` 404-sauf-admin, `update()` avec ownership + strip `status`/`id_region` pour Prestataire/Responsable, `refuserSiHorsPerimetre()`, `valider()`/`rejeter()`, `destroy()` avec ownership) — pas de catégorie (le document n'en prévoit pas pour ces 3 entités, contrairement à Site/Evenement)
+- [x] `ChambreController`/`PlatController`/`TrajetController` : mirroir `PrixController` (`doitVerifierOwnership`/`appartientAuCreateur`). `TrajetController` valide `id_ville_arrivee` `different:id_ville_depart`
+- [x] `GalerieHotelController`/`GalerieRestaurantController`/`GalerieTransportController` : mirroir exact `GalerieSiteController`
+- [x] `VilleController` : `index()` public, `store`/`update`/`destroy` admin-only
+- [x] `ResponsableRegionalController::aValider()` étendu — inclut désormais `hotels`/`restaurants`/`transports` dans la file de validation régionale, même filtre `whereNull('id_responsable')` que Site/Evenement
+- [x] Seeder : 14 villes rattachées à leur région (Cotonou→Littoral, Porto-Novo→Ouémé, etc.)
+- [x] Routes ajoutées sur les 4 tiers pour les 3 entités + leurs sous-entités + galeries + villes (`routes/api.php`, ~180 lignes ajoutées)
+- [x] Vérifié en réel via de vraies requêtes HTTP (mêmes scénarios qu'à chaque module précédent) : création admin (status par défaut `en_attente` tant que non explicite — comportement identique à Site, pas un bug) → validation → visible publiquement ; création par 2 prestataires distincts → statut `en_attente` forcé → isolation ownership confirmée (403 croisé) → chambre/plat ajoutés par leur propriétaire, refusés au tiers (403) ; responsable régional créé sur une région → file `a-valider` scope correctement (hôtel de sa région visible, pas les autres) → auto-validation de son propre transport → 403 → validation d'une fiche prestataire de sa région → 200 ; trajet créé entre deux villes seedées ; galerie hôtel (upload multipart) → visible sur le `show()` public. Toutes les données de test supprimées
+
+### Frontend
+
+- [x] `services.js` : `hotelsApi`/`restaurantsApi`/`transportsApi`/`villesApi`/`chambresApi`/`platsApi`/`trajetsApi` (public + adminList + CRUD admin) + extensions `galeriesApi`/`prestatairesApi`/`responsablesApi` (mêmes méthodes que pour sites/évènements, déclinées pour les 3 nouvelles entités et leurs sous-entités/galeries)
+- [x] `HotelCard`/`RestaurantCard`/`TransportCard` ajoutées à `components/ui/index.jsx`, mirroir `SiteCard`
+- [x] Public : `Hotels`/`HotelDetail`, `Restaurants`/`RestaurantDetail`, `Transports`/`TransportDetail` — recherche + géoloc comme `Sites.jsx` mais sans filtre catégorie/prix (n'existent pas pour ces entités) ; page détail affiche chambres/plats/trajets en sidebar avec leur prix, **pas de bouton réservation** (le backend ne supporte la réservation que pour Site/Evenement — pas de fonctionnalité inventée côté frontend)
+- [x] Admin : `AdminHotels`/`AdminRestaurants`/`AdminTransports` — mirroir `AdminSites.jsx`, modale sous-entité (Chambres/Plats/Trajets, ce dernier avec select Ville départ/arrivée) à la place de la modale Tarifs, modale Galerie identique
+- [x] Prestataire et Responsable : mêmes pages en variante "mes fiches" (mirroir `PrestataireSites.jsx`/`ResponsableSites.jsx`), région en lecture seule pour un responsable scopé
+- [x] `ResponsableAValider.jsx` généralisé (tableau `SECTIONS` au lieu de JSX dupliqué par section) pour inclure Hôtels/Restaurants/Transports sans tripler le code
+- [x] Nav : sidebars Admin/Prestataire/Responsable + navbar publique (`Hôtels`/`Restaurants`/`Transports`) + routeur — le lien `/hotels` déjà présent dans le CTA de `Home.jsx` ("Hôtels & Restaurants") pointait dans le vide avant cette session, résolu par la nouvelle route
+- [x] Bug trouvé et corrigé pendant la vérification Playwright : `<Stars>` (rendu `<div>`) imbriqué dans un `<p>`/`<span>` dans `HotelCard`/`HotelDetail` → warning React `validateDOMNesting` ; corrigé en retirant le wrapper `p`/`span` superflu
+- [x] Vérifié en réel (Playwright, 0 erreur console à chaque étape) sur les 4 portails : liste publique → détail avec chambres affichées → connexion admin → sidebar + table + modale Chambres fonctionnelles → connexion prestataire → création d'hôtel (statut "En Attente" affiché) → connexion responsable → file "À valider" affiche le restaurant en attente de sa région → validation → disparaît de la file. Toutes les données de test supprimées
