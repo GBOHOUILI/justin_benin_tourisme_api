@@ -111,4 +111,19 @@ class AuthenticationTest extends TestCase
 
         $response->assertUnprocessable();
     }
+
+    /**
+     * Régression : sans header Accept: application/json (n'importe quel
+     * client hors browser/axios - Swagger "Try it out", Postman, curl brut),
+     * l'app n'a pas de route web nommée "login" - le framework tentait
+     * quand même route('login') pour rediriger un invité, ce qui plantait
+     * en 500 (RouteNotFoundException) au lieu d'un 401 propre. getJson()
+     * masquerait ce bug (il force Accept: application/json), d'où get() ici.
+     */
+    public function test_unauthenticated_request_without_accept_header_returns_401_not_500(): void
+    {
+        $response = $this->get('/api/admin/me');
+
+        $response->assertStatus(401);
+    }
 }
