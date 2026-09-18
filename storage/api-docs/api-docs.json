@@ -2256,6 +2256,279 @@
                 ]
             }
         },
+        "/api/prestataire/hotels": {
+            "get": {
+                "tags": [
+                    "Prestataires"
+                ],
+                "summary": "Lister mes propres hôtels (prestataire connecté)",
+                "operationId": "d925d66892ad2878521a2f55d70a97e5",
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée de mes hôtels"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hotels": {
+            "get": {
+                "tags": [
+                    "Hôtels"
+                ],
+                "summary": "Liste des hôtels validés",
+                "operationId": "1f059609a9a7cdebad01e8494549cc8d",
+                "parameters": [
+                    {
+                        "name": "libelle",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "radius",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée des hôtels"
+                    }
+                }
+            }
+        },
+        "/api/admin/hotels": {
+            "get": {
+                "tags": [
+                    "Hôtels"
+                ],
+                "summary": "Liste des hôtels, tous statuts confondus (admin)",
+                "operationId": "6c93c1a38931b55cac129e604d429431",
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée de tous les hôtels"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Hôtels"
+                ],
+                "summary": "Créer un hôtel (admin)",
+                "operationId": "216f122d77ae59b634a411ef1a0d0194",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "libelle",
+                                    "adresse",
+                                    "longitude",
+                                    "latitude"
+                                ],
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "adresse": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "nombre_etoiles": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Hôtel créé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hotels/{id}": {
+            "get": {
+                "tags": [
+                    "Hôtels"
+                ],
+                "summary": "Afficher un hôtel",
+                "operationId": "32fa458e73403c0f53352a6162667196",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails de l'hôtel"
+                    }
+                }
+            }
+        },
+        "/api/admin/hotels/{id}": {
+            "put": {
+                "tags": [
+                    "Hôtels"
+                ],
+                "summary": "Mettre à jour un hôtel (admin)",
+                "operationId": "9150f0be5198bf1b7ce12f8025b09477",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Hôtel mis à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Hôtels"
+                ],
+                "summary": "Supprimer un hôtel (admin)",
+                "operationId": "dcb6da0ca9803e1f44efb86068a7098b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Hôtel supprimé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/hotels/{id}/valider": {
+            "patch": {
+                "tags": [
+                    "Hôtels"
+                ],
+                "summary": "Valider un hôtel (admin ou responsable régional de sa zone)",
+                "operationId": "12cf140d5441d0e1232a8adfe610e195",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Hôtel validé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/hotels/{id}/rejeter": {
+            "patch": {
+                "tags": [
+                    "Hôtels"
+                ],
+                "summary": "Rejeter un hôtel (admin ou responsable régional de sa zone)",
+                "operationId": "9d5e843b0a6994afdfe8390759221182",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Hôtel rejeté"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/paiements/{id}/verifier": {
             "patch": {
                 "tags": [
@@ -2634,6 +2907,294 @@
                 "responses": {
                     "200": {
                         "description": "Sites et événements en attente"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/prestataire/restaurants": {
+            "get": {
+                "tags": [
+                    "Prestataires"
+                ],
+                "summary": "Lister mes propres restaurants (prestataire connecté)",
+                "operationId": "e261b4510a92506bff9535168cfa0368",
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée de mes restaurants"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/restaurants": {
+            "get": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Liste des restaurants validés",
+                "operationId": "0ef65917394f8eb77311d1d085ff31e4",
+                "parameters": [
+                    {
+                        "name": "libelle",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type_cuisine",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "radius",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée des restaurants"
+                    }
+                }
+            }
+        },
+        "/api/admin/restaurants": {
+            "get": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Liste des restaurants, tous statuts confondus (admin)",
+                "operationId": "8e71e80efc3dfdee23324486559bdbd4",
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée de tous les restaurants"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Créer un restaurant (admin)",
+                "operationId": "8204923428664245adc700b58b7ee51a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "libelle",
+                                    "adresse",
+                                    "longitude",
+                                    "latitude"
+                                ],
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "adresse": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "type_cuisine": {
+                                        "type": "string"
+                                    },
+                                    "gamme_prix": {
+                                        "type": "string",
+                                        "enum": [
+                                            "economique",
+                                            "moyen",
+                                            "eleve"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Restaurant créé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/restaurants/{id}": {
+            "get": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Afficher un restaurant",
+                "operationId": "26e68feb8cf848945261ce292866ec2c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails du restaurant"
+                    }
+                }
+            }
+        },
+        "/api/admin/restaurants/{id}": {
+            "put": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Mettre à jour un restaurant (admin)",
+                "operationId": "fcc77abe1aa620fd012e59b030df0a6f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Restaurant mis à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Supprimer un restaurant (admin)",
+                "operationId": "37ccfd67f299636de1af01f1565e16e3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Restaurant supprimé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/restaurants/{id}/valider": {
+            "patch": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Valider un restaurant (admin ou responsable régional de sa zone)",
+                "operationId": "5c49103339fce1ede53a16f7d947bfeb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Restaurant validé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/restaurants/{id}/rejeter": {
+            "patch": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Rejeter un restaurant (admin ou responsable régional de sa zone)",
+                "operationId": "d9194d81dc8e8835984dc9dd5daf3a35",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Restaurant rejeté"
                     }
                 },
                 "security": [
@@ -3254,6 +3815,289 @@
                 }
             }
         },
+        "/api/prestataire/transports": {
+            "get": {
+                "tags": [
+                    "Prestataires"
+                ],
+                "summary": "Lister mes propres transports (prestataire connecté)",
+                "operationId": "fc3bdd1845b40fe883e367b1a606202f",
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée de mes transports"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/transports": {
+            "get": {
+                "tags": [
+                    "Transports"
+                ],
+                "summary": "Liste des transports validés",
+                "operationId": "9504b729f8ee57d88798653603cadfbe",
+                "parameters": [
+                    {
+                        "name": "libelle",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type_transport",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "radius",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée des transports"
+                    }
+                }
+            }
+        },
+        "/api/admin/transports": {
+            "get": {
+                "tags": [
+                    "Transports"
+                ],
+                "summary": "Liste des transports, tous statuts confondus (admin)",
+                "operationId": "677d4f729de0ceaafc5e2210146e126a",
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée de tous les transports"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Transports"
+                ],
+                "summary": "Créer un transport (admin)",
+                "operationId": "918bfdbb437f92fae33e3741354f2f53",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "libelle",
+                                    "adresse",
+                                    "longitude",
+                                    "latitude"
+                                ],
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "adresse": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "type_transport": {
+                                        "type": "string"
+                                    },
+                                    "capacite": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Transport créé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/transports/{id}": {
+            "get": {
+                "tags": [
+                    "Transports"
+                ],
+                "summary": "Afficher un transport",
+                "operationId": "2a1e34d89bded777446fc1c08ccea6fe",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails du transport"
+                    }
+                }
+            }
+        },
+        "/api/admin/transports/{id}": {
+            "put": {
+                "tags": [
+                    "Transports"
+                ],
+                "summary": "Mettre à jour un transport (admin)",
+                "operationId": "0add433a4b2576eadc0cf9664ff26317",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transport mis à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Transports"
+                ],
+                "summary": "Supprimer un transport (admin)",
+                "operationId": "90cf9a67b297d6505e6470437604965b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transport supprimé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/transports/{id}/valider": {
+            "patch": {
+                "tags": [
+                    "Transports"
+                ],
+                "summary": "Valider un transport (admin ou responsable régional de sa zone)",
+                "operationId": "f4a4f1397a84f594ea0ee6c6ea55f3bf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transport validé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/transports/{id}/rejeter": {
+            "patch": {
+                "tags": [
+                    "Transports"
+                ],
+                "summary": "Rejeter un transport (admin ou responsable régional de sa zone)",
+                "operationId": "85d78bb3d8ad8eefb65b617f040932a8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transport rejeté"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/utilisations": {
             "get": {
                 "tags": [
@@ -3416,6 +4260,75 @@
                     }
                 }
             }
+        },
+        "/api/villes": {
+            "get": {
+                "tags": [
+                    "Villes"
+                ],
+                "summary": "Lister les villes",
+                "operationId": "d9ae318b356d4b342e7c93f3b8d8db8f",
+                "responses": {
+                    "200": {
+                        "description": "Liste des villes"
+                    }
+                }
+            }
+        },
+        "/api/admin/villes": {
+            "post": {
+                "tags": [
+                    "Villes"
+                ],
+                "summary": "Créer une ville (admin)",
+                "operationId": "b0bee787d59477cc8d13e4269da40a42",
+                "responses": {
+                    "201": {
+                        "description": "Ville créée"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/villes/{id}": {
+            "put": {
+                "tags": [
+                    "Villes"
+                ],
+                "summary": "Mettre à jour une ville (admin)",
+                "operationId": "5d18e119d216737da395f120c808d9f5",
+                "responses": {
+                    "200": {
+                        "description": "Ville mise à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Villes"
+                ],
+                "summary": "Supprimer une ville (admin)",
+                "operationId": "bdc2a5818c9be7eeb69bd5cc7e079c07",
+                "responses": {
+                    "200": {
+                        "description": "Ville supprimée"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -3494,6 +4407,10 @@
             "description": "Galeries Evenements"
         },
         {
+            "name": "Hôtels",
+            "description": "Hôtels"
+        },
+        {
             "name": "Paiements",
             "description": "Paiements"
         },
@@ -3504,6 +4421,18 @@
         {
             "name": "Réservations",
             "description": "Réservations"
+        },
+        {
+            "name": "Restaurants",
+            "description": "Restaurants"
+        },
+        {
+            "name": "Transports",
+            "description": "Transports"
+        },
+        {
+            "name": "Villes",
+            "description": "Villes"
         }
     ],
     "security": [

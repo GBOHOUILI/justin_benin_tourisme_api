@@ -40,4 +40,19 @@ class Prestataire extends Authenticatable
     {
         return $this->hasMany(Evenement::class, 'id_prestataire');
     }
+
+    public function hotels()
+    {
+        return $this->hasMany(Hotel::class, 'id_prestataire');
+    }
+
+    public function restaurants()
+    {
+        return $this->hasMany(Restaurant::class, 'id_prestataire');
+    }
+
+    public function transports()
+    {
+        return $this->hasMany(Transport::class, 'id_prestataire');
+    }
 }

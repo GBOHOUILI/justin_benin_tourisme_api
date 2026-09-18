@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Evenement;
+use App\Models\Hotel;
+use App\Models\Restaurant;
 use App\Models\ResponsableRegional;
 use App\Models\Site;
+use App\Models\Transport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use OpenApi\Attributes as OA;
@@ -176,6 +179,30 @@ class ResponsableRegionalController extends Controller
             ->when(!$responsable->estGlobal(), fn ($q) => $q->where('id_region', $responsable->id_region))
             ->get();
 
-        return response()->json(['sites' => $sites, 'evenements' => $evenements]);
+        $hotels = Hotel::with(['region', 'prestataire', 'admin'])
+            ->where('status', 'en_attente')
+            ->whereNull('id_responsable')
+            ->when(!$responsable->estGlobal(), fn ($q) => $q->where('id_region', $responsable->id_region))
+            ->get();
+
+        $restaurants = Restaurant::with(['region', 'prestataire', 'admin'])
+            ->where('status', 'en_attente')
+            ->whereNull('id_responsable')
+            ->when(!$responsable->estGlobal(), fn ($q) => $q->where('id_region', $responsable->id_region))
+            ->get();
+
+        $transports = Transport::with(['region', 'prestataire', 'admin'])
+            ->where('status', 'en_attente')
+            ->whereNull('id_responsable')
+            ->when(!$responsable->estGlobal(), fn ($q) => $q->where('id_region', $responsable->id_region))
+            ->get();
+
+        return response()->json([
+            'sites' => $sites,
+            'evenements' => $evenements,
+            'hotels' => $hotels,
+            'restaurants' => $restaurants,
+            'transports' => $transports,
+        ]);
     }
 }

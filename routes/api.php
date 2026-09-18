@@ -23,6 +23,16 @@ use App\Http\Controllers\EtapeCircuitController;
 use App\Http\Controllers\PrestataireController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\ResponsableRegionalController;
+use App\Http\Controllers\HotelController;
+use App\Http\Controllers\ChambreController;
+use App\Http\Controllers\GalerieHotelController;
+use App\Http\Controllers\RestaurantController;
+use App\Http\Controllers\PlatController;
+use App\Http\Controllers\GalerieRestaurantController;
+use App\Http\Controllers\TransportController;
+use App\Http\Controllers\TrajetController;
+use App\Http\Controllers\GalerieTransportController;
+use App\Http\Controllers\VilleController;
 
 // ══════════════════════════════════════════════════════
 //  ROUTES PUBLIQUES — aucun token requis
@@ -43,6 +53,29 @@ Route::get("/sites/{site}", [SiteController::class, "show"]);
 
 Route::get("/evenements", [EvenementController::class, "index"]);
 Route::get("/evenements/{evenement}", [EvenementController::class, "show"]);
+
+Route::get("/hotels", [HotelController::class, "index"]);
+Route::get("/hotels/{hotel}", [HotelController::class, "show"]);
+Route::get("/restaurants", [RestaurantController::class, "index"]);
+Route::get("/restaurants/{restaurant}", [RestaurantController::class, "show"]);
+Route::get("/transports", [TransportController::class, "index"]);
+Route::get("/transports/{transport}", [TransportController::class, "show"]);
+Route::get("/villes", [VilleController::class, "index"]);
+Route::get("/villes/{ville}", [VilleController::class, "show"]);
+
+Route::get("/chambres", [ChambreController::class, "index"]);
+Route::get("/chambres/{chambre}", [ChambreController::class, "show"]);
+Route::get("/plats", [PlatController::class, "index"]);
+Route::get("/plats/{plat}", [PlatController::class, "show"]);
+Route::get("/trajets", [TrajetController::class, "index"]);
+Route::get("/trajets/{trajet}", [TrajetController::class, "show"]);
+
+Route::get("/galeries/hotels", [GalerieHotelController::class, "index"]);
+Route::get("/galeries/hotels/{galerieHotel}", [GalerieHotelController::class, "show"]);
+Route::get("/galeries/restaurants", [GalerieRestaurantController::class, "index"]);
+Route::get("/galeries/restaurants/{galerieRestaurant}", [GalerieRestaurantController::class, "show"]);
+Route::get("/galeries/transports", [GalerieTransportController::class, "index"]);
+Route::get("/galeries/transports/{galerieTransport}", [GalerieTransportController::class, "show"]);
 
 Route::get("/categories/sites", [CatSiteController::class, "index"]);
 Route::get("/categories/sites/{catSite}", [CatSiteController::class, "show"]);
@@ -189,6 +222,48 @@ Route::middleware(["auth:admin", "admin"])
         // Responsables régionaux (poste officiel — créé par un admin, pas d'auto-inscription)
         Route::apiResource("responsables", ResponsableRegionalController::class);
 
+        // Villes (liste ouverte, gérée par l'admin — contrairement aux régions fixes/seedées)
+        Route::post("/villes", [VilleController::class, "store"]);
+        Route::put("/villes/{ville}", [VilleController::class, "update"]);
+        Route::delete("/villes/{ville}", [VilleController::class, "destroy"]);
+
+        // Hôtels
+        Route::get("/hotels", [HotelController::class, "adminIndex"]);
+        Route::post("/hotels", [HotelController::class, "store"]);
+        Route::put("/hotels/{hotel}", [HotelController::class, "update"]);
+        Route::delete("/hotels/{hotel}", [HotelController::class, "destroy"]);
+        Route::patch("/hotels/{hotel}/valider", [HotelController::class, "valider"]);
+        Route::patch("/hotels/{hotel}/rejeter", [HotelController::class, "rejeter"]);
+
+        // Restaurants
+        Route::get("/restaurants", [RestaurantController::class, "adminIndex"]);
+        Route::post("/restaurants", [RestaurantController::class, "store"]);
+        Route::put("/restaurants/{restaurant}", [RestaurantController::class, "update"]);
+        Route::delete("/restaurants/{restaurant}", [RestaurantController::class, "destroy"]);
+        Route::patch("/restaurants/{restaurant}/valider", [RestaurantController::class, "valider"]);
+        Route::patch("/restaurants/{restaurant}/rejeter", [RestaurantController::class, "rejeter"]);
+
+        // Transports
+        Route::get("/transports", [TransportController::class, "adminIndex"]);
+        Route::post("/transports", [TransportController::class, "store"]);
+        Route::put("/transports/{transport}", [TransportController::class, "update"]);
+        Route::delete("/transports/{transport}", [TransportController::class, "destroy"]);
+        Route::patch("/transports/{transport}/valider", [TransportController::class, "valider"]);
+        Route::patch("/transports/{transport}/rejeter", [TransportController::class, "rejeter"]);
+
+        // Chambres, plats, trajets (sous-entités)
+        Route::post("/chambres", [ChambreController::class, "store"]);
+        Route::put("/chambres/{chambre}", [ChambreController::class, "update"]);
+        Route::delete("/chambres/{chambre}", [ChambreController::class, "destroy"]);
+
+        Route::post("/plats", [PlatController::class, "store"]);
+        Route::put("/plats/{plat}", [PlatController::class, "update"]);
+        Route::delete("/plats/{plat}", [PlatController::class, "destroy"]);
+
+        Route::post("/trajets", [TrajetController::class, "store"]);
+        Route::put("/trajets/{trajet}", [TrajetController::class, "update"]);
+        Route::delete("/trajets/{trajet}", [TrajetController::class, "destroy"]);
+
         // Galeries
         Route::post("/galeries/sites", [GalerieSiteController::class, "store"]);
         Route::put("/galeries/sites/{galerieSite}", [
@@ -212,6 +287,18 @@ Route::middleware(["auth:admin", "admin"])
             GallerieEvnmtController::class,
             "destroy",
         ]);
+
+        Route::post("/galeries/hotels", [GalerieHotelController::class, "store"]);
+        Route::put("/galeries/hotels/{galerieHotel}", [GalerieHotelController::class, "update"]);
+        Route::delete("/galeries/hotels/{galerieHotel}", [GalerieHotelController::class, "destroy"]);
+
+        Route::post("/galeries/restaurants", [GalerieRestaurantController::class, "store"]);
+        Route::put("/galeries/restaurants/{galerieRestaurant}", [GalerieRestaurantController::class, "update"]);
+        Route::delete("/galeries/restaurants/{galerieRestaurant}", [GalerieRestaurantController::class, "destroy"]);
+
+        Route::post("/galeries/transports", [GalerieTransportController::class, "store"]);
+        Route::put("/galeries/transports/{galerieTransport}", [GalerieTransportController::class, "update"]);
+        Route::delete("/galeries/transports/{galerieTransport}", [GalerieTransportController::class, "destroy"]);
 
         // Prix
         Route::post("/prix", [PrixController::class, "store"]);
@@ -267,6 +354,37 @@ Route::middleware(["auth:prestataire", "prestataire"])
         Route::put("/evenements/{evenement}", [EvenementController::class, "update"]);
         Route::delete("/evenements/{evenement}", [EvenementController::class, "destroy"]);
 
+        // Mes hôtels
+        Route::get("/hotels", [HotelController::class, "mine"]);
+        Route::post("/hotels", [HotelController::class, "store"]);
+        Route::put("/hotels/{hotel}", [HotelController::class, "update"]);
+        Route::delete("/hotels/{hotel}", [HotelController::class, "destroy"]);
+
+        // Mes restaurants
+        Route::get("/restaurants", [RestaurantController::class, "mine"]);
+        Route::post("/restaurants", [RestaurantController::class, "store"]);
+        Route::put("/restaurants/{restaurant}", [RestaurantController::class, "update"]);
+        Route::delete("/restaurants/{restaurant}", [RestaurantController::class, "destroy"]);
+
+        // Mes transports
+        Route::get("/transports", [TransportController::class, "mine"]);
+        Route::post("/transports", [TransportController::class, "store"]);
+        Route::put("/transports/{transport}", [TransportController::class, "update"]);
+        Route::delete("/transports/{transport}", [TransportController::class, "destroy"]);
+
+        // Chambres, plats, trajets de mes fiches (ownership vérifié dans les controllers)
+        Route::post("/chambres", [ChambreController::class, "store"]);
+        Route::put("/chambres/{chambre}", [ChambreController::class, "update"]);
+        Route::delete("/chambres/{chambre}", [ChambreController::class, "destroy"]);
+
+        Route::post("/plats", [PlatController::class, "store"]);
+        Route::put("/plats/{plat}", [PlatController::class, "update"]);
+        Route::delete("/plats/{plat}", [PlatController::class, "destroy"]);
+
+        Route::post("/trajets", [TrajetController::class, "store"]);
+        Route::put("/trajets/{trajet}", [TrajetController::class, "update"]);
+        Route::delete("/trajets/{trajet}", [TrajetController::class, "destroy"]);
+
         // Tarifs et galeries de mes fiches (ownership vérifié dans les controllers)
         Route::post("/prix", [PrixController::class, "store"]);
         Route::put("/prix/{prix}", [PrixController::class, "update"]);
@@ -279,6 +397,18 @@ Route::middleware(["auth:prestataire", "prestataire"])
         Route::post("/galeries/evenements", [GallerieEvnmtController::class, "store"]);
         Route::put("/galeries/evenements/{gallerieEvnmt}", [GallerieEvnmtController::class, "update"]);
         Route::delete("/galeries/evenements/{gallerieEvnmt}", [GallerieEvnmtController::class, "destroy"]);
+
+        Route::post("/galeries/hotels", [GalerieHotelController::class, "store"]);
+        Route::put("/galeries/hotels/{galerieHotel}", [GalerieHotelController::class, "update"]);
+        Route::delete("/galeries/hotels/{galerieHotel}", [GalerieHotelController::class, "destroy"]);
+
+        Route::post("/galeries/restaurants", [GalerieRestaurantController::class, "store"]);
+        Route::put("/galeries/restaurants/{galerieRestaurant}", [GalerieRestaurantController::class, "update"]);
+        Route::delete("/galeries/restaurants/{galerieRestaurant}", [GalerieRestaurantController::class, "destroy"]);
+
+        Route::post("/galeries/transports", [GalerieTransportController::class, "store"]);
+        Route::put("/galeries/transports/{galerieTransport}", [GalerieTransportController::class, "update"]);
+        Route::delete("/galeries/transports/{galerieTransport}", [GalerieTransportController::class, "destroy"]);
     });
 
 // ══════════════════════════════════════════════════════
@@ -301,6 +431,12 @@ Route::middleware(["auth:responsable", "responsable"])
         Route::patch("/sites/{site}/rejeter", [SiteController::class, "rejeter"]);
         Route::patch("/evenements/{evenement}/valider", [EvenementController::class, "valider"]);
         Route::patch("/evenements/{evenement}/rejeter", [EvenementController::class, "rejeter"]);
+        Route::patch("/hotels/{hotel}/valider", [HotelController::class, "valider"]);
+        Route::patch("/hotels/{hotel}/rejeter", [HotelController::class, "rejeter"]);
+        Route::patch("/restaurants/{restaurant}/valider", [RestaurantController::class, "valider"]);
+        Route::patch("/restaurants/{restaurant}/rejeter", [RestaurantController::class, "rejeter"]);
+        Route::patch("/transports/{transport}/valider", [TransportController::class, "valider"]);
+        Route::patch("/transports/{transport}/rejeter", [TransportController::class, "rejeter"]);
 
         // Mes sites
         Route::get("/sites", [SiteController::class, "mine"]);
@@ -314,6 +450,37 @@ Route::middleware(["auth:responsable", "responsable"])
         Route::put("/evenements/{evenement}", [EvenementController::class, "update"]);
         Route::delete("/evenements/{evenement}", [EvenementController::class, "destroy"]);
 
+        // Mes hôtels
+        Route::get("/hotels", [HotelController::class, "mine"]);
+        Route::post("/hotels", [HotelController::class, "store"]);
+        Route::put("/hotels/{hotel}", [HotelController::class, "update"]);
+        Route::delete("/hotels/{hotel}", [HotelController::class, "destroy"]);
+
+        // Mes restaurants
+        Route::get("/restaurants", [RestaurantController::class, "mine"]);
+        Route::post("/restaurants", [RestaurantController::class, "store"]);
+        Route::put("/restaurants/{restaurant}", [RestaurantController::class, "update"]);
+        Route::delete("/restaurants/{restaurant}", [RestaurantController::class, "destroy"]);
+
+        // Mes transports
+        Route::get("/transports", [TransportController::class, "mine"]);
+        Route::post("/transports", [TransportController::class, "store"]);
+        Route::put("/transports/{transport}", [TransportController::class, "update"]);
+        Route::delete("/transports/{transport}", [TransportController::class, "destroy"]);
+
+        // Chambres, plats, trajets de mes fiches (ownership vérifié dans les controllers)
+        Route::post("/chambres", [ChambreController::class, "store"]);
+        Route::put("/chambres/{chambre}", [ChambreController::class, "update"]);
+        Route::delete("/chambres/{chambre}", [ChambreController::class, "destroy"]);
+
+        Route::post("/plats", [PlatController::class, "store"]);
+        Route::put("/plats/{plat}", [PlatController::class, "update"]);
+        Route::delete("/plats/{plat}", [PlatController::class, "destroy"]);
+
+        Route::post("/trajets", [TrajetController::class, "store"]);
+        Route::put("/trajets/{trajet}", [TrajetController::class, "update"]);
+        Route::delete("/trajets/{trajet}", [TrajetController::class, "destroy"]);
+
         // Tarifs et galeries de mes fiches (ownership vérifié dans les controllers)
         Route::post("/prix", [PrixController::class, "store"]);
         Route::put("/prix/{prix}", [PrixController::class, "update"]);
@@ -326,4 +493,16 @@ Route::middleware(["auth:responsable", "responsable"])
         Route::post("/galeries/evenements", [GallerieEvnmtController::class, "store"]);
         Route::put("/galeries/evenements/{gallerieEvnmt}", [GallerieEvnmtController::class, "update"]);
         Route::delete("/galeries/evenements/{gallerieEvnmt}", [GallerieEvnmtController::class, "destroy"]);
+
+        Route::post("/galeries/hotels", [GalerieHotelController::class, "store"]);
+        Route::put("/galeries/hotels/{galerieHotel}", [GalerieHotelController::class, "update"]);
+        Route::delete("/galeries/hotels/{galerieHotel}", [GalerieHotelController::class, "destroy"]);
+
+        Route::post("/galeries/restaurants", [GalerieRestaurantController::class, "store"]);
+        Route::put("/galeries/restaurants/{galerieRestaurant}", [GalerieRestaurantController::class, "update"]);
+        Route::delete("/galeries/restaurants/{galerieRestaurant}", [GalerieRestaurantController::class, "destroy"]);
+
+        Route::post("/galeries/transports", [GalerieTransportController::class, "store"]);
+        Route::put("/galeries/transports/{galerieTransport}", [GalerieTransportController::class, "update"]);
+        Route::delete("/galeries/transports/{galerieTransport}", [GalerieTransportController::class, "destroy"]);
     });

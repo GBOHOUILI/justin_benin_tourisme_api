@@ -24,4 +24,24 @@ class Region extends Model
     {
         return $this->hasMany(ResponsableRegional::class, 'id_region');
     }
+
+    public function hotels()
+    {
+        return $this->hasMany(Hotel::class, 'id_region');
+    }
+
+    public function restaurants()
+    {
+        return $this->hasMany(Restaurant::class, 'id_region');
+    }
+
+    public function transports()
+    {
+        return $this->hasMany(Transport::class, 'id_region');
+    }
+
+    public function villes()
+    {
+        return $this->hasMany(Ville::class, 'id_region');
+    }
 }

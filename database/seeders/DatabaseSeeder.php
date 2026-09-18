@@ -38,6 +38,29 @@ class DatabaseSeeder extends Seeder
             \App\Models\Region::firstOrCreate(['nom' => $nom]);
         }
 
-        $this->command->info('✅ Admin + catégories + régions créés.');
+        // ─── Villes principales (pour les trajets de transport) ──
+        foreach ([
+            'Cotonou' => 'Littoral',
+            'Porto-Novo' => 'Ouémé',
+            'Parakou' => 'Borgou',
+            'Abomey' => 'Zou',
+            'Bohicon' => 'Zou',
+            'Natitingou' => 'Atacora',
+            'Ouidah' => 'Atlantique',
+            'Abomey-Calavi' => 'Atlantique',
+            'Lokossa' => 'Mono',
+            'Djougou' => 'Donga',
+            'Kandi' => 'Alibori',
+            'Savalou' => 'Collines',
+            'Aplahoué' => 'Couffo',
+            'Pobè' => 'Plateau',
+        ] as $nomVille => $nomRegion) {
+            \App\Models\Ville::firstOrCreate(
+                ['nom' => $nomVille],
+                ['id_region' => \App\Models\Region::where('nom', $nomRegion)->first()?->id]
+            );
+        }
+
+        $this->command->info('✅ Admin + catégories + régions + villes créés.');
     }
 }
