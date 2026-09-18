@@ -88,7 +88,8 @@ class SiteController extends Controller
             ],
         ),
     ]
-    public function index(Request $request)
+    /** Filtres communs (recherche, catégorie, prix, proximité) — pas le statut, géré différemment par index()/adminIndex(). */
+    private function requeteFiltree(Request $request)
     {
         $query = Site::with(["categorie", "galeries", "prix", "region", "prestataire", "responsable"]);
 
@@ -97,9 +98,6 @@ class SiteController extends Controller
         }
         if ($request->filled("id_cat_site")) {
             $query->where("id_cat_site", $request->id_cat_site);
-        }
-        if ($request->filled("status")) {
-            $query->where("status", $request->status);
         }
 
         if ($request->filled("prix_min") || $request->filled("prix_max")) {
@@ -137,7 +135,38 @@ class SiteController extends Controller
             $query->orderByRaw($haversine, [$lat, $lng, $lat]);
         }
 
+        return $query;
+    }
+
+    public function index(Request $request)
+    {
+        // Public : uniquement les sites validés, quoi que le client demande —
+        // un en_attente/rejete/suspendu ne doit jamais apparaître ici.
+        $query = $this->requeteFiltree($request)->where("status", "valide");
+
         return response()->json($query->paginate(12));
+    }
+
+    #[
+        OA\Get(
+            path: "/api/admin/sites",
+            tags: ["Sites"],
+            summary: "Liste des sites, tous statuts confondus (admin)",
+            security: [["bearerAuth" => []]],
+            responses: [
+                new OA\Response(response: 200, description: "Liste paginée de tous les sites"),
+            ],
+        ),
+    ]
+    public function adminIndex(Request $request)
+    {
+        $query = $this->requeteFiltree($request);
+
+        if ($request->filled("status")) {
+            $query->where("status", $request->status);
+        }
+
+        return response()->json($query->paginate(50));
     }
 
     // id_admin est retiré du body — déduit du token admin connecté
@@ -250,8 +279,15 @@ class SiteController extends Controller
             ],
         ),
     ]
-    public function show(Site $site)
+    public function show(Request $request, Site $site)
     {
+        // Une fiche non validée n'est jamais accessible publiquement, même en
+        // devinant/partageant son id — seul un admin peut la prévisualiser
+        // (utile pour vérifier avant validation depuis un lien direct).
+        if ($site->status !== "valide" && !$request->user("admin")) {
+            abort(404);
+        }
+
         return response()->json(
             $site->load([
                 "categorie",

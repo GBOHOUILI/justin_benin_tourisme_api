@@ -1263,7 +1263,8 @@
                     "Evenements"
                 ],
                 "summary": "Lister les événements",
-                "operationId": "cf17114513864def8e795303a48f7205",
+                "description": "Filtres communs (recherche, catégorie, date, prix, proximité) — pas le statut, géré par index()/adminIndex().",
+                "operationId": "5c2a9fa53cdfac0a74ac29d36b470bf2",
                 "parameters": [
                     {
                         "name": "libelle",
@@ -1343,6 +1344,23 @@
             }
         },
         "/api/admin/evenements": {
+            "get": {
+                "tags": [
+                    "Evenements"
+                ],
+                "summary": "Liste des événements, tous statuts confondus (admin)",
+                "operationId": "1d2563c21343256bad07d7aac4f8ab99",
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée de tous les événements"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Evenements"
@@ -2650,7 +2668,8 @@
                     "Sites"
                 ],
                 "summary": "Liste des sites",
-                "operationId": "b2375423d59eedc5dcce02e3cb15173a",
+                "description": "Filtres communs (recherche, catégorie, prix, proximité) — pas le statut, géré différemment par index()/adminIndex().",
+                "operationId": "a6eb725f23c4ad001db400347fdfec8f",
                 "parameters": [
                     {
                         "name": "libelle",
@@ -2728,6 +2747,23 @@
             }
         },
         "/api/admin/sites": {
+            "get": {
+                "tags": [
+                    "Sites"
+                ],
+                "summary": "Liste des sites, tous statuts confondus (admin)",
+                "operationId": "796a74f7bbf056d6b389fa3aee2d66b0",
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée de tous les sites"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Sites"

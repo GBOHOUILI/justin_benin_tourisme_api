@@ -93,7 +93,8 @@ class EvenementController extends Controller
             ],
         ),
     ]
-    public function index(Request $request)
+    /** Filtres communs (recherche, catégorie, date, prix, proximité) — pas le statut, géré par index()/adminIndex(). */
+    private function requeteFiltree(Request $request)
     {
         $query = Evenement::with(["categorie", "galeries", "prix", "region", "prestataire", "responsable"]);
 
@@ -102,9 +103,6 @@ class EvenementController extends Controller
         }
         if ($request->filled("id_cat_evenmt")) {
             $query->where("id_cat_evenmt", $request->id_cat_evenmt);
-        }
-        if ($request->filled("status")) {
-            $query->where("status", $request->status);
         }
         if ($request->filled("date_debut")) {
             $query->whereDate("date_debut", ">=", $request->date_debut);
@@ -145,7 +143,38 @@ class EvenementController extends Controller
             $query->orderByRaw($haversine, [$lat, $lng, $lat]);
         }
 
+        return $query;
+    }
+
+    public function index(Request $request)
+    {
+        // Public : uniquement les événements validés, quoi que le client
+        // demande — un en_attente/rejete/suspendu ne doit jamais apparaître ici.
+        $query = $this->requeteFiltree($request)->where("status", "valide");
+
         return response()->json($query->paginate(12));
+    }
+
+    #[
+        OA\Get(
+            path: "/api/admin/evenements",
+            tags: ["Evenements"],
+            summary: "Liste des événements, tous statuts confondus (admin)",
+            security: [["bearerAuth" => []]],
+            responses: [
+                new OA\Response(response: 200, description: "Liste paginée de tous les événements"),
+            ],
+        ),
+    ]
+    public function adminIndex(Request $request)
+    {
+        $query = $this->requeteFiltree($request);
+
+        if ($request->filled("status")) {
+            $query->where("status", $request->status);
+        }
+
+        return response()->json($query->paginate(50));
     }
 
     // id_admin est retiré du body — déduit du token admin connecté
@@ -268,8 +297,14 @@ class EvenementController extends Controller
             ],
         ),
     ]
-    public function show(Evenement $evenement)
+    public function show(Request $request, Evenement $evenement)
     {
+        // Même règle que Site::show — jamais accessible publiquement tant que
+        // non validé, sauf pour un admin (prévisualisation).
+        if ($evenement->status !== "valide" && !$request->user("admin")) {
+            abort(404);
+        }
+
         return response()->json(
             $evenement->load([
                 "categorie",

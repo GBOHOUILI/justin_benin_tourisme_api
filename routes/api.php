@@ -159,6 +159,7 @@ Route::middleware(["auth:admin", "admin"])
         ]);
 
         // Sites
+        Route::get("/sites", [SiteController::class, "adminIndex"]);
         Route::post("/sites", [SiteController::class, "store"]);
         Route::put("/sites/{site}", [SiteController::class, "update"]);
         Route::delete("/sites/{site}", [SiteController::class, "destroy"]);
@@ -166,6 +167,7 @@ Route::middleware(["auth:admin", "admin"])
         Route::patch("/sites/{site}/rejeter", [SiteController::class, "rejeter"]);
 
         // Événements
+        Route::get("/evenements", [EvenementController::class, "adminIndex"]);
         Route::post("/evenements", [EvenementController::class, "store"]);
         Route::put("/evenements/{evenement}", [
             EvenementController::class,
