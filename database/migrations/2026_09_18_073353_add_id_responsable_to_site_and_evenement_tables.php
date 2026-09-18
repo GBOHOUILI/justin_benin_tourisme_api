@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Un Responsable régional connaît son territoire — il peut créer un Site/
+ * Un Responsable régional connaît son territoire - il peut créer un Site/
  * Evenement pour sa région, mais ne peut jamais le valider lui-même : seul
  * un Admin valide une fiche créée par un responsable (cf. id_prestataire :
  * même logique de créateur "en_attente" jamais auto-validé).

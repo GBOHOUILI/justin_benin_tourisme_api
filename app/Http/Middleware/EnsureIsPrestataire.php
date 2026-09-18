@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Vérifie que l'utilisateur authentifié est bien un Prestataire.
- * À utiliser APRÈS le middleware auth:prestataire — même pattern que EnsureIsAdmin.
+ * À utiliser APRÈS le middleware auth:prestataire - même pattern que EnsureIsAdmin.
  *
  * Usage dans les routes :
  *   Route::middleware(['auth:prestataire', 'prestataire'])->group(...)

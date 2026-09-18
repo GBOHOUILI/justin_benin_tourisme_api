@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Vérifie que l'utilisateur authentifié est bien un Responsable régional.
- * À utiliser APRÈS le middleware auth:responsable — même pattern que
+ * À utiliser APRÈS le middleware auth:responsable - même pattern que
  * EnsureIsAdmin/EnsureIsPrestataire.
  */
 class EnsureIsResponsable

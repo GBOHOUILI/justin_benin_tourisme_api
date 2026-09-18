@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 /**
- * id_admin était NOT NULL — impossible pour un Site/Evenement créé par un
+ * id_admin était NOT NULL - impossible pour un Site/Evenement créé par un
  * Prestataire (pas d'admin associé). Symétrique à id_prestataire, déjà
  * nullable depuis la migration 2026_09_15_151308. Raw SQL (pas ->change())
  * pour éviter la dépendance doctrine/dbal, absente de ce projet.

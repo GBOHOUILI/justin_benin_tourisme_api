@@ -88,7 +88,7 @@ class SiteController extends Controller
             ],
         ),
     ]
-    /** Filtres communs (recherche, catégorie, prix, proximité) — pas le statut, géré différemment par index()/adminIndex(). */
+    /** Filtres communs (recherche, catégorie, prix, proximité) - pas le statut, géré différemment par index()/adminIndex(). */
     private function requeteFiltree(Request $request)
     {
         $query = Site::with(["categorie", "galeries", "prix", "region", "prestataire", "responsable"]);
@@ -98,6 +98,9 @@ class SiteController extends Controller
         }
         if ($request->filled("id_cat_site")) {
             $query->where("id_cat_site", $request->id_cat_site);
+        }
+        if ($request->filled("id_region")) {
+            $query->where("id_region", $request->id_region);
         }
 
         if ($request->filled("prix_min") || $request->filled("prix_max")) {
@@ -140,7 +143,7 @@ class SiteController extends Controller
 
     public function index(Request $request)
     {
-        // Public : uniquement les sites validés, quoi que le client demande —
+        // Public : uniquement les sites validés, quoi que le client demande -
         // un en_attente/rejete/suspendu ne doit jamais apparaître ici.
         $query = $this->requeteFiltree($request)->where("status", "valide");
 
@@ -169,7 +172,7 @@ class SiteController extends Controller
         return response()->json($query->paginate(50));
     }
 
-    // id_admin est retiré du body — déduit du token admin connecté
+    // id_admin est retiré du body - déduit du token admin connecté
     #[
         OA\Post(
             path: "/api/admin/sites",
@@ -233,7 +236,7 @@ class SiteController extends Controller
             "id_region" => "nullable|exists:region,id",
         ]);
 
-        // id_admin OU id_prestataire OU id_responsable selon le guard connecté —
+        // id_admin OU id_prestataire OU id_responsable selon le guard connecté -
         // jamais deux à la fois, jamais fourni par le client (déduit du token).
         $user = $request->user();
         if ($user instanceof Prestataire) {
@@ -245,7 +248,7 @@ class SiteController extends Controller
         } elseif ($user instanceof ResponsableRegional) {
             $validated["id_responsable"] = $user->id;
             // Un responsable connaît sa région mais ne peut pas non plus s'auto-
-            // valider — seul un Admin valide une fiche créée par un responsable.
+            // valider - seul un Admin valide une fiche créée par un responsable.
             $validated["status"] = "en_attente";
             // Région forcée à la sienne s'il est scopé (jamais celle envoyée par
             // le client) ; un responsable global doit en choisir une explicitement.
@@ -282,7 +285,7 @@ class SiteController extends Controller
     public function show(Request $request, Site $site)
     {
         // Une fiche non validée n'est jamais accessible publiquement, même en
-        // devinant/partageant son id — seul un admin peut la prévisualiser
+        // devinant/partageant son id - seul un admin peut la prévisualiser
         // (utile pour vérifier avant validation depuis un lien direct).
         if ($site->status !== "valide" && !$request->user("admin")) {
             abort(404);
@@ -377,7 +380,7 @@ class SiteController extends Controller
         ]);
 
         // Même règle qu'à la création : ni un prestataire ni un responsable ne
-        // s'auto-valident (cf. EvenementController::update) — seul valider()/
+        // s'auto-valident (cf. EvenementController::update) - seul valider()/
         // rejeter() (réservés à l'admin pour une fiche de responsable) change le statut.
         if ($estPrestataire || $estResponsable) {
             unset($validated["status"]);
@@ -394,7 +397,7 @@ class SiteController extends Controller
 
     /**
      * 403 si un ResponsableRegional tente de valider une fiche créée par un
-     * responsable (lui ou un autre — seul un Admin valide ces fiches-là, un
+     * responsable (lui ou un autre - seul un Admin valide ces fiches-là, un
      * responsable connaît sa région mais ne s'auto-valide/ne valide jamais un
      * pair), ou une fiche hors de sa région (sauf responsable global).
      */
@@ -405,7 +408,7 @@ class SiteController extends Controller
             return null;
         }
         if ($site->id_responsable !== null) {
-            return response()->json(["message" => "Cette fiche a été créée par un responsable régional — seul un admin peut la valider."], 403);
+            return response()->json(["message" => "Cette fiche a été créée par un responsable régional - seul un admin peut la valider."], 403);
         }
         if (!$responsable->estGlobal() && $site->id_region !== $responsable->id_region) {
             return response()->json(["message" => "Ce site est hors de votre région."], 403);

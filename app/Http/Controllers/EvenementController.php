@@ -93,7 +93,7 @@ class EvenementController extends Controller
             ],
         ),
     ]
-    /** Filtres communs (recherche, catégorie, date, prix, proximité) — pas le statut, géré par index()/adminIndex(). */
+    /** Filtres communs (recherche, catégorie, date, prix, proximité) - pas le statut, géré par index()/adminIndex(). */
     private function requeteFiltree(Request $request)
     {
         $query = Evenement::with(["categorie", "galeries", "prix", "region", "prestataire", "responsable"]);
@@ -106,6 +106,9 @@ class EvenementController extends Controller
         }
         if ($request->filled("date_debut")) {
             $query->whereDate("date_debut", ">=", $request->date_debut);
+        }
+        if ($request->filled("id_region")) {
+            $query->where("id_region", $request->id_region);
         }
 
         if ($request->filled("prix_min") || $request->filled("prix_max")) {
@@ -149,7 +152,7 @@ class EvenementController extends Controller
     public function index(Request $request)
     {
         // Public : uniquement les événements validés, quoi que le client
-        // demande — un en_attente/rejete/suspendu ne doit jamais apparaître ici.
+        // demande - un en_attente/rejete/suspendu ne doit jamais apparaître ici.
         $query = $this->requeteFiltree($request)->where("status", "valide");
 
         return response()->json($query->paginate(12));
@@ -177,7 +180,7 @@ class EvenementController extends Controller
         return response()->json($query->paginate(50));
     }
 
-    // id_admin est retiré du body — déduit du token admin connecté
+    // id_admin est retiré du body - déduit du token admin connecté
     #[
         OA\Post(
             path: "/api/admin/evenements",
@@ -251,7 +254,7 @@ class EvenementController extends Controller
             "id_region" => "nullable|exists:region,id",
         ]);
 
-        // id_admin OU id_prestataire OU id_responsable selon le guard connecté —
+        // id_admin OU id_prestataire OU id_responsable selon le guard connecté -
         // jamais deux à la fois, jamais fourni par le client (déduit du token).
         $user = $request->user();
         if ($user instanceof Prestataire) {
@@ -299,7 +302,7 @@ class EvenementController extends Controller
     ]
     public function show(Request $request, Evenement $evenement)
     {
-        // Même règle que Site::show — jamais accessible publiquement tant que
+        // Même règle que Site::show - jamais accessible publiquement tant que
         // non validé, sauf pour un admin (prévisualisation).
         if ($evenement->status !== "valide" && !$request->user("admin")) {
             abort(404);
@@ -406,7 +409,7 @@ class EvenementController extends Controller
         ]);
 
         // Ni un prestataire ni un responsable ne peuvent se revalider après une
-        // modif — seul valider()/rejeter() (réservé à l'admin pour une fiche de
+        // modif - seul valider()/rejeter() (réservé à l'admin pour une fiche de
         // responsable) change le statut.
         if ($estPrestataire || $estResponsable) {
             unset($validated["status"]);
@@ -432,7 +435,7 @@ class EvenementController extends Controller
             return null;
         }
         if ($evenement->id_responsable !== null) {
-            return response()->json(["message" => "Cette fiche a été créée par un responsable régional — seul un admin peut la valider."], 403);
+            return response()->json(["message" => "Cette fiche a été créée par un responsable régional - seul un admin peut la valider."], 403);
         }
         if (!$responsable->estGlobal() && $evenement->id_region !== $responsable->id_region) {
             return response()->json(["message" => "Cet événement est hors de votre région."], 403);

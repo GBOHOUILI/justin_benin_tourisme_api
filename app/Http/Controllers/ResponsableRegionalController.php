@@ -34,7 +34,7 @@ class ResponsableRegionalController extends Controller
         OA\Post(
             path: "/api/admin/responsables",
             tags: ["Responsables régionaux"],
-            summary: "Créer un responsable régional (admin) — pas d'auto-inscription, poste officiel",
+            summary: "Créer un responsable régional (admin) - pas d'auto-inscription, poste officiel",
             security: [["bearerAuth" => []]],
             requestBody: new OA\RequestBody(
                 required: true,
@@ -165,7 +165,7 @@ class ResponsableRegionalController extends Controller
         $responsable = $request->user();
 
         // Une fiche créée par un responsable régional (id_responsable renseigné)
-        // n'apparaît jamais dans la file d'un responsable — seul un admin la
+        // n'apparaît jamais dans la file d'un responsable - seul un admin la
         // valide (cf. SiteController/EvenementController::refuserSiHorsPerimetre).
         $sites = Site::with(['categorie', 'region', 'prestataire', 'admin'])
             ->where('status', 'en_attente')

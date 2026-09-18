@@ -35,7 +35,7 @@ use App\Http\Controllers\GalerieTransportController;
 use App\Http\Controllers\VilleController;
 
 // ══════════════════════════════════════════════════════
-//  ROUTES PUBLIQUES — aucun token requis
+//  ROUTES PUBLIQUES - aucun token requis
 // ══════════════════════════════════════════════════════
 
 Route::post("/register", [AuthController::class, "register"]);
@@ -109,7 +109,7 @@ Route::post("/tickets/verifier", [TicketController::class, "verifier"]);
 Route::post("/webhooks/kkiapay", [PaiementController::class, "webhook"]);
 
 // ══════════════════════════════════════════════════════
-//  ROUTES UTILISATEURS — token User (auth:sanctum)
+//  ROUTES UTILISATEURS - token User (auth:sanctum)
 // ══════════════════════════════════════════════════════
 Route::middleware("auth:sanctum")->group(function () {
     Route::get("/me", [AuthController::class, "me"]);
@@ -144,7 +144,7 @@ Route::middleware("auth:sanctum")->group(function () {
 });
 
 // ══════════════════════════════════════════════════════
-//  ROUTES ADMIN — token Admin uniquement (auth:admin)
+//  ROUTES ADMIN - token Admin uniquement (auth:admin)
 //  Le middleware 'admin' vérifie en plus que le compte
 //  n'est pas désactivé (status = false).
 // ══════════════════════════════════════════════════════
@@ -219,10 +219,10 @@ Route::middleware(["auth:admin", "admin"])
             "rejeter",
         ]);
 
-        // Responsables régionaux (poste officiel — créé par un admin, pas d'auto-inscription)
+        // Responsables régionaux (poste officiel - créé par un admin, pas d'auto-inscription)
         Route::apiResource("responsables", ResponsableRegionalController::class);
 
-        // Villes (liste ouverte, gérée par l'admin — contrairement aux régions fixes/seedées)
+        // Villes (liste ouverte, gérée par l'admin - contrairement aux régions fixes/seedées)
         Route::post("/villes", [VilleController::class, "store"]);
         Route::put("/villes/{ville}", [VilleController::class, "update"]);
         Route::delete("/villes/{ville}", [VilleController::class, "destroy"]);
@@ -329,7 +329,7 @@ Route::middleware(["auth:admin", "admin"])
     });
 
 // ══════════════════════════════════════════════════════
-//  ROUTES PRESTATAIRE — token Prestataire (auth:prestataire)
+//  ROUTES PRESTATAIRE - token Prestataire (auth:prestataire)
 //  Portail SaaS : gère uniquement ses propres fiches (Site/
 //  Evenement/Prix/Galerie), jamais celles d'un autre prestataire.
 // ══════════════════════════════════════════════════════
@@ -412,10 +412,10 @@ Route::middleware(["auth:prestataire", "prestataire"])
     });
 
 // ══════════════════════════════════════════════════════
-//  ROUTES RESPONSABLE RÉGIONAL — token Responsable (auth:responsable)
+//  ROUTES RESPONSABLE RÉGIONAL - token Responsable (auth:responsable)
 //  Valide/rejette les Site/Evenement de sa région (ou de toutes les
-//  régions si id_region est NULL — responsable "global"). Peut aussi
-//  créer ses propres fiches (il connaît son territoire) — jamais
+//  régions si id_region est NULL - responsable "global"). Peut aussi
+//  créer ses propres fiches (il connaît son territoire) - jamais
 //  auto-validées, seul un Admin les valide (cf. refuserSiHorsPerimetre).
 // ══════════════════════════════════════════════════════
 Route::middleware(["auth:responsable", "responsable"])

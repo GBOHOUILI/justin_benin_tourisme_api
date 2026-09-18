@@ -36,6 +36,12 @@ class RestaurantController extends Controller
         if ($request->filled("type_cuisine")) {
             $query->where("type_cuisine", "like", "%" . $request->type_cuisine . "%");
         }
+        if ($request->filled("gamme_prix")) {
+            $query->where("gamme_prix", $request->gamme_prix);
+        }
+        if ($request->filled("id_region")) {
+            $query->where("id_region", $request->id_region);
+        }
 
         if ($request->filled("lat") && $request->filled("lng")) {
             $lat = (float) $request->lat;
@@ -228,7 +234,7 @@ class RestaurantController extends Controller
             return null;
         }
         if ($restaurant->id_responsable !== null) {
-            return response()->json(["message" => "Cette fiche a été créée par un responsable régional — seul un admin peut la valider."], 403);
+            return response()->json(["message" => "Cette fiche a été créée par un responsable régional - seul un admin peut la valider."], 403);
         }
         if (!$responsable->estGlobal() && $restaurant->id_region !== $responsable->id_region) {
             return response()->json(["message" => "Ce restaurant est hors de votre région."], 403);
