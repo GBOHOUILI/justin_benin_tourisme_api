@@ -33,6 +33,8 @@ use App\Http\Controllers\TransportController;
 use App\Http\Controllers\TrajetController;
 use App\Http\Controllers\GalerieTransportController;
 use App\Http\Controllers\VilleController;
+use App\Http\Controllers\PlanController;
+use App\Http\Controllers\AbonnementController;
 
 // ══════════════════════════════════════════════════════
 //  ROUTES PUBLIQUES - aucun token requis
@@ -46,6 +48,7 @@ Route::post("/prestataire/login", [AuthController::class, "loginPrestataire"]);
 Route::post("/responsable/login", [AuthController::class, "loginResponsable"]);
 
 Route::get("/regions", [RegionController::class, "index"]);
+Route::get("/plans", [PlanController::class, "index"]);
 
 // Consultation publique
 Route::get("/sites", [SiteController::class, "index"]);
@@ -107,6 +110,7 @@ Route::post("/tickets/verifier", [TicketController::class, "verifier"]);
 // Webhook Kkiapay : pas de token Sanctum possible côté serveur-à-serveur,
 // l'authenticité est vérifiée via le header x-kkiapay-secret (cf. PaiementController::webhook).
 Route::post("/webhooks/kkiapay", [PaiementController::class, "webhook"]);
+Route::post("/webhooks/kkiapay-abonnement", [AbonnementController::class, "webhook"]);
 
 // ══════════════════════════════════════════════════════
 //  ROUTES UTILISATEURS - token User (auth:sanctum)
@@ -227,6 +231,12 @@ Route::middleware(["auth:admin", "admin"])
         Route::put("/villes/{ville}", [VilleController::class, "update"]);
         Route::delete("/villes/{ville}", [VilleController::class, "destroy"]);
 
+        // Plans d'abonnement SaaS + abonnements des prestataires (module Prestataire, étape 3)
+        Route::post("/plans", [PlanController::class, "store"]);
+        Route::put("/plans/{plan}", [PlanController::class, "update"]);
+        Route::delete("/plans/{plan}", [PlanController::class, "destroy"]);
+        Route::get("/abonnements", [AbonnementController::class, "adminIndex"]);
+
         // Hôtels
         Route::get("/hotels", [HotelController::class, "adminIndex"]);
         Route::post("/hotels", [HotelController::class, "store"]);
@@ -341,6 +351,11 @@ Route::middleware(["auth:prestataire", "prestataire"])
         Route::post("/update-password", [AuthController::class, "updatePassword"]);
         Route::put("/profil", [PrestataireController::class, "updateProfil"]);
         Route::get("/dashboard", [PrestataireController::class, "dashboard"]);
+
+        // Abonnement SaaS (module Prestataire, étape 3)
+        Route::get("/abonnement", [AbonnementController::class, "statut"]);
+        Route::post("/abonnements", [AbonnementController::class, "souscrire"]);
+        Route::patch("/factures-abonnement/{factureAbonnement}/verifier", [AbonnementController::class, "verifier"]);
 
         // Mes sites
         Route::get("/sites", [SiteController::class, "mine"]);

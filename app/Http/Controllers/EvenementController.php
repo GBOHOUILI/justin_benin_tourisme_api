@@ -258,6 +258,14 @@ class EvenementController extends Controller
         // jamais deux à la fois, jamais fourni par le client (déduit du token).
         $user = $request->user();
         if ($user instanceof Prestataire) {
+            // Précondition du module Abonnement (étape 3) : un prestataire sans
+            // abonnement actif ne peut créer aucune nouvelle fiche.
+            if (!$user->abonnementActif()) {
+                return response()->json([
+                    "message" => "Votre abonnement n'est plus actif. Souscrivez ou renouvelez un plan pour créer une fiche.",
+                ], 403);
+            }
+
             $validated["id_prestataire"] = $user->id;
             // Un prestataire ne décide jamais lui-même que son événement est "valide" :
             // toujours en_attente à la création, quoi que le client envoie.

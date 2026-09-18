@@ -143,6 +143,14 @@ class RestaurantController extends Controller
 
         $user = $request->user();
         if ($user instanceof Prestataire) {
+            // Précondition du module Abonnement (étape 3) : un prestataire sans
+            // abonnement actif ne peut créer aucune nouvelle fiche.
+            if (!$user->abonnementActif()) {
+                return response()->json([
+                    "message" => "Votre abonnement n'est plus actif. Souscrivez ou renouvelez un plan pour créer une fiche.",
+                ], 403);
+            }
+
             $validated["id_prestataire"] = $user->id;
             $validated["status"] = "en_attente";
         } elseif ($user instanceof ResponsableRegional) {

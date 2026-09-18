@@ -55,4 +55,30 @@ class Prestataire extends Authenticatable
     {
         return $this->hasMany(Transport::class, 'id_prestataire');
     }
+
+    public function abonnements()
+    {
+        return $this->hasMany(Abonnement::class, 'id_prestataire');
+    }
+
+    /** Abonnement en cours (actif ou en attente de paiement), le plus récent d'abord. */
+    public function abonnementCourant()
+    {
+        return $this->abonnements()
+            ->whereIn('statut', ['actif', 'en_attente'])
+            ->latest()
+            ->first();
+    }
+
+    /**
+     * Précondition à la création de fiche (cf. document de référence : "Le prestataire
+     * dispose d'un compte professionnel actif et d'un abonnement en cours de validité").
+     */
+    public function abonnementActif(): bool
+    {
+        return $this->abonnements()
+            ->where('statut', 'actif')
+            ->whereDate('date_fin', '>=', now()->toDateString())
+            ->exists();
+    }
 }
