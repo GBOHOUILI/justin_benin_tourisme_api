@@ -87,4 +87,17 @@ class ContenuEnrichiEntitesTest extends TestCase
         $this->assertSame('14:00:00', $fresh->heure_arrivee);
         $this->assertSame('11:00:00', $fresh->heure_depart);
     }
+
+    public function test_restaurant_round_trips_contenu_enrichi_et_horaires(): void
+    {
+        $restaurant = \App\Models\Restaurant::factory()->create([
+            'inclus' => ['Menu dégustation'],
+            'horaires' => '12h-15h, 19h-23h',
+        ]);
+
+        $fresh = $restaurant->fresh();
+
+        $this->assertSame(['Menu dégustation'], $fresh->inclus);
+        $this->assertSame('12h-15h, 19h-23h', $fresh->horaires);
+    }
 }
