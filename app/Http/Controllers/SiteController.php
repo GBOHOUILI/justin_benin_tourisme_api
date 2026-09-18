@@ -300,7 +300,9 @@ class SiteController extends Controller
     ]
     public function update(Request $request, Site $site)
     {
-        if ($request->user() instanceof Prestataire && $site->id_prestataire !== $request->user()->id) {
+        $estPrestataire = $request->user() instanceof Prestataire;
+
+        if ($estPrestataire && $site->id_prestataire !== $request->user()->id) {
             return response()->json(["message" => "Ce site ne vous appartient pas."], 403);
         }
 
@@ -316,9 +318,15 @@ class SiteController extends Controller
             "id_cat_site" => "sometimes|exists:cat_site,id",
         ]);
 
+        // Même règle qu'à la création : un prestataire ne s'auto-active jamais
+        // lui-même (cf. EvenementController::update, même logique).
+        if ($estPrestataire) {
+            unset($validated["status"]);
+        }
+
         $site->update($validated);
 
-        return response()->json($site->load(["categorie", "admin"]));
+        return response()->json($site->load(["categorie", "admin", "prestataire"]));
     }
 
     #[
