@@ -282,7 +282,9 @@ Route::middleware(["auth:prestataire", "prestataire"])
 // ══════════════════════════════════════════════════════
 //  ROUTES RESPONSABLE RÉGIONAL — token Responsable (auth:responsable)
 //  Valide/rejette les Site/Evenement de sa région (ou de toutes les
-//  régions si id_region est NULL — responsable "global").
+//  régions si id_region est NULL — responsable "global"). Peut aussi
+//  créer ses propres fiches (il connaît son territoire) — jamais
+//  auto-validées, seul un Admin les valide (cf. refuserSiHorsPerimetre).
 // ══════════════════════════════════════════════════════
 Route::middleware(["auth:responsable", "responsable"])
     ->prefix("responsable")
@@ -297,4 +299,29 @@ Route::middleware(["auth:responsable", "responsable"])
         Route::patch("/sites/{site}/rejeter", [SiteController::class, "rejeter"]);
         Route::patch("/evenements/{evenement}/valider", [EvenementController::class, "valider"]);
         Route::patch("/evenements/{evenement}/rejeter", [EvenementController::class, "rejeter"]);
+
+        // Mes sites
+        Route::get("/sites", [SiteController::class, "mine"]);
+        Route::post("/sites", [SiteController::class, "store"]);
+        Route::put("/sites/{site}", [SiteController::class, "update"]);
+        Route::delete("/sites/{site}", [SiteController::class, "destroy"]);
+
+        // Mes événements
+        Route::get("/evenements", [EvenementController::class, "mine"]);
+        Route::post("/evenements", [EvenementController::class, "store"]);
+        Route::put("/evenements/{evenement}", [EvenementController::class, "update"]);
+        Route::delete("/evenements/{evenement}", [EvenementController::class, "destroy"]);
+
+        // Tarifs et galeries de mes fiches (ownership vérifié dans les controllers)
+        Route::post("/prix", [PrixController::class, "store"]);
+        Route::put("/prix/{prix}", [PrixController::class, "update"]);
+        Route::delete("/prix/{prix}", [PrixController::class, "destroy"]);
+
+        Route::post("/galeries/sites", [GalerieSiteController::class, "store"]);
+        Route::put("/galeries/sites/{galerieSite}", [GalerieSiteController::class, "update"]);
+        Route::delete("/galeries/sites/{galerieSite}", [GalerieSiteController::class, "destroy"]);
+
+        Route::post("/galeries/evenements", [GallerieEvnmtController::class, "store"]);
+        Route::put("/galeries/evenements/{gallerieEvnmt}", [GallerieEvnmtController::class, "update"]);
+        Route::delete("/galeries/evenements/{gallerieEvnmt}", [GallerieEvnmtController::class, "destroy"]);
     });

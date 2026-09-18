@@ -95,7 +95,7 @@ class EvenementController extends Controller
     ]
     public function index(Request $request)
     {
-        $query = Evenement::with(["categorie", "galeries", "prix", "region", "prestataire"]);
+        $query = Evenement::with(["categorie", "galeries", "prix", "region", "prestataire", "responsable"]);
 
         if ($request->filled("libelle")) {
             $query->where("libelle", "like", "%" . $request->libelle . "%");
@@ -222,20 +222,29 @@ class EvenementController extends Controller
             "id_region" => "nullable|exists:region,id",
         ]);
 
-        // id_admin OU id_prestataire selon le guard connecté — jamais les deux,
-        // jamais fourni par le client (déduit du token).
-        if ($request->user() instanceof Prestataire) {
-            $validated["id_prestataire"] = $request->user()->id;
+        // id_admin OU id_prestataire OU id_responsable selon le guard connecté —
+        // jamais deux à la fois, jamais fourni par le client (déduit du token).
+        $user = $request->user();
+        if ($user instanceof Prestataire) {
+            $validated["id_prestataire"] = $user->id;
             // Un prestataire ne décide jamais lui-même que son événement est "valide" :
             // toujours en_attente à la création, quoi que le client envoie.
             $validated["status"] = "en_attente";
+        } elseif ($user instanceof ResponsableRegional) {
+            $validated["id_responsable"] = $user->id;
+            // Même logique que pour Site::store : ne s'auto-valide jamais, région
+            // forcée à la sienne s'il est scopé.
+            $validated["status"] = "en_attente";
+            if (!$user->estGlobal()) {
+                $validated["id_region"] = $user->id_region;
+            }
         } else {
-            $validated["id_admin"] = $request->user()->id;
+            $validated["id_admin"] = $user->id;
         }
 
         $evenement = Evenement::create($validated);
 
-        return response()->json($evenement->load(["categorie", "admin", "prestataire", "region"]), 201);
+        return response()->json($evenement->load(["categorie", "admin", "prestataire", "responsable", "region"]), 201);
     }
 
     #[
@@ -266,6 +275,7 @@ class EvenementController extends Controller
                 "categorie",
                 "admin",
                 "prestataire",
+                "responsable",
                 "region",
                 "galeries",
                 "prix",
@@ -336,9 +346,14 @@ class EvenementController extends Controller
     ]
     public function update(Request $request, Evenement $evenement)
     {
-        $estPrestataire = $request->user() instanceof Prestataire;
+        $user = $request->user();
+        $estPrestataire = $user instanceof Prestataire;
+        $estResponsable = $user instanceof ResponsableRegional;
 
-        if ($estPrestataire && $evenement->id_prestataire !== $request->user()->id) {
+        if ($estPrestataire && $evenement->id_prestataire !== $user->id) {
+            return response()->json(["message" => "Cet événement ne vous appartient pas."], 403);
+        }
+        if ($estResponsable && $evenement->id_responsable !== $user->id) {
             return response()->json(["message" => "Cet événement ne vous appartient pas."], 403);
         }
 
@@ -355,24 +370,36 @@ class EvenementController extends Controller
             "id_region" => "nullable|exists:region,id",
         ]);
 
-        // Un prestataire ne peut pas se revalider lui-même après une modif —
-        // seuls valider()/rejeter() (admin/responsable) changent le statut.
-        if ($estPrestataire) {
+        // Ni un prestataire ni un responsable ne peuvent se revalider après une
+        // modif — seul valider()/rejeter() (réservé à l'admin pour une fiche de
+        // responsable) change le statut.
+        if ($estPrestataire || $estResponsable) {
             unset($validated["status"]);
+        }
+        if ($estResponsable && !$user->estGlobal()) {
+            unset($validated["id_region"]);
         }
 
         $evenement->update($validated);
 
-        return response()->json($evenement->load(["categorie", "admin", "region"]));
+        return response()->json($evenement->load(["categorie", "admin", "prestataire", "responsable", "region"]));
     }
 
-    /** 403 si un ResponsableRegional non global tente de valider hors de sa région ; sinon null. */
+    /**
+     * 403 si un ResponsableRegional tente de valider une fiche créée par un
+     * responsable (seul un Admin le peut), ou une fiche hors de sa région
+     * (sauf responsable global).
+     */
     private function refuserSiHorsPerimetre(Request $request, Evenement $evenement)
     {
         $responsable = $request->user();
-        if ($responsable instanceof ResponsableRegional
-            && !$responsable->estGlobal()
-            && $evenement->id_region !== $responsable->id_region) {
+        if (!($responsable instanceof ResponsableRegional)) {
+            return null;
+        }
+        if ($evenement->id_responsable !== null) {
+            return response()->json(["message" => "Cette fiche a été créée par un responsable régional — seul un admin peut la valider."], 403);
+        }
+        if (!$responsable->estGlobal() && $evenement->id_region !== $responsable->id_region) {
             return response()->json(["message" => "Cet événement est hors de votre région."], 403);
         }
         return null;
@@ -466,7 +493,11 @@ class EvenementController extends Controller
     ]
     public function destroy(Request $request, Evenement $evenement)
     {
-        if ($request->user() instanceof Prestataire && $evenement->id_prestataire !== $request->user()->id) {
+        $user = $request->user();
+        if ($user instanceof Prestataire && $evenement->id_prestataire !== $user->id) {
+            return response()->json(["message" => "Cet événement ne vous appartient pas."], 403);
+        }
+        if ($user instanceof ResponsableRegional && $evenement->id_responsable !== $user->id) {
             return response()->json(["message" => "Cet événement ne vous appartient pas."], 403);
         }
 

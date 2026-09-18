@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Evenement;
 use App\Models\GallerieEvnmt;
 use App\Models\Prestataire;
+use App\Models\ResponsableRegional;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use OpenApi\Attributes as OA;
@@ -115,8 +116,10 @@ class GallerieEvnmtController extends Controller
                 "nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov|max:51200",
         ]);
 
-        if ($request->user() instanceof Prestataire
-            && !Evenement::where('id', $validated['id_evnmt'])->where('id_prestataire', $request->user()->id)->exists()) {
+        $user = $request->user();
+        $colonne = $user instanceof ResponsableRegional ? 'id_responsable' : 'id_prestataire';
+        if (($user instanceof Prestataire || $user instanceof ResponsableRegional)
+            && !Evenement::where('id', $validated['id_evnmt'])->where($colonne, $user->id)->exists()) {
             return response()->json(["message" => "Cet événement ne vous appartient pas."], 403);
         }
 
@@ -193,7 +196,11 @@ class GallerieEvnmtController extends Controller
     ]
     public function update(Request $request, GallerieEvnmt $gallerieEvnmt)
     {
-        if ($request->user() instanceof Prestataire && $gallerieEvnmt->evenement?->id_prestataire !== $request->user()->id) {
+        $user = $request->user();
+        if ($user instanceof Prestataire && $gallerieEvnmt->evenement?->id_prestataire !== $user->id) {
+            return response()->json(["message" => "Cette galerie ne vous appartient pas."], 403);
+        }
+        if ($user instanceof ResponsableRegional && $gallerieEvnmt->evenement?->id_responsable !== $user->id) {
             return response()->json(["message" => "Cette galerie ne vous appartient pas."], 403);
         }
 
@@ -233,7 +240,11 @@ class GallerieEvnmtController extends Controller
     ]
     public function destroy(Request $request, GallerieEvnmt $gallerieEvnmt)
     {
-        if ($request->user() instanceof Prestataire && $gallerieEvnmt->evenement?->id_prestataire !== $request->user()->id) {
+        $user = $request->user();
+        if ($user instanceof Prestataire && $gallerieEvnmt->evenement?->id_prestataire !== $user->id) {
+            return response()->json(["message" => "Cette galerie ne vous appartient pas."], 403);
+        }
+        if ($user instanceof ResponsableRegional && $gallerieEvnmt->evenement?->id_responsable !== $user->id) {
             return response()->json(["message" => "Cette galerie ne vous appartient pas."], 403);
         }
 

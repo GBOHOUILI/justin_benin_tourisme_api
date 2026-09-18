@@ -34,6 +34,16 @@ class ResponsableRegional extends Authenticatable
         return $this->belongsTo(Region::class, 'id_region');
     }
 
+    public function sites()
+    {
+        return $this->hasMany(Site::class, 'id_responsable');
+    }
+
+    public function evenements()
+    {
+        return $this->hasMany(Evenement::class, 'id_responsable');
+    }
+
     /** Un responsable sans région assignée valide partout (poste vacant ailleurs). */
     public function estGlobal(): bool
     {
