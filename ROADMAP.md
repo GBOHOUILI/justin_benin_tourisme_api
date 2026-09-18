@@ -254,8 +254,6 @@ Démarré le 2026-09-16. Un Circuit est un itinéraire personnalisé construit m
 
 ## Module Billetterie (QR code)
 
-## Module Billetterie (QR code)
-
 Démarré le 2026-09-16. Décisions produit actées : QR généré côté frontend uniquement (`qrcode.react`, encode `ticket.numero`, aucune dépendance/colonne backend) ; pas de PDF téléchargeable pour l'instant ; scan côté staff via caméra (`html5-qrcode`) qui réutilise `POST /tickets/verifier` existant — **`verifier()` reste un contrôle pur, la création d'`Utilisation` reste une action explicite et séparée du staff, jamais un effet de bord du scan/de la vérification** (confirmé par relecture ligne à ligne avant toute modification, et vérifié en réel après coup).
 
 ### Backend
@@ -274,3 +272,38 @@ Démarré le 2026-09-16. Décisions produit actées : QR généré côté fronte
   - Côté admin, scan : le mode caméra s'ouvre proprement (0 erreur console) ; caméra physique non simulable dans cet environnement (pas de contrôle des flags de lancement Chromium pour un fake device), donc testé via le fallback "Scan an Image File" de la même librairie avec une **vraie image PNG du QR** généré par le composant `qrcode.react` côté touriste (capturée dans l'app, pas une image externe) : décodage correct de `TCK-BQ8FC5IT`, fermeture auto du scanner, résultat "Utilisé" affiché — même moteur de décodage que la caméra, donc preuve solide du pipeline scan → vérification
   - Toutes les données de test supprimées après vérification
 - ⚠️ Découverte annexe, non corrigée (hors périmètre) : `npm audit` signale des vulnérabilités (dont une critique sur `swiper`) sur des dépendances **préexistantes** (axios, react-router-dom, vite, swiper...), aucune liée aux deux nouvelles libs. À traiter séparément, pas introduit par ce lot
+
+## Module Prestataire (portail SaaS)
+
+Démarré le 2026-09-18, suite à un point d'écart complet entre le document de référence (`BeninTourismes/Benin-Tourisme-Documentation-Projet.docx`) et le code réel : le document décrit une plateforme SaaS multi-secteurs (Hôtel/Restaurant/Transport/Site/Événement, `Ville`, `ResponsableRegional`, `Plan`/`Abonnement`/`FactureAbonnement`) très en avance sur l'implémentation, qui ne couvrait que Site/Evenement + une fiche `Prestataire` passive (sans compte, peuplée par `artisan prestataire:create`). Écart discuté avec l'utilisateur, scope découpé en 3 étapes :
+1. **Compte Prestataire** (cette section) — login, gère ses propres fiches, pas de workflow de validation territoriale ni d'abonnement
+2. Workflow de validation (`ResponsableRegional`, `statut_validation` par territoire) — pas commencé
+3. SaaS complet (`Plan`/`Abonnement`/`FactureAbonnement`, blocage si abonnement expiré) — pas commencé
+
+### Backend
+
+- [x] Table `prestataire` étendue (`email` unique, `tel`, `password`) — même pattern que `Admin` : table indépendante avec son propre guard Sanctum (`prestataire`, driver sanctum, provider `prestataires`), pas de FK vers `users`. `Prestataire` devient `Authenticatable` (`HasApiTokens`, `Notifiable`)
+- [x] `EnsureIsPrestataire` (alias `prestataire`) — même logique que `EnsureIsAdmin` (vérifie `status` actif)
+- [x] `AuthController::registerPrestataire`/`loginPrestataire` — compte actif immédiatement à l'inscription (pas de workflow de validation à ce stade)
+- [x] `PrestataireController` : `updateProfil`, `dashboard` (nb sites/événements/réservations reçues, montant confirmé)
+- [x] `SiteController`/`EvenementController`/`PrixController`/`GalerieSiteController`/`GallerieEvnmtController` étendus pour accepter l'acteur Prestataire en plus d'Admin : ownership toujours déduit du token (jamais du client), vérifié sur `update`/`destroy` (403 sinon). **Comportement admin strictement inchangé** — aucune restriction d'ownership ajoutée pour les admins
+- [x] **Sécurité — un prestataire ne peut jamais s'auto-valider** : `Site::store` force `status=false`, `Evenement::store` force `status=en_attente`, quoi que le client envoie. Bug trouvé et corrigé pendant la vérification : `Site::update` ne retirait pas `status` de la requête (contrairement à `Evenement::update`), permettant à un prestataire de repasser son propre site à `status=true` via un simple `PUT` après création — corrigé avec la même règle que pour Evenement, revérifié
+- [x] Migration `id_admin` nullable sur `site`/`evenement` (raw SQL, `doctrine/dbal` absent de ce projet) — nécessaire pour qu'une fiche appartienne à un prestataire sans admin associé (symétrique à `id_prestataire`, déjà nullable depuis le 2026-09-15)
+- [x] Vérifié en réel via de vraies requêtes HTTP (2026-09-18) : inscription → connexion → création site (`status` forcé `false` malgré `status:true` envoyé) → création événement (`status` forcé `en_attente` malgré `status:valide` envoyé) → tarif + upload galerie (vrai JPEG) sur mes propres fiches → **isolation totale vérifiée avec un second prestataire** (403 sur `update` du site d'autrui, 403 sur création de tarif pour le site d'autrui) → admin non affecté (édite toujours tout sans restriction, valide l'événement du prestataire normalement) → **guard isolation confirmée** (token prestataire → 401 sur route `auth:admin`). Toutes les données de test supprimées après chaque vérification
+
+### Frontend
+
+- [x] Portail construit en miroir du portail admin existant — **réutilise les classes CSS `admin-*` telles quelles** (`admin-layout`, `admin-table`, `admin-modal`, `admin-form`, `admin-stat-card`...), aucune nouvelle CSS nécessaire
+- [x] `AuthContext` : `loginPrestataire`/`registerPrestataire`, `isPrestataire`. `logout()` route désormais vers le bon endpoint selon le rôle (`/prestataire/logout` vs `/logout`) — bug latent potentiel identifié au passage (`logout()` appelait toujours `/logout` quel que soit le rôle, y compris pour un admin ; `auth:sanctum` et `auth:admin` rejettent les tokens de l'autre guard, donc un logout admin échouait probablement déjà silencieusement côté serveur avant ce changement — le state local était nettoyé quand même donc invisible pour l'utilisateur ; **non corrigé pour Admin, hors périmètre de cette session**, à vérifier si on y retouche)
+- [x] `/prestataire/login`, `/prestataire/inscription` (nom entreprise, type d'activité, email, tel, password), `RequirePrestataire` (même pattern que `RequireAdmin`)
+- [x] Portail protégé : Dashboard (stats), Mes Sites, Mes Événements (CRUD complet, tarifs et galerie en modales intégrées, pas de champ statut modifiable — le serveur l'impose déjà), Mon Profil (infos + mot de passe)
+- [x] Lien "Espace Prestataire" ajouté au footer (colonne Services) — seul point d'entrée public, cohérent avec `/admin/login` qui n'est pas non plus mis en avant dans la nav
+- [x] Coordonnées réelles ajoutées aux 4 sites et 2 événements de démo (latitude/longitude étaient `NULL`) pendant le travail sur la carte Circuit — profite aussi à la recherche par proximité déjà existante
+- [x] Vérifié en réel (Playwright, 0 erreur console à chaque étape) : inscription → dashboard (stats à 0) → création site (badge "En attente" affiché) → ajout tarif (affiché immédiatement dans la modale) → upload galerie (vrai fichier JPEG via file chooser) → dashboard mis à jour (1 site) → édition profil → déconnexion → reconnexion avec les nouveaux identifiants → accès direct à `/prestataire` sans session redirige bien vers `/prestataire/login`. Portail admin existant revérifié sans régression (`/admin/login` toujours accessible, 0 erreur). Toutes les données de test supprimées après vérification (y compris le fichier uploadé)
+
+### Reste à faire (étapes 2 et 3, non commencées)
+
+- [ ] `ResponsableRegional` (acteur, guard, territoire) + workflow de validation réel des fiches en attente par région — actuellement seul un Admin peut valider/rejeter un `Evenement` (déjà existant), et rien ne bloque encore la visibilité publique d'une fiche `status=false`/`en_attente` (l'endpoint public `GET /sites`/`GET /evenements` n'a jamais filtré par défaut, avant comme après ce lot — délibérément non touché cette session pour ne pas casser `AdminSites.jsx`/`AdminEvenements.jsx` qui réutilisent le même endpoint sans filtre)
+- [ ] `Plan`/`Abonnement`/`FactureAbonnement`, blocage de création de fiche si abonnement expiré
+- [ ] Hôtel/Chambre, Restaurant/Plat, Transport/Trajet — entités du document jamais commencées, `type_prestataire` les anticipe déjà (enum `hotel`/`restaurant`/`transport`) mais seuls Site/Evenement existent comme "Service" concret
+- [ ] Favoris, notifications (push/SMS/email), blog, marketing — modules du document jamais commencés, hors du périmètre prestataire
