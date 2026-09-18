@@ -347,10 +347,28 @@ Trou de sécurité laissé ouvert dans la section précédente, résolu avant d'
 - [x] `AdminSites.jsx`/`AdminEvenements.jsx` basculés sur `sitesApi.adminList()`/`evenementsApi.adminList()`
 - [x] Vérifié en réel via de vraies requêtes HTTP + Playwright (0 erreur console) : site `en_attente` créé par admin → absent de `GET /sites` → 404 sur `GET /sites/{id}` en anonyme → 200 avec un token admin → présent dans `GET /admin/sites` → les 4 sites/2 événements de démo (`valide`) toujours visibles publiquement, recherche par proximité et pages admin toujours fonctionnelles (aucune régression). Donnée de test supprimée
 
-### Reste à faire (étape 3, non commencée)
+### Reste à faire (étape 3)
 
-- [ ] `Plan`/`Abonnement`/`FactureAbonnement`, blocage de création de fiche si abonnement expiré
 - [ ] Favoris, notifications (push/SMS/email), blog, marketing — modules du document jamais commencés, hors du périmètre prestataire
+
+## Module Abonnement SaaS — Plan/Abonnement/FactureAbonnement (étape 3/3 du module Prestataire, 2026-09-18)
+
+Dernier étage du module Prestataire (voir `id_plan`, `id_abonnement`, `id_facture` du document de référence). Paiement récurrent Kkiapay mirroré sur le flux Commande/Paiement existant (voir Module Commande + Paiement) plutôt que réinventé : `souscrire()` crée un `Abonnement` (réutilisé s'il est déjà `en_attente`, pour ne pas empiler une ligne par tentative) + une `FactureAbonnement`, `verifier()`/`webhook()` reconfirment toujours auprès de l'API Kkiapay avant d'acter quoi que ce soit (jamais sur la seule foi du client/payload), activation = `statut=actif` + `date_fin = +1 mois` (repart de la date de fin en cours si le renouvellement arrive avant expiration, pas de mois perdu).
+
+### Backend
+
+- [x] Schéma conforme au document : `plan` (`nom`, `prix_mensuel`, `nombre_fiches_max` nullable = illimité, `fonctionnalites` json), `abonnement` (`id_prestataire`, `id_plan`, `date_debut`/`date_fin`, `statut` enum `en_attente/actif/expire/annule`), `facture_abonnement` (`id_abonnement`, `montant`, `date_facturation`, `statut_paiement` enum `en_attente/payee/echouee`, `reference_transaction`, `payload_webhook`)
+- [x] `PlanController` : `index` public, CRUD admin (`/admin/plans`) — `destroy` refuse si des abonnements référencent encore le plan (422)
+- [x] `AbonnementController` : `statut` (GET `/prestataire/abonnement`, abonnement courant + booléen `actif`), `souscrire` (POST `/prestataire/abonnements`, refuse 422 si un abonnement actif couvre déjà la période), `verifier` (PATCH `/prestataire/factures-abonnement/{id}/verifier`, idempotent), `webhook` (POST `/webhooks/kkiapay-abonnement`, secret `x-kkiapay-secret`), `adminIndex` (GET `/admin/abonnements`)
+- [x] **Précondition métier ajoutée** (« le prestataire dispose d'un compte actif et d'un abonnement en cours de validité ») sur `SiteController`/`EvenementController`/`HotelController`/`RestaurantController`/`TransportController::store()` — branche Prestataire uniquement : `Prestataire::abonnementActif()` (statut `actif` + `date_fin >= aujourd'hui`) sinon 403 avant toute création. Admin et ResponsableRegional non concernés, comportement inchangé
+- [x] Vérifié en réel via de vraies requêtes HTTP : blocage 403 confirmé sur les 5 types de fiches pour un prestataire sans abonnement, régression testée côté admin (toujours 201 sans restriction) ; connectivité réelle à l'API sandbox Kkiapay (`TRANSACTION_NOT_FOUND` sur une transaction bidon, même pattern que la vérification Commande/Paiement) ; webhook rejeté sur secret invalide (401) ; activation via tinker → `abonnementActif()` passe à `true` → déblocage immédiat confirmé par une vraie requête `POST /prestataire/sites` (201) ; re-souscription refusée pendant qu'un abonnement est actif (422) ; suppression d'un plan encore référencé refusée (422). Toutes les données de test supprimées après vérification
+
+### Frontend
+
+- [x] Portail Prestataire : page `/prestataire/abonnement` (statut actuel avec date d'expiration, sélection d'un plan, bouton "Payer maintenant" sur une facture `en_attente`, historique des factures) ; bannière d'alerte sur le Dashboard quand aucun abonnement actif, avec lien direct
+- [x] Widget Kkiapay mirroré sur `MesReservations.jsx` (`PayerButton`) : `data` porte l'id de la `FactureAbonnement`, résolu côté serveur via `stateData.data` (même mécanisme que `Paiement`). Aucun montant recalculé côté client
+- [x] Portail Admin : `AdminPlans.jsx` (CRUD complet, mirroir `AdminResponsables.jsx`), `AdminAbonnements.jsx` (liste en lecture seule - la gestion se fait côté portail Prestataire)
+- [x] Vérifié en réel (Playwright, 0 erreur console à chaque étape) : création d'un plan admin → inscription prestataire → bannière "abonnement inactif" sur le dashboard → souscription → **paiement sandbox réel via le widget Kkiapay** (numéro de test MTN, piloté par Playwright) → "Paiement confirmé, abonnement activé !" → statut "Actif" avec date d'expiration affichée → création d'un site débloquée immédiatement depuis l'UI (sans rechargement manuel) → abonnement visible dans `AdminAbonnements.jsx`. Toutes les données de test supprimées après vérification
 
 ## Module Hôtel/Restaurant/Transport (2026-09-18)
 
