@@ -20,6 +20,7 @@ class Site extends Model
         'id_cat_site',
         'id_admin',
         'id_prestataire',
+        'id_region',
     ];
 
     protected $casts = [
@@ -40,6 +41,11 @@ class Site extends Model
     public function prestataire()
     {
         return $this->belongsTo(Prestataire::class, 'id_prestataire');
+    }
+
+    public function region()
+    {
+        return $this->belongsTo(Region::class, 'id_region');
     }
 
     public function galeries()

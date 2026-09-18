@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Admin;
 use App\Models\Prestataire;
+use App\Models\ResponsableRegional;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -186,6 +187,58 @@ class AuthController extends Controller
         return response()->json([
             'message'     => 'Connexion réussie',
             'prestataire' => $prestataire,
+            'token'       => $token,
+            'type'        => 'Bearer',
+        ]);
+    }
+
+    #[
+        OA\Post(
+            path: "/api/responsable/login",
+            tags: ["Responsables régionaux"],
+            summary: "Connexion responsable régional",
+            requestBody: new OA\RequestBody(
+                required: true,
+                content: new OA\JsonContent(
+                    required: ["tel", "password"],
+                    properties: [
+                        new OA\Property(property: "tel", type: "string"),
+                        new OA\Property(property: "password", type: "string"),
+                    ],
+                ),
+            ),
+            responses: [
+                new OA\Response(response: 200, description: "Connexion réussie"),
+                new OA\Response(response: 422, description: "Identifiants incorrects ou compte désactivé"),
+            ],
+        ),
+    ]
+    public function loginResponsable(Request $request)
+    {
+        $request->validate([
+            'tel'      => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $responsable = ResponsableRegional::where('tel', $request->tel)->first();
+
+        if (!$responsable || !Hash::check($request->password, $responsable->password)) {
+            throw ValidationException::withMessages([
+                'tel' => ['Identifiants incorrects.'],
+            ]);
+        }
+
+        if (!$responsable->status) {
+            throw ValidationException::withMessages([
+                'tel' => ['Ce compte responsable est désactivé.'],
+            ]);
+        }
+
+        $token = $responsable->createToken('responsable_token')->plainTextToken;
+
+        return response()->json([
+            'message'     => 'Connexion réussie',
+            'responsable' => $responsable->load('region'),
             'token'       => $token,
             'type'        => 'Bearer',
         ]);

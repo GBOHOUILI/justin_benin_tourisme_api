@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+
+class ResponsableRegional extends Authenticatable
+{
+    use HasApiTokens, Notifiable;
+
+    protected $table = 'responsable_regional';
+
+    protected $fillable = [
+        'nom',
+        'prenom',
+        'tel',
+        'password',
+        'status',
+        'id_region',
+    ];
+
+    protected $hidden = [
+        'password',
+    ];
+
+    protected $casts = [
+        'password' => 'hashed',
+    ];
+
+    public function region()
+    {
+        return $this->belongsTo(Region::class, 'id_region');
+    }
+
+    /** Un responsable sans région assignée valide partout (poste vacant ailleurs). */
+    public function estGlobal(): bool
+    {
+        return $this->id_region === null;
+    }
+}

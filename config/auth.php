@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Models\Admin;
 use App\Models\Prestataire;
+use App\Models\ResponsableRegional;
 
 return [
     "defaults" => [
@@ -33,6 +34,12 @@ return [
             "driver" => "sanctum",
             "provider" => "prestataires",
         ],
+
+        // Guard séparé pour les responsables régionaux (validation territoriale)
+        "responsable" => [
+            "driver" => "sanctum",
+            "provider" => "responsables",
+        ],
     ],
 
     "providers" => [
@@ -49,6 +56,11 @@ return [
         "prestataires" => [
             "driver" => "eloquent",
             "model" => Prestataire::class,
+        ],
+
+        "responsables" => [
+            "driver" => "eloquent",
+            "model" => ResponsableRegional::class,
         ],
     ],
 

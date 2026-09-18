@@ -15,10 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // EnsureFrontendRequestsAreStateful supprimé — cause une récursion
         // infinie dans Sanctum Guard pour une API Bearer token pure
 
-        // Alias utilisables dans les routes : 'admin', 'prestataire'
+        // Alias utilisables dans les routes : 'admin', 'prestataire', 'responsable'
         $middleware->alias([
             "admin" => \App\Http\Middleware\EnsureIsAdmin::class,
             "prestataire" => \App\Http\Middleware\EnsureIsPrestataire::class,
+            "responsable" => \App\Http\Middleware\EnsureIsResponsable::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
