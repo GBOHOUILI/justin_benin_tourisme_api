@@ -338,9 +338,17 @@ Suite à la discussion avec l'utilisateur : le responsable régional connaît so
 - [x] `ResponsableSites.jsx`/`ResponsableEvenements.jsx` (mirroir des pages Prestataire équivalentes, tarifs + galerie en modales) ; champ Région en lecture seule (pré-rempli à sa propre région) pour un responsable scopé, select pour un responsable global. Navigation `ResponsableLayout` étendue de "À valider" à "Mes Sites"/"Mes Événements"
 - [x] Vérifié en réel (Playwright, 0 erreur console) : région forcée "Littoral" affichée en lecture seule → site créé en attente → absent de la propre file du responsable → visible et validable dans `AdminSites.jsx` (aucune régression) → validation admin réussie. Données de test supprimées
 
+### Filtrage public des fiches non validées (2026-09-18)
+
+Trou de sécurité laissé ouvert dans la section précédente, résolu avant d'attaquer Hôtel/Restaurant/Transport (demandé par l'utilisateur).
+
+- [x] Liste publique et liste admin séparées plutôt qu'un filtre conditionnel sur le même endpoint (qui aurait cassé la vue "tout voir" d'`AdminSites.jsx`/`AdminEvenements.jsx`) : `SiteController`/`EvenementController::index()` (public, route inchangée) ne renvoie désormais que `status=valide`, quoi que le client envoie. Nouveau `adminIndex()` (mêmes filtres recherche/catégorie/prix/proximité, extraits dans `requeteFiltree()` partagée) sans restriction de statut, exposé sur les nouvelles routes `GET /admin/sites`/`GET /admin/evenements`
+- [x] `show()` (Site + Evenement) : 404 sur une fiche non validée pour tout le monde sauf un Admin (`$request->user('admin')`, sans middleware de route nécessaire) — fermait le même trou pour un lien direct vers une fiche pas encore approuvée (liste filtrée ne suffisait pas, l'accès par id restait ouvert)
+- [x] `AdminSites.jsx`/`AdminEvenements.jsx` basculés sur `sitesApi.adminList()`/`evenementsApi.adminList()`
+- [x] Vérifié en réel via de vraies requêtes HTTP + Playwright (0 erreur console) : site `en_attente` créé par admin → absent de `GET /sites` → 404 sur `GET /sites/{id}` en anonyme → 200 avec un token admin → présent dans `GET /admin/sites` → les 4 sites/2 événements de démo (`valide`) toujours visibles publiquement, recherche par proximité et pages admin toujours fonctionnelles (aucune régression). Donnée de test supprimée
+
 ### Reste à faire (étape 3, non commencée)
 
 - [ ] `Plan`/`Abonnement`/`FactureAbonnement`, blocage de création de fiche si abonnement expiré
-- [ ] Toujours pas de filtrage par défaut des fiches non validées sur les endpoints publics `GET /sites`/`GET /evenements` — délibérément non touché (`AdminSites.jsx`/`AdminEvenements.jsx` réutilisent le même endpoint sans filtre, un filtre par défaut casserait leur vue "tout voir"). Une fiche `en_attente`/`rejete` reste donc visible publiquement pour l'instant — à trancher si ça devient un problème produit réel
 - [ ] Hôtel/Chambre, Restaurant/Plat, Transport/Trajet — entités du document jamais commencées, `type_prestataire` les anticipe déjà (enum `hotel`/`restaurant`/`transport`) mais seuls Site/Evenement existent comme "Service" concret. Décision actée : tables indépendantes, pas de `Service` générique (cf. en-tête de section)
 - [ ] Favoris, notifications (push/SMS/email), blog, marketing — modules du document jamais commencés, hors du périmètre prestataire
