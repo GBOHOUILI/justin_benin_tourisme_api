@@ -65,4 +65,4 @@ EXPOSE 80
 # 4. route:cache       → cache les routes
 # 5. view:cache        → cache les vues Blade
 # 6. apache2-foreground → démarre le serveur web
-CMD ["sh", "-c", "php artisan migrate --force && php artisan storage:link || true && php artisan config:cache && php artisan route:cache && php artisan view:cache && apache2-foreground"]
+CMD ["sh", "-c", "php artisan migrate --force && php artisan storage:link || true && php artisan route:cache && php artisan view:cache && apache2-foreground"]
