@@ -21,6 +21,14 @@ return Application::configure(basePath: dirname(__DIR__))
             "prestataire" => \App\Http\Middleware\EnsureIsPrestataire::class,
             "responsable" => \App\Http\Middleware\EnsureIsResponsable::class,
         ]);
+
+        // API pure, aucune route web "login" : sans ce override, le framework
+        // branche par défaut redirectGuestsTo(fn () => route('login')) (voir
+        // ApplicationBuilder::withMiddleware) - toute requête non authentifiée
+        // qui n'envoie pas Accept: application/json (Swagger "Try it out",
+        // Postman, curl brut...) plante alors en 500 (RouteNotFoundException,
+        // "Route [login] not defined") au lieu d'un 401 propre.
+        $middleware->redirectGuestsTo(fn () => null);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
