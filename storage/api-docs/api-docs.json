@@ -809,7 +809,7 @@
                 "tags": [
                     "Circuits"
                 ],
-                "summary": "Créer un circuit (itinéraire personnalisé, construit manuellement — pas d'IA pour l'instant)",
+                "summary": "Créer un circuit (itinéraire personnalisé, construit manuellement - pas d'IA pour l'instant)",
                 "operationId": "b30e55037a8c729b170fdb384fc29dd7",
                 "requestBody": {
                     "required": true,
@@ -993,7 +993,7 @@
                                         }
                                     },
                                     "echelonner": {
-                                        "description": "Demande un paiement échelonné — refusé si le tarif ne le permet pas",
+                                        "description": "Demande un paiement échelonné - refusé si le tarif ne le permet pas",
                                         "type": "boolean"
                                     }
                                 },
@@ -1211,7 +1211,7 @@
                                 ],
                                 "properties": {
                                     "ordre": {
-                                        "description": "Liste des id d'étapes dans le nouvel ordre souhaité — doit contenir exactement toutes les étapes du circuit",
+                                        "description": "Liste des id d'étapes dans le nouvel ordre souhaité - doit contenir exactement toutes les étapes du circuit",
                                         "type": "array",
                                         "items": {
                                             "type": "integer"
@@ -1263,7 +1263,7 @@
                     "Evenements"
                 ],
                 "summary": "Lister les événements",
-                "description": "Filtres communs (recherche, catégorie, date, prix, proximité) — pas le statut, géré par index()/adminIndex().",
+                "description": "Filtres communs (recherche, catégorie, date, prix, proximité) - pas le statut, géré par index()/adminIndex().",
                 "operationId": "5c2a9fa53cdfac0a74ac29d36b470bf2",
                 "parameters": [
                     {
@@ -2687,7 +2687,7 @@
                 "tags": [
                     "Réservations"
                 ],
-                "summary": "Créer une réservation — gratuite (tarif à 0 ou absent) ou payante (statut en_attente_paiement, ticket différé au paiement)",
+                "summary": "Créer une réservation - gratuite (tarif à 0 ou absent) ou payante (statut en_attente_paiement, ticket différé au paiement)",
                 "operationId": "01e3d21dc330a31de025203bc142ffa3",
                 "requestBody": {
                     "required": true,
@@ -2720,7 +2720,7 @@
                                         "type": "integer"
                                     },
                                     "id_prix": {
-                                        "description": "Tarif choisi (table Prix) — le montant n'est jamais fourni par le client, il est résolu côté serveur depuis ce tarif",
+                                        "description": "Tarif choisi (table Prix) - le montant n'est jamais fourni par le client, il est résolu côté serveur depuis ce tarif",
                                         "type": "integer"
                                     }
                                 },
@@ -2766,7 +2766,7 @@
                 "tags": [
                     "Responsables régionaux"
                 ],
-                "summary": "Créer un responsable régional (admin) — pas d'auto-inscription, poste officiel",
+                "summary": "Créer un responsable régional (admin) - pas d'auto-inscription, poste officiel",
                 "operationId": "df8c8fd8dd76d84c9024270808e78b11",
                 "requestBody": {
                     "required": true,
@@ -3229,7 +3229,7 @@
                     "Sites"
                 ],
                 "summary": "Liste des sites",
-                "description": "Filtres communs (recherche, catégorie, prix, proximité) — pas le statut, géré différemment par index()/adminIndex().",
+                "description": "Filtres communs (recherche, catégorie, prix, proximité) - pas le statut, géré différemment par index()/adminIndex().",
                 "operationId": "a6eb725f23c4ad001db400347fdfec8f",
                 "parameters": [
                     {
