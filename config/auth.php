@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Models\Admin;
+use App\Models\Prestataire;
 
 return [
     "defaults" => [
@@ -26,6 +27,12 @@ return [
             "driver" => "sanctum",
             "provider" => "admins",
         ],
+
+        // Guard séparé pour les prestataires (portail SaaS)
+        "prestataire" => [
+            "driver" => "sanctum",
+            "provider" => "prestataires",
+        ],
     ],
 
     "providers" => [
@@ -37,6 +44,11 @@ return [
         "admins" => [
             "driver" => "eloquent",
             "model" => Admin::class,
+        ],
+
+        "prestataires" => [
+            "driver" => "eloquent",
+            "model" => Prestataire::class,
         ],
     ],
 

@@ -20,6 +20,7 @@ use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\CircuitController;
 use App\Http\Controllers\EtapeCircuitController;
+use App\Http\Controllers\PrestataireController;
 
 // ══════════════════════════════════════════════════════
 //  ROUTES PUBLIQUES — aucun token requis
@@ -28,6 +29,8 @@ use App\Http\Controllers\EtapeCircuitController;
 Route::post("/register", [AuthController::class, "register"]);
 Route::post("/login", [AuthController::class, "login"]);
 Route::post("/admin/login", [AuthController::class, "loginAdmin"]);
+Route::post("/prestataire/register", [AuthController::class, "registerPrestataire"]);
+Route::post("/prestataire/login", [AuthController::class, "loginPrestataire"]);
 
 // Consultation publique
 Route::get("/sites", [SiteController::class, "index"]);
@@ -224,4 +227,44 @@ Route::middleware(["auth:admin", "admin"])
             FonctionnaliteController::class,
             "assignerUser",
         ]);
+    });
+
+// ══════════════════════════════════════════════════════
+//  ROUTES PRESTATAIRE — token Prestataire (auth:prestataire)
+//  Portail SaaS : gère uniquement ses propres fiches (Site/
+//  Evenement/Prix/Galerie), jamais celles d'un autre prestataire.
+// ══════════════════════════════════════════════════════
+Route::middleware(["auth:prestataire", "prestataire"])
+    ->prefix("prestataire")
+    ->group(function () {
+        Route::get("/me", [AuthController::class, "me"]);
+        Route::post("/logout", [AuthController::class, "logout"]);
+        Route::post("/update-password", [AuthController::class, "updatePassword"]);
+        Route::put("/profil", [PrestataireController::class, "updateProfil"]);
+        Route::get("/dashboard", [PrestataireController::class, "dashboard"]);
+
+        // Mes sites
+        Route::get("/sites", [SiteController::class, "mine"]);
+        Route::post("/sites", [SiteController::class, "store"]);
+        Route::put("/sites/{site}", [SiteController::class, "update"]);
+        Route::delete("/sites/{site}", [SiteController::class, "destroy"]);
+
+        // Mes événements
+        Route::get("/evenements", [EvenementController::class, "mine"]);
+        Route::post("/evenements", [EvenementController::class, "store"]);
+        Route::put("/evenements/{evenement}", [EvenementController::class, "update"]);
+        Route::delete("/evenements/{evenement}", [EvenementController::class, "destroy"]);
+
+        // Tarifs et galeries de mes fiches (ownership vérifié dans les controllers)
+        Route::post("/prix", [PrixController::class, "store"]);
+        Route::put("/prix/{prix}", [PrixController::class, "update"]);
+        Route::delete("/prix/{prix}", [PrixController::class, "destroy"]);
+
+        Route::post("/galeries/sites", [GalerieSiteController::class, "store"]);
+        Route::put("/galeries/sites/{galerieSite}", [GalerieSiteController::class, "update"]);
+        Route::delete("/galeries/sites/{galerieSite}", [GalerieSiteController::class, "destroy"]);
+
+        Route::post("/galeries/evenements", [GallerieEvnmtController::class, "store"]);
+        Route::put("/galeries/evenements/{gallerieEvnmt}", [GallerieEvnmtController::class, "update"]);
+        Route::delete("/galeries/evenements/{gallerieEvnmt}", [GallerieEvnmtController::class, "destroy"]);
     });

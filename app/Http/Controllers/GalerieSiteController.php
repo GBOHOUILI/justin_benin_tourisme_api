@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\GalerieSite;
+use App\Models\Prestataire;
+use App\Models\Site;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use OpenApi\Attributes as OA;
@@ -114,6 +116,11 @@ class GalerieSiteController extends Controller
                 "nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov|max:51200",
         ]);
 
+        if ($request->user() instanceof Prestataire
+            && !Site::where('id', $validated['id_site'])->where('id_prestataire', $request->user()->id)->exists()) {
+            return response()->json(["message" => "Ce site ne vous appartient pas."], 403);
+        }
+
         // CORRECTION : le libelle (titre) est conservé tel quel.
         // Le chemin du fichier est stocké dans un champ séparé 'url_fichier'.
         if ($request->hasFile("fichier")) {
@@ -184,6 +191,10 @@ class GalerieSiteController extends Controller
     ]
     public function update(Request $request, GalerieSite $galerieSite)
     {
+        if ($request->user() instanceof Prestataire && $galerieSite->site?->id_prestataire !== $request->user()->id) {
+            return response()->json(["message" => "Cette galerie ne vous appartient pas."], 403);
+        }
+
         $validated = $request->validate([
             "libelle" => "sometimes|string|max:255",
             "type" => "sometimes|string|in:image,video",
@@ -218,8 +229,12 @@ class GalerieSiteController extends Controller
             ],
         ),
     ]
-    public function destroy(GalerieSite $galerieSite)
+    public function destroy(Request $request, GalerieSite $galerieSite)
     {
+        if ($request->user() instanceof Prestataire && $galerieSite->site?->id_prestataire !== $request->user()->id) {
+            return response()->json(["message" => "Cette galerie ne vous appartient pas."], 403);
+        }
+
         // Suppression du fichier physique si présent
         if (
             $galerieSite->url_fichier &&

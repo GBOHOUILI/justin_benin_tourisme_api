@@ -2,12 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Prestataire;
 use App\Models\Site;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 class SiteController extends Controller
 {
+    #[
+        OA\Get(
+            path: "/api/prestataire/sites",
+            tags: ["Prestataires"],
+            summary: "Lister mes propres sites (prestataire connecté)",
+            security: [["bearerAuth" => []]],
+            responses: [
+                new OA\Response(response: 200, description: "Liste paginée de mes sites"),
+            ],
+        ),
+    ]
+    public function mine(Request $request)
+    {
+        return response()->json(
+            $request->user()->sites()->with(["categorie", "galeries", "prix"])->latest()->paginate(15)
+        );
+    }
+
     #[
         OA\Get(
             path: "/api/sites",
@@ -183,12 +202,21 @@ class SiteController extends Controller
             "id_cat_site" => "required|exists:cat_site,id",
         ]);
 
-        // CORRECTION : l'id_admin est toujours celui de l'admin connecté
-        $validated["id_admin"] = $request->user()->id;
+        // id_admin OU id_prestataire selon le guard connecté — jamais les deux,
+        // jamais fourni par le client (déduit du token).
+        if ($request->user() instanceof Prestataire) {
+            $validated["id_prestataire"] = $request->user()->id;
+            // Un prestataire ne décide jamais lui-même que son site est actif :
+            // inactif à la création, quoi que le client envoie (même logique
+            // que le statut "en_attente" forcé sur Evenement::store).
+            $validated["status"] = false;
+        } else {
+            $validated["id_admin"] = $request->user()->id;
+        }
 
         $site = Site::create($validated);
 
-        return response()->json($site->load(["categorie", "admin"]), 201);
+        return response()->json($site->load(["categorie", "admin", "prestataire"]), 201);
     }
 
     #[
@@ -272,6 +300,10 @@ class SiteController extends Controller
     ]
     public function update(Request $request, Site $site)
     {
+        if ($request->user() instanceof Prestataire && $site->id_prestataire !== $request->user()->id) {
+            return response()->json(["message" => "Ce site ne vous appartient pas."], 403);
+        }
+
         $validated = $request->validate([
             "libelle" => "sometimes|string|max:200",
             "adresse" => "sometimes|string|max:255",
@@ -308,8 +340,12 @@ class SiteController extends Controller
             ],
         ),
     ]
-    public function destroy(Site $site)
+    public function destroy(Request $request, Site $site)
     {
+        if ($request->user() instanceof Prestataire && $site->id_prestataire !== $request->user()->id) {
+            return response()->json(["message" => "Ce site ne vous appartient pas."], 403);
+        }
+
         $site->delete();
 
         return response()->json(

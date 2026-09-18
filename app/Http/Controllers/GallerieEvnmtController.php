@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Evenement;
 use App\Models\GallerieEvnmt;
+use App\Models\Prestataire;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use OpenApi\Attributes as OA;
@@ -113,6 +115,11 @@ class GallerieEvnmtController extends Controller
                 "nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov|max:51200",
         ]);
 
+        if ($request->user() instanceof Prestataire
+            && !Evenement::where('id', $validated['id_evnmt'])->where('id_prestataire', $request->user()->id)->exists()) {
+            return response()->json(["message" => "Cet événement ne vous appartient pas."], 403);
+        }
+
         // CORRECTION : le libelle (titre) est conservé tel quel.
         // Le chemin du fichier est stocké dans un champ séparé 'url_fichier'.
         if ($request->hasFile("fichier")) {
@@ -186,6 +193,10 @@ class GallerieEvnmtController extends Controller
     ]
     public function update(Request $request, GallerieEvnmt $gallerieEvnmt)
     {
+        if ($request->user() instanceof Prestataire && $gallerieEvnmt->evenement?->id_prestataire !== $request->user()->id) {
+            return response()->json(["message" => "Cette galerie ne vous appartient pas."], 403);
+        }
+
         $validated = $request->validate([
             "libelle" => "sometimes|string|max:255",
             "type" => "sometimes|string|in:image,video",
@@ -220,8 +231,12 @@ class GallerieEvnmtController extends Controller
             ],
         ),
     ]
-    public function destroy(GallerieEvnmt $gallerieEvnmt)
+    public function destroy(Request $request, GallerieEvnmt $gallerieEvnmt)
     {
+        if ($request->user() instanceof Prestataire && $gallerieEvnmt->evenement?->id_prestataire !== $request->user()->id) {
+            return response()->json(["message" => "Cette galerie ne vous appartient pas."], 403);
+        }
+
         if (
             $gallerieEvnmt->url_fichier &&
             Storage::disk("public")->exists($gallerieEvnmt->url_fichier)
