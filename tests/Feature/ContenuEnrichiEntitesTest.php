@@ -72,4 +72,19 @@ class ContenuEnrichiEntitesTest extends TestCase
         $this->assertSame('2h', $fresh->duree_visite);
         $this->assertSame('facile', $fresh->difficulte);
     }
+
+    public function test_hotel_round_trips_contenu_enrichi_et_heures_arrivee_depart(): void
+    {
+        $hotel = \App\Models\Hotel::factory()->create([
+            'points_forts' => ['Piscine', 'Vue mer'],
+            'heure_arrivee' => '14:00',
+            'heure_depart' => '11:00',
+        ]);
+
+        $fresh = $hotel->fresh();
+
+        $this->assertSame(['Piscine', 'Vue mer'], $fresh->points_forts);
+        $this->assertSame('14:00:00', $fresh->heure_arrivee);
+        $this->assertSame('11:00:00', $fresh->heure_depart);
+    }
 }
