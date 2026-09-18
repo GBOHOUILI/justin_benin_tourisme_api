@@ -466,8 +466,17 @@
                         }
                     },
                     {
-                        "name": "id_utilisation",
+                        "name": "id_site",
                         "in": "query",
+                        "description": "Avis laissés sur ce site (via la réservation)",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id_evnmt",
+                        "in": "query",
+                        "description": "Avis laissés sur cet événement (via la réservation)",
                         "schema": {
                             "type": "integer"
                         }
@@ -490,11 +499,12 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "id_utilisation",
+                                    "id_reservation",
                                     "message"
                                 ],
                                 "properties": {
-                                    "id_utilisation": {
+                                    "id_reservation": {
+                                        "description": "Réservation confirmée du touriste sur laquelle porte l'avis",
                                         "type": "integer"
                                     },
                                     "message": {
@@ -509,6 +519,9 @@
                 "responses": {
                     "201": {
                         "description": "Avis créé"
+                    },
+                    "422": {
+                        "description": "Réservation non confirmée, ou déjà notée"
                     }
                 }
             }

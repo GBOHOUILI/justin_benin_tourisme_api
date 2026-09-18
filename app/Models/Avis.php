@@ -12,13 +12,13 @@ class Avis extends Model
     protected $table = 'avis';
 
     protected $fillable = [
-        'id_utilisation',
+        'id_reservation',
         'message',
         'status',
     ];
 
-    public function utilisation()
+    public function reservation()
     {
-        return $this->belongsTo(Utilisation::class, 'id_utilisation');
+        return $this->belongsTo(Reservation::class, 'id_reservation');
     }
 }

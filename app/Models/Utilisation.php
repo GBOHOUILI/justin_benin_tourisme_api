@@ -26,9 +26,4 @@ class Utilisation extends Model
     {
         return $this->belongsTo(Ticket::class, 'id_ticket');
     }
-
-    public function avis()
-    {
-        return $this->hasOne(Avis::class, 'id_utilisation');
-    }
 }

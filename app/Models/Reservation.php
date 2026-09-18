@@ -50,4 +50,9 @@ class Reservation extends Model
     {
         return $this->belongsTo(Commande::class, 'id_commande');
     }
+
+    public function avis()
+    {
+        return $this->hasOne(Avis::class, 'id_reservation');
+    }
 }

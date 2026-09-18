@@ -17,7 +17,9 @@ class ReservationController extends Controller
     public function index(Request $request)
     {
         // CORRECTION : on charge site et evenement SANS user (évite récursion)
-        $query = Reservation::with(['site', 'evenement', 'tickets'])
+        // 'avis' chargé pour que le frontend sache si une réservation confirmee
+        // a déjà été notée (affichage conditionnel du formulaire de dépôt d'avis)
+        $query = Reservation::with(['site', 'evenement', 'tickets', 'avis'])
             ->where('id_user', $request->user()->id);
 
         if ($request->filled('id_site'))  $query->where('id_site', $request->id_site);
