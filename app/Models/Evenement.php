@@ -82,6 +82,11 @@ class Evenement extends Model
         return $this->hasMany(Reservation::class, 'id_evnmt');
     }
 
+    public function avis()
+    {
+        return $this->hasManyThrough(Avis::class, Reservation::class, 'id_evnmt', 'id_reservation');
+    }
+
     public function prix()
     {
         return $this->hasMany(Prix::class, 'id_evnmt');

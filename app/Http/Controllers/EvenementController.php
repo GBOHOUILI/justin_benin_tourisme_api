@@ -96,7 +96,9 @@ class EvenementController extends Controller
     /** Filtres communs (recherche, catégorie, date, prix, proximité) - pas le statut, géré par index()/adminIndex(). */
     private function requeteFiltree(Request $request)
     {
-        $query = Evenement::with(["categorie", "galeries", "prix", "region", "prestataire", "responsable"]);
+        $query = Evenement::with(["categorie", "galeries", "prix", "region", "prestataire", "responsable"])
+            ->withAvg(["avis as note_moyenne" => fn($q) => $q->where("avis.status", "approuve")], "note")
+            ->withCount(["avis as nombre_avis" => fn($q) => $q->where("avis.status", "approuve")]);
 
         if ($request->filled("libelle")) {
             $query->where("libelle", "like", "%" . $request->libelle . "%");
@@ -331,18 +333,20 @@ class EvenementController extends Controller
             abort(404);
         }
 
-        return response()->json(
-            $evenement->load([
-                "categorie",
-                "admin",
-                "prestataire",
-                "responsable",
-                "region",
-                "galeries",
-                "prix",
-                "sites",
-            ]),
-        );
+        $evenement->load([
+            "categorie",
+            "admin",
+            "prestataire",
+            "responsable",
+            "region",
+            "galeries",
+            "prix",
+            "sites",
+        ]);
+        $evenement->loadAvg(["avis as note_moyenne" => fn($q) => $q->where("avis.status", "approuve")], "note");
+        $evenement->loadCount(["avis as nombre_avis" => fn($q) => $q->where("avis.status", "approuve")]);
+
+        return response()->json($evenement);
     }
 
     #[

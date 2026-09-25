@@ -28,7 +28,9 @@ class RestaurantController extends Controller
 
     private function requeteFiltree(Request $request)
     {
-        $query = Restaurant::with(["galeries", "plats", "region", "prestataire", "responsable"]);
+        $query = Restaurant::with(["galeries", "plats", "region", "prestataire", "responsable"])
+            ->withAvg(["avis as note_moyenne" => fn($q) => $q->where("avis.status", "approuve")], "note")
+            ->withCount(["avis as nombre_avis" => fn($q) => $q->where("avis.status", "approuve")]);
 
         if ($request->filled("libelle")) {
             $query->where("libelle", "like", "%" . $request->libelle . "%");
@@ -205,9 +207,11 @@ class RestaurantController extends Controller
             abort(404);
         }
 
-        return response()->json(
-            $restaurant->load(["admin", "prestataire", "responsable", "region", "galeries", "plats"]),
-        );
+        $restaurant->load(["admin", "prestataire", "responsable", "region", "galeries", "plats"]);
+        $restaurant->loadAvg(["avis as note_moyenne" => fn($q) => $q->where("avis.status", "approuve")], "note");
+        $restaurant->loadCount(["avis as nombre_avis" => fn($q) => $q->where("avis.status", "approuve")]);
+
+        return response()->json($restaurant);
     }
 
     #[

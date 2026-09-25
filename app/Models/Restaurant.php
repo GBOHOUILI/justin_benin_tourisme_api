@@ -67,4 +67,9 @@ class Restaurant extends Model
     {
         return $this->hasMany(GalerieRestaurant::class, 'id_restaurant');
     }
+
+    public function avis()
+    {
+        return $this->hasMany(Avis::class, 'id_restaurant');
+    }
 }

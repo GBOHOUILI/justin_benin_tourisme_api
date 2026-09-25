@@ -18,6 +18,7 @@ class AvisFactory extends Factory
         return [
             'id_reservation' => Reservation::factory()->state(['statut' => 'confirmee']),
             'message' => fake()->sentence(),
+            'note' => fake()->numberBetween(1, 5),
             'status' => 'en_attente',
         ];
     }

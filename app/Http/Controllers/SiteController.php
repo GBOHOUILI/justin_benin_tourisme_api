@@ -91,7 +91,9 @@ class SiteController extends Controller
     /** Filtres communs (recherche, catégorie, prix, proximité) - pas le statut, géré différemment par index()/adminIndex(). */
     private function requeteFiltree(Request $request)
     {
-        $query = Site::with(["categorie", "galeries", "prix", "region", "prestataire", "responsable"]);
+        $query = Site::with(["categorie", "galeries", "prix", "region", "prestataire", "responsable"])
+            ->withAvg(["avis as note_moyenne" => fn($q) => $q->where("avis.status", "approuve")], "note")
+            ->withCount(["avis as nombre_avis" => fn($q) => $q->where("avis.status", "approuve")]);
 
         if ($request->filled("libelle")) {
             $query->where("libelle", "like", "%" . $request->libelle . "%");
@@ -309,18 +311,20 @@ class SiteController extends Controller
             abort(404);
         }
 
-        return response()->json(
-            $site->load([
-                "categorie",
-                "admin",
-                "prestataire",
-                "responsable",
-                "region",
-                "galeries",
-                "prix",
-                "evenements",
-            ]),
-        );
+        $site->load([
+            "categorie",
+            "admin",
+            "prestataire",
+            "responsable",
+            "region",
+            "galeries",
+            "prix",
+            "evenements",
+        ]);
+        $site->loadAvg(["avis as note_moyenne" => fn($q) => $q->where("avis.status", "approuve")], "note");
+        $site->loadCount(["avis as nombre_avis" => fn($q) => $q->where("avis.status", "approuve")]);
+
+        return response()->json($site);
     }
 
     #[

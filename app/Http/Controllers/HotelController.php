@@ -29,7 +29,9 @@ class HotelController extends Controller
     /** Filtres communs (recherche, proximité) - pas le statut, géré différemment par index()/adminIndex(). */
     private function requeteFiltree(Request $request)
     {
-        $query = Hotel::with(["galeries", "chambres", "region", "prestataire", "responsable"]);
+        $query = Hotel::with(["galeries", "chambres", "region", "prestataire", "responsable"])
+            ->withAvg(["avis as note_moyenne" => fn($q) => $q->where("avis.status", "approuve")], "note")
+            ->withCount(["avis as nombre_avis" => fn($q) => $q->where("avis.status", "approuve")]);
 
         if ($request->filled("libelle")) {
             $query->where("libelle", "like", "%" . $request->libelle . "%");
@@ -201,9 +203,11 @@ class HotelController extends Controller
             abort(404);
         }
 
-        return response()->json(
-            $hotel->load(["admin", "prestataire", "responsable", "region", "galeries", "chambres"]),
-        );
+        $hotel->load(["admin", "prestataire", "responsable", "region", "galeries", "chambres"]);
+        $hotel->loadAvg(["avis as note_moyenne" => fn($q) => $q->where("avis.status", "approuve")], "note");
+        $hotel->loadCount(["avis as nombre_avis" => fn($q) => $q->where("avis.status", "approuve")]);
+
+        return response()->json($hotel);
     }
 
     #[

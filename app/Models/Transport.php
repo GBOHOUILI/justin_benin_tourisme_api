@@ -68,4 +68,9 @@ class Transport extends Model
     {
         return $this->hasMany(GalerieTransport::class, 'id_transport');
     }
+
+    public function avis()
+    {
+        return $this->hasMany(Avis::class, 'id_transport');
+    }
 }
