@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Paiement;
 use App\Models\Reservation;
 use App\Models\Ticket;
@@ -195,6 +196,18 @@ class PaiementController extends Controller
         }
 
         $commande->update(["statut" => "payee"]);
+
+        $user = $commande->user ?? \App\Models\User::find($commande->id_user);
+        if ($user) {
+            Notification::envoyer(
+                "user",
+                $user,
+                "commande_confirmee",
+                "Commande confirmée",
+                "Votre paiement a été confirmé, votre commande #{$commande->id} est validée.",
+                "/mes-reservations",
+            );
+        }
 
         $reservations = Reservation::where("id_commande", $commande->id)->get();
         foreach ($reservations as $reservation) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Prestataire;
 use App\Models\Restaurant;
 use App\Models\ResponsableRegional;
@@ -189,6 +190,16 @@ class RestaurantController extends Controller
 
         $restaurant = Restaurant::create($validated);
 
+        if ($user instanceof Prestataire) {
+            Notification::notifierResponsablesRegion(
+                $restaurant->id_region,
+                "soumission_prestataire",
+                "Nouvelle fiche à valider",
+                "{$user->nom_entreprise} a soumis un nouveau restaurant : « {$restaurant->libelle} ».",
+                "/responsable",
+            );
+        }
+
         return response()->json($restaurant->load(["admin", "prestataire", "responsable", "region"]), 201);
     }
 
@@ -307,6 +318,7 @@ class RestaurantController extends Controller
         if ($refus = $this->refuserSiHorsPerimetre($request, $restaurant)) return $refus;
 
         $restaurant->update(["status" => "valide", "commentaire_responsable" => null]);
+        $this->notifierPrestataire($restaurant, "fiche_validee", "Fiche validée", "Votre restaurant « {$restaurant->libelle} » a été validé et est maintenant visible publiquement.");
 
         return response()->json(["message" => "Restaurant validé", "restaurant" => $restaurant]);
     }
@@ -326,6 +338,7 @@ class RestaurantController extends Controller
         if ($refus = $this->refuserSiHorsPerimetre($request, $restaurant)) return $refus;
 
         $restaurant->update(["status" => "rejete"]);
+        $this->notifierPrestataire($restaurant, "fiche_rejetee", "Fiche rejetée", "Votre restaurant « {$restaurant->libelle} » a été rejeté.");
 
         return response()->json(["message" => "Restaurant rejeté", "restaurant" => $restaurant]);
     }
@@ -355,6 +368,7 @@ class RestaurantController extends Controller
         ]);
 
         $restaurant->update(["status" => "precisions_demandees", "commentaire_responsable" => $validated["commentaire"]]);
+        $this->notifierPrestataire($restaurant, "precisions_demandees", "Précisions demandées", "Le responsable régional a demandé des précisions sur votre restaurant « {$restaurant->libelle} » : {$validated['commentaire']}");
 
         return response()->json(["message" => "Précisions demandées", "restaurant" => $restaurant]);
     }
@@ -382,5 +396,17 @@ class RestaurantController extends Controller
         $restaurant->delete();
 
         return response()->json(["message" => "Restaurant supprimé avec succès"], 200);
+    }
+
+    private function notifierPrestataire(Restaurant $restaurant, string $typeEvenement, string $titre, string $message): void
+    {
+        if (! $restaurant->id_prestataire) {
+            return;
+        }
+
+        $prestataire = $restaurant->prestataire ?? Prestataire::find($restaurant->id_prestataire);
+        if ($prestataire) {
+            Notification::envoyer("prestataire", $prestataire, $typeEvenement, $titre, $message, "/prestataire/restaurants");
+        }
     }
 }
