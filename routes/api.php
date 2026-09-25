@@ -19,6 +19,7 @@ use App\Http\Controllers\PrixController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\CircuitController;
+use App\Http\Controllers\CircuitIaController;
 use App\Http\Controllers\EtapeCircuitController;
 use App\Http\Controllers\PrestataireController;
 use App\Http\Controllers\RegionController;
@@ -68,6 +69,9 @@ Route::get("/transports", [TransportController::class, "index"]);
 Route::get("/transports/{transport}", [TransportController::class, "show"]);
 Route::get("/villes", [VilleController::class, "index"]);
 Route::get("/villes/{ville}", [VilleController::class, "show"]);
+
+// Circuit IA (module Circuit, public comme le reste de la composition manuelle)
+Route::post("/circuits/generer-ia", [CircuitIaController::class, "generer"]);
 
 Route::get("/chambres", [ChambreController::class, "index"]);
 Route::get("/chambres/{chambre}", [ChambreController::class, "show"]);

@@ -1114,6 +1114,63 @@
                 ]
             }
         },
+        "/api/circuits/generer-ia": {
+            "post": {
+                "tags": [
+                    "Circuits"
+                ],
+                "summary": "Proposer un circuit via IA à partir de contraintes (budget, jours, saison, intérêts)",
+                "operationId": "52d4010a9cd368f81a2867c7974a59d5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "jours"
+                                ],
+                                "properties": {
+                                    "budget": {
+                                        "description": "Budget total en FCFA",
+                                        "type": "number"
+                                    },
+                                    "jours": {
+                                        "type": "integer",
+                                        "maximum": 14,
+                                        "minimum": 1
+                                    },
+                                    "saison": {
+                                        "type": "string",
+                                        "enum": [
+                                            "sec",
+                                            "pluie"
+                                        ]
+                                    },
+                                    "interets": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "{ titre, budget_estime, etapes: [{type, id, raison, item}] }"
+                    },
+                    "422": {
+                        "description": "Contraintes invalides"
+                    },
+                    "503": {
+                        "description": "IA non configurée ou indisponible"
+                    }
+                }
+            }
+        },
         "/api/commandes": {
             "get": {
                 "tags": [

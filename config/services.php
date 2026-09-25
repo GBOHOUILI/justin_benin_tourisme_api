@@ -42,4 +42,14 @@ return [
         'sandbox' => env('KKIAPAY_SANDBOX', true),
     ],
 
+    // Circuit IA (module Circuit, génération assistée) - endpoint compatible
+    // OpenAI "chat/completions" (Groq, OpenRouter, Mistral, Gemini via son
+    // endpoint de compatibilité OpenAI fonctionnent tous avec la même forme
+    // de requête - changer base_url/model suffit pour changer de fournisseur).
+    'ai' => [
+        'base_url' => env('AI_BASE_URL'),
+        'key' => env('AI_API_KEY'),
+        'model' => env('AI_MODEL'),
+    ],
+
 ];
