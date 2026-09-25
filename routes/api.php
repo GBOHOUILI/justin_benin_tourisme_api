@@ -35,6 +35,7 @@ use App\Http\Controllers\GalerieTransportController;
 use App\Http\Controllers\VilleController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\AbonnementController;
+use App\Http\Controllers\TemoignageController;
 
 // ══════════════════════════════════════════════════════
 //  ROUTES PUBLIQUES - aucun token requis
@@ -49,6 +50,7 @@ Route::post("/responsable/login", [AuthController::class, "loginResponsable"]);
 
 Route::get("/regions", [RegionController::class, "index"]);
 Route::get("/plans", [PlanController::class, "index"]);
+Route::get("/temoignages", [TemoignageController::class, "index"]);
 
 // Consultation publique
 Route::get("/sites", [SiteController::class, "index"]);
@@ -336,6 +338,12 @@ Route::middleware(["auth:admin", "admin"])
             FonctionnaliteController::class,
             "assignerUser",
         ]);
+
+        // Témoignages plateforme (Chantier 3 - section "Ce que pensent nos utilisateurs" sur l'Accueil)
+        Route::get("/temoignages", [TemoignageController::class, "adminIndex"]);
+        Route::post("/temoignages", [TemoignageController::class, "store"]);
+        Route::put("/temoignages/{temoignage}", [TemoignageController::class, "update"]);
+        Route::delete("/temoignages/{temoignage}", [TemoignageController::class, "destroy"]);
     });
 
 // ══════════════════════════════════════════════════════
