@@ -36,6 +36,7 @@ use App\Http\Controllers\VilleController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\AbonnementController;
 use App\Http\Controllers\TemoignageController;
+use App\Http\Controllers\FavoriController;
 
 // ══════════════════════════════════════════════════════
 //  ROUTES PUBLIQUES - aucun token requis
@@ -147,6 +148,11 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::patch("/circuits/{circuit}/etapes/reordonner", [EtapeCircuitController::class, "reordonner"]);
     Route::put("/etapes/{etape}", [EtapeCircuitController::class, "update"]);
     Route::delete("/etapes/{etape}", [EtapeCircuitController::class, "destroy"]);
+
+    // Favoris (site/evenement/hotel/restaurant/transport)
+    Route::get("/favoris", [FavoriController::class, "index"]);
+    Route::post("/favoris", [FavoriController::class, "store"]);
+    Route::delete("/favoris/{favori}", [FavoriController::class, "destroy"]);
 });
 
 // ══════════════════════════════════════════════════════

@@ -1785,6 +1785,107 @@
                 ]
             }
         },
+        "/api/favoris": {
+            "get": {
+                "tags": [
+                    "Favoris"
+                ],
+                "summary": "Lister les favoris du touriste connecté",
+                "operationId": "874c5e0a479fff4a6ed1397452c76e40",
+                "responses": {
+                    "200": {
+                        "description": "Liste des favoris, chacun avec sa fiche chargée ({id, type, item})"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Favoris"
+                ],
+                "summary": "Ajouter une fiche aux favoris (idempotent)",
+                "operationId": "99de524e3e138263f85a33e688646b0a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "type",
+                                    "id"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "site",
+                                            "evenement",
+                                            "hotel",
+                                            "restaurant",
+                                            "transport"
+                                        ]
+                                    },
+                                    "id": {
+                                        "description": "id de la fiche à favoriter",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Favori créé (ou déjà existant, réponse identique)"
+                    },
+                    "404": {
+                        "description": "Fiche introuvable"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/favoris/{id}": {
+            "delete": {
+                "tags": [
+                    "Favoris"
+                ],
+                "summary": "Retirer un favori",
+                "operationId": "8fde1cf0adc28f52e7e7103fca3caa16",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Favori supprimé"
+                    },
+                    "403": {
+                        "description": "Ce favori ne vous appartient pas"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/fonctionnalites": {
             "get": {
                 "tags": [
@@ -4825,6 +4926,10 @@
         {
             "name": "Commandes",
             "description": "Commandes"
+        },
+        {
+            "name": "Favoris",
+            "description": "Favoris"
         },
         {
             "name": "Galeries Sites",
