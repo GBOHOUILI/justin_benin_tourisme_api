@@ -1895,6 +1895,59 @@
                 ]
             }
         },
+        "/api/admin/evenements/{id}/demander-precisions": {
+            "patch": {
+                "tags": [
+                    "Evenements"
+                ],
+                "summary": "Demander un complément d'information au prestataire (admin ou responsable régional de sa zone)",
+                "operationId": "63823d371862beb6a7401195122b30af",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "commentaire"
+                                ],
+                                "properties": {
+                                    "commentaire": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Précisions demandées"
+                    },
+                    "403": {
+                        "description": "Événement hors de la région du responsable"
+                    },
+                    "422": {
+                        "description": "Commentaire manquant"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/favoris": {
             "get": {
                 "tags": [
@@ -2917,6 +2970,53 @@
                 ]
             }
         },
+        "/api/admin/hotels/{id}/demander-precisions": {
+            "patch": {
+                "tags": [
+                    "Hôtels"
+                ],
+                "summary": "Demander un complément d'information au prestataire (admin ou responsable régional de sa zone)",
+                "operationId": "11fb634beab15f4a1cb292a383b756a1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "commentaire"
+                                ],
+                                "properties": {
+                                    "commentaire": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Précisions demandées"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/paiements/{id}/verifier": {
             "patch": {
                 "tags": [
@@ -3732,6 +3832,53 @@
                 ]
             }
         },
+        "/api/admin/restaurants/{id}/demander-precisions": {
+            "patch": {
+                "tags": [
+                    "Restaurants"
+                ],
+                "summary": "Demander un complément d'information au prestataire (admin ou responsable régional de sa zone)",
+                "operationId": "83696c298637f5e3683fec7dd63dfc81",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "commentaire"
+                                ],
+                                "properties": {
+                                    "commentaire": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Précisions demandées"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/prestataire/sites": {
             "get": {
                 "tags": [
@@ -4094,6 +4241,59 @@
                     },
                     "403": {
                         "description": "Site hors de la région du responsable"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/sites/{id}/demander-precisions": {
+            "patch": {
+                "tags": [
+                    "Sites"
+                ],
+                "summary": "Demander un complément d'information au prestataire (admin ou responsable régional de sa zone)",
+                "operationId": "e94abb5dd0c480919bfc3322983c7004",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "commentaire"
+                                ],
+                                "properties": {
+                                    "commentaire": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Précisions demandées"
+                    },
+                    "403": {
+                        "description": "Site hors de la région du responsable"
+                    },
+                    "422": {
+                        "description": "Commentaire manquant"
                     }
                 },
                 "security": [
@@ -4772,6 +4972,53 @@
                 "responses": {
                     "200": {
                         "description": "Transport rejeté"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/transports/{id}/demander-precisions": {
+            "patch": {
+                "tags": [
+                    "Transports"
+                ],
+                "summary": "Demander un complément d'information au prestataire (admin ou responsable régional de sa zone)",
+                "operationId": "325910b89448fede3174dcbd8f2d009d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "commentaire"
+                                ],
+                                "properties": {
+                                    "commentaire": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Précisions demandées"
                     }
                 },
                 "security": [

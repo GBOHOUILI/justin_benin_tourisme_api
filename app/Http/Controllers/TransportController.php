@@ -254,6 +254,13 @@ class TransportController extends Controller
         if ($estPrestataire || $estResponsable) {
             unset($validated["status"]);
         }
+        // Le prestataire vient de corriger sa fiche suite à une demande de
+        // précisions - elle repasse en attente pour revenir dans la file du
+        // responsable, sans quoi elle resterait bloquée indéfiniment.
+        if ($estPrestataire && $transport->status === "precisions_demandees") {
+            $validated["status"] = "en_attente";
+            $validated["commentaire_responsable"] = null;
+        }
         if ($estResponsable && !$user->estGlobal()) {
             unset($validated["id_region"]);
         }
@@ -292,7 +299,7 @@ class TransportController extends Controller
     {
         if ($refus = $this->refuserSiHorsPerimetre($request, $transport)) return $refus;
 
-        $transport->update(["status" => "valide"]);
+        $transport->update(["status" => "valide", "commentaire_responsable" => null]);
 
         return response()->json(["message" => "Transport validé", "transport" => $transport]);
     }
@@ -314,6 +321,35 @@ class TransportController extends Controller
         $transport->update(["status" => "rejete"]);
 
         return response()->json(["message" => "Transport rejeté", "transport" => $transport]);
+    }
+
+    #[
+        OA\Patch(
+            path: "/api/admin/transports/{id}/demander-precisions",
+            tags: ["Transports"],
+            summary: "Demander un complément d'information au prestataire (admin ou responsable régional de sa zone)",
+            security: [["bearerAuth" => []]],
+            parameters: [new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))],
+            requestBody: new OA\RequestBody(
+                required: true,
+                content: new OA\JsonContent(required: ["commentaire"], properties: [
+                    new OA\Property(property: "commentaire", type: "string"),
+                ]),
+            ),
+            responses: [new OA\Response(response: 200, description: "Précisions demandées")],
+        ),
+    ]
+    public function demanderPrecisions(Request $request, Transport $transport)
+    {
+        if ($refus = $this->refuserSiHorsPerimetre($request, $transport)) return $refus;
+
+        $validated = $request->validate([
+            "commentaire" => "required|string|min:5|max:1000",
+        ]);
+
+        $transport->update(["status" => "precisions_demandees", "commentaire_responsable" => $validated["commentaire"]]);
+
+        return response()->json(["message" => "Précisions demandées", "transport" => $transport]);
     }
 
     #[

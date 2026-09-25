@@ -27,6 +27,7 @@ class Site extends Model
         'ouverture',
         'fermeture',
         'status',
+        'commentaire_responsable',
         'id_cat_site',
         'id_admin',
         'id_prestataire',

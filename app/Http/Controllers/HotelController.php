@@ -253,6 +253,13 @@ class HotelController extends Controller
         if ($estPrestataire || $estResponsable) {
             unset($validated["status"]);
         }
+        // Le prestataire vient de corriger sa fiche suite à une demande de
+        // précisions - elle repasse en attente pour revenir dans la file du
+        // responsable, sans quoi elle resterait bloquée indéfiniment.
+        if ($estPrestataire && $hotel->status === "precisions_demandees") {
+            $validated["status"] = "en_attente";
+            $validated["commentaire_responsable"] = null;
+        }
         if ($estResponsable && !$user->estGlobal()) {
             unset($validated["id_region"]);
         }
@@ -291,7 +298,7 @@ class HotelController extends Controller
     {
         if ($refus = $this->refuserSiHorsPerimetre($request, $hotel)) return $refus;
 
-        $hotel->update(["status" => "valide"]);
+        $hotel->update(["status" => "valide", "commentaire_responsable" => null]);
 
         return response()->json(["message" => "Hôtel validé", "hotel" => $hotel]);
     }
@@ -313,6 +320,35 @@ class HotelController extends Controller
         $hotel->update(["status" => "rejete"]);
 
         return response()->json(["message" => "Hôtel rejeté", "hotel" => $hotel]);
+    }
+
+    #[
+        OA\Patch(
+            path: "/api/admin/hotels/{id}/demander-precisions",
+            tags: ["Hôtels"],
+            summary: "Demander un complément d'information au prestataire (admin ou responsable régional de sa zone)",
+            security: [["bearerAuth" => []]],
+            parameters: [new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))],
+            requestBody: new OA\RequestBody(
+                required: true,
+                content: new OA\JsonContent(required: ["commentaire"], properties: [
+                    new OA\Property(property: "commentaire", type: "string"),
+                ]),
+            ),
+            responses: [new OA\Response(response: 200, description: "Précisions demandées")],
+        ),
+    ]
+    public function demanderPrecisions(Request $request, Hotel $hotel)
+    {
+        if ($refus = $this->refuserSiHorsPerimetre($request, $hotel)) return $refus;
+
+        $validated = $request->validate([
+            "commentaire" => "required|string|min:5|max:1000",
+        ]);
+
+        $hotel->update(["status" => "precisions_demandees", "commentaire_responsable" => $validated["commentaire"]]);
+
+        return response()->json(["message" => "Précisions demandées", "hotel" => $hotel]);
     }
 
     #[

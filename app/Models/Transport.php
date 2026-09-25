@@ -20,6 +20,7 @@ class Transport extends Model
         'type_transport',
         'capacite',
         'status',
+        'commentaire_responsable',
         'id_admin',
         'id_prestataire',
         'id_responsable',

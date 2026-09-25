@@ -19,6 +19,7 @@ class Hotel extends Model
         'description',
         'nombre_etoiles',
         'status',
+        'commentaire_responsable',
         'id_admin',
         'id_prestataire',
         'id_responsable',
