@@ -20,6 +20,7 @@ use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\CircuitController;
 use App\Http\Controllers\CircuitIaController;
+use App\Http\Controllers\AssistantIaController;
 use App\Http\Controllers\EtapeCircuitController;
 use App\Http\Controllers\PrestataireController;
 use App\Http\Controllers\RegionController;
@@ -72,6 +73,7 @@ Route::get("/villes/{ville}", [VilleController::class, "show"]);
 
 // Circuit IA (module Circuit, public comme le reste de la composition manuelle)
 Route::post("/circuits/generer-ia", [CircuitIaController::class, "generer"]);
+Route::post("/assistant/chat", [AssistantIaController::class, "discuter"]);
 
 Route::get("/chambres", [ChambreController::class, "index"]);
 Route::get("/chambres/{chambre}", [ChambreController::class, "show"]);
