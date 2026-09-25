@@ -17,6 +17,7 @@ class Admin extends Authenticatable
         'nom',
         'prenom',
         'tel',
+        'email',
         'password',
         'status',
     ];

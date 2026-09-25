@@ -52,4 +52,8 @@ return [
         'model' => env('AI_MODEL'),
     ],
 
+    'frontend' => [
+        'url' => env('FRONTEND_URL', 'http://localhost:5173'),
+    ],
+
 ];

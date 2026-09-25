@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CatSiteController;
@@ -50,6 +51,12 @@ Route::post("/admin/login", [AuthController::class, "loginAdmin"]);
 Route::post("/prestataire/register", [AuthController::class, "registerPrestataire"]);
 Route::post("/prestataire/login", [AuthController::class, "loginPrestataire"]);
 Route::post("/responsable/login", [AuthController::class, "loginResponsable"]);
+
+// Mot de passe oublié (4 types de comptes, cf. PasswordResetController) -
+// throttle sur demander() seulement : reinitialiser() est déjà protégé par
+// son propre token à usage unique, pas besoin d'une double limite.
+Route::post("/mot-de-passe/oublie", [PasswordResetController::class, "demander"])->middleware("throttle:6,1");
+Route::post("/mot-de-passe/reinitialiser", [PasswordResetController::class, "reinitialiser"]);
 
 Route::get("/regions", [RegionController::class, "index"]);
 Route::get("/plans", [PlanController::class, "index"]);

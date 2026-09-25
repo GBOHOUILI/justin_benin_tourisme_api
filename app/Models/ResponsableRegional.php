@@ -16,6 +16,7 @@ class ResponsableRegional extends Authenticatable
         'nom',
         'prenom',
         'tel',
+        'email',
         'password',
         'status',
         'id_region',

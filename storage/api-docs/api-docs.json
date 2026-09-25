@@ -3130,6 +3130,107 @@
                 }
             }
         },
+        "/api/mot-de-passe/oublie": {
+            "post": {
+                "tags": [
+                    "Authentification"
+                ],
+                "summary": "Demander un lien de réinitialisation de mot de passe (envoyé par email si le compte existe)",
+                "operationId": "b814bba9dedd11ed8c83469540b16c51",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "type",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "user",
+                                            "admin",
+                                            "prestataire",
+                                            "responsable"
+                                        ]
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Message générique (compte trouvé ou non, jamais révélé)"
+                    }
+                }
+            }
+        },
+        "/api/mot-de-passe/reinitialiser": {
+            "post": {
+                "tags": [
+                    "Authentification"
+                ],
+                "summary": "Réinitialiser le mot de passe à partir du lien reçu par email",
+                "operationId": "2c71a4935740c20c6751ee2b647e2d45",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "type",
+                                    "email",
+                                    "token",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "user",
+                                            "admin",
+                                            "prestataire",
+                                            "responsable"
+                                        ]
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "token": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mot de passe réinitialisé"
+                    },
+                    "422": {
+                        "description": "Lien invalide ou expiré"
+                    }
+                }
+            }
+        },
         "/api/plans": {
             "get": {
                 "tags": [
@@ -5394,6 +5495,10 @@
         {
             "name": "Paiements",
             "description": "Paiements"
+        },
+        {
+            "name": "Authentification",
+            "description": "Authentification"
         },
         {
             "name": "Plans",

@@ -19,6 +19,7 @@ class AdminFactory extends Factory
             'nom' => fake()->lastName(),
             'prenom' => fake()->firstName(),
             'tel' => fake()->unique()->numerify('+229#########'),
+            'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make('password'),
             'status' => true,
         ];
