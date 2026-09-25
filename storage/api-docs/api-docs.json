@@ -3918,6 +3918,145 @@
                 }
             }
         },
+        "/api/temoignages": {
+            "get": {
+                "tags": [
+                    "Témoignages"
+                ],
+                "summary": "Lister les témoignages actifs (public, page d'accueil)",
+                "operationId": "590f0c03520cdb477e813299239cf1de",
+                "responses": {
+                    "200": {
+                        "description": "Liste des témoignages actifs"
+                    }
+                }
+            }
+        },
+        "/api/admin/temoignages": {
+            "get": {
+                "tags": [
+                    "Témoignages"
+                ],
+                "summary": "Lister tous les témoignages, actifs et inactifs (admin)",
+                "operationId": "6fd9d72c18b8b4b8aa9ec72935144217",
+                "responses": {
+                    "200": {
+                        "description": "Liste complète des témoignages"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Témoignages"
+                ],
+                "summary": "Créer un témoignage (admin)",
+                "operationId": "2d3e07c6e5905daa9f330a585f5ce679",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "role",
+                                    "message"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string"
+                                    },
+                                    "role": {
+                                        "description": "Ex: Prestataire, Touriste, Responsable régional",
+                                        "type": "string"
+                                    },
+                                    "message": {
+                                        "type": "string"
+                                    },
+                                    "actif": {
+                                        "type": "boolean"
+                                    },
+                                    "photo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Témoignage créé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/temoignages/{id}": {
+            "put": {
+                "tags": [
+                    "Témoignages"
+                ],
+                "summary": "Mettre à jour un témoignage (admin)",
+                "operationId": "8d69d445d21b57c14f511698088237c5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Témoignage mis à jour"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Témoignages"
+                ],
+                "summary": "Supprimer un témoignage (admin)",
+                "operationId": "a4a8180790c5183ec9ea7b43a9876e4f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Témoignage supprimé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/tickets": {
             "get": {
                 "tags": [
@@ -4718,6 +4857,10 @@
         {
             "name": "Restaurants",
             "description": "Restaurants"
+        },
+        {
+            "name": "Témoignages",
+            "description": "Témoignages"
         },
         {
             "name": "Transports",
