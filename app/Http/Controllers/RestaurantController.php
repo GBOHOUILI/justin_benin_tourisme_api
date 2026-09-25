@@ -257,6 +257,13 @@ class RestaurantController extends Controller
         if ($estPrestataire || $estResponsable) {
             unset($validated["status"]);
         }
+        // Le prestataire vient de corriger sa fiche suite à une demande de
+        // précisions - elle repasse en attente pour revenir dans la file du
+        // responsable, sans quoi elle resterait bloquée indéfiniment.
+        if ($estPrestataire && $restaurant->status === "precisions_demandees") {
+            $validated["status"] = "en_attente";
+            $validated["commentaire_responsable"] = null;
+        }
         if ($estResponsable && !$user->estGlobal()) {
             unset($validated["id_region"]);
         }
@@ -295,7 +302,7 @@ class RestaurantController extends Controller
     {
         if ($refus = $this->refuserSiHorsPerimetre($request, $restaurant)) return $refus;
 
-        $restaurant->update(["status" => "valide"]);
+        $restaurant->update(["status" => "valide", "commentaire_responsable" => null]);
 
         return response()->json(["message" => "Restaurant validé", "restaurant" => $restaurant]);
     }
@@ -317,6 +324,35 @@ class RestaurantController extends Controller
         $restaurant->update(["status" => "rejete"]);
 
         return response()->json(["message" => "Restaurant rejeté", "restaurant" => $restaurant]);
+    }
+
+    #[
+        OA\Patch(
+            path: "/api/admin/restaurants/{id}/demander-precisions",
+            tags: ["Restaurants"],
+            summary: "Demander un complément d'information au prestataire (admin ou responsable régional de sa zone)",
+            security: [["bearerAuth" => []]],
+            parameters: [new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))],
+            requestBody: new OA\RequestBody(
+                required: true,
+                content: new OA\JsonContent(required: ["commentaire"], properties: [
+                    new OA\Property(property: "commentaire", type: "string"),
+                ]),
+            ),
+            responses: [new OA\Response(response: 200, description: "Précisions demandées")],
+        ),
+    ]
+    public function demanderPrecisions(Request $request, Restaurant $restaurant)
+    {
+        if ($refus = $this->refuserSiHorsPerimetre($request, $restaurant)) return $refus;
+
+        $validated = $request->validate([
+            "commentaire" => "required|string|min:5|max:1000",
+        ]);
+
+        $restaurant->update(["status" => "precisions_demandees", "commentaire_responsable" => $validated["commentaire"]]);
+
+        return response()->json(["message" => "Précisions demandées", "restaurant" => $restaurant]);
     }
 
     #[

@@ -30,6 +30,7 @@ class Evenement extends Model
         'date_debut',
         'date_fin',
         'status',
+        'commentaire_responsable',
         'id_cat_evenmt',
         'id_admin',
         'id_prestataire',

@@ -452,6 +452,13 @@ class EvenementController extends Controller
         if ($estPrestataire || $estResponsable) {
             unset($validated["status"]);
         }
+        // Le prestataire vient de corriger sa fiche suite à une demande de
+        // précisions - elle repasse en attente pour revenir dans la file du
+        // responsable, sans quoi elle resterait bloquée indéfiniment.
+        if ($estPrestataire && $evenement->status === "precisions_demandees") {
+            $validated["status"] = "en_attente";
+            $validated["commentaire_responsable"] = null;
+        }
         if ($estResponsable && !$user->estGlobal()) {
             unset($validated["id_region"]);
         }
@@ -505,7 +512,7 @@ class EvenementController extends Controller
     {
         if ($refus = $this->refuserSiHorsPerimetre($request, $evenement)) return $refus;
 
-        $evenement->update(["status" => "valide"]);
+        $evenement->update(["status" => "valide", "commentaire_responsable" => null]);
 
         return response()->json([
             "message" => "Événement validé",
@@ -541,6 +548,44 @@ class EvenementController extends Controller
 
         return response()->json([
             "message" => "Événement rejeté",
+            "evenement" => $evenement,
+        ]);
+    }
+
+    #[
+        OA\Patch(
+            path: "/api/admin/evenements/{id}/demander-precisions",
+            tags: ["Evenements"],
+            summary: "Demander un complément d'information au prestataire (admin ou responsable régional de sa zone)",
+            security: [["bearerAuth" => []]],
+            parameters: [
+                new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer")),
+            ],
+            requestBody: new OA\RequestBody(
+                required: true,
+                content: new OA\JsonContent(required: ["commentaire"], properties: [
+                    new OA\Property(property: "commentaire", type: "string"),
+                ]),
+            ),
+            responses: [
+                new OA\Response(response: 200, description: "Précisions demandées"),
+                new OA\Response(response: 403, description: "Événement hors de la région du responsable"),
+                new OA\Response(response: 422, description: "Commentaire manquant"),
+            ],
+        ),
+    ]
+    public function demanderPrecisions(Request $request, Evenement $evenement)
+    {
+        if ($refus = $this->refuserSiHorsPerimetre($request, $evenement)) return $refus;
+
+        $validated = $request->validate([
+            "commentaire" => "required|string|min:5|max:1000",
+        ]);
+
+        $evenement->update(["status" => "precisions_demandees", "commentaire_responsable" => $validated["commentaire"]]);
+
+        return response()->json([
+            "message" => "Précisions demandées",
             "evenement" => $evenement,
         ]);
     }

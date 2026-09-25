@@ -19,6 +19,7 @@ class Restaurant extends Model
         'type_cuisine',
         'gamme_prix',
         'status',
+        'commentaire_responsable',
         'id_admin',
         'id_prestataire',
         'id_responsable',

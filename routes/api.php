@@ -216,6 +216,7 @@ Route::middleware(["auth:admin", "admin"])
         Route::delete("/sites/{site}", [SiteController::class, "destroy"]);
         Route::patch("/sites/{site}/valider", [SiteController::class, "valider"]);
         Route::patch("/sites/{site}/rejeter", [SiteController::class, "rejeter"]);
+        Route::patch("/sites/{site}/demander-precisions", [SiteController::class, "demanderPrecisions"]);
 
         // Événements
         Route::get("/evenements", [EvenementController::class, "adminIndex"]);
@@ -235,6 +236,10 @@ Route::middleware(["auth:admin", "admin"])
         Route::patch("/evenements/{evenement}/rejeter", [
             EvenementController::class,
             "rejeter",
+        ]);
+        Route::patch("/evenements/{evenement}/demander-precisions", [
+            EvenementController::class,
+            "demanderPrecisions",
         ]);
 
         // Responsables régionaux (poste officiel - créé par un admin, pas d'auto-inscription)
@@ -258,6 +263,7 @@ Route::middleware(["auth:admin", "admin"])
         Route::delete("/hotels/{hotel}", [HotelController::class, "destroy"]);
         Route::patch("/hotels/{hotel}/valider", [HotelController::class, "valider"]);
         Route::patch("/hotels/{hotel}/rejeter", [HotelController::class, "rejeter"]);
+        Route::patch("/hotels/{hotel}/demander-precisions", [HotelController::class, "demanderPrecisions"]);
 
         // Restaurants
         Route::get("/restaurants", [RestaurantController::class, "adminIndex"]);
@@ -266,6 +272,7 @@ Route::middleware(["auth:admin", "admin"])
         Route::delete("/restaurants/{restaurant}", [RestaurantController::class, "destroy"]);
         Route::patch("/restaurants/{restaurant}/valider", [RestaurantController::class, "valider"]);
         Route::patch("/restaurants/{restaurant}/rejeter", [RestaurantController::class, "rejeter"]);
+        Route::patch("/restaurants/{restaurant}/demander-precisions", [RestaurantController::class, "demanderPrecisions"]);
 
         // Transports
         Route::get("/transports", [TransportController::class, "adminIndex"]);
@@ -274,6 +281,7 @@ Route::middleware(["auth:admin", "admin"])
         Route::delete("/transports/{transport}", [TransportController::class, "destroy"]);
         Route::patch("/transports/{transport}/valider", [TransportController::class, "valider"]);
         Route::patch("/transports/{transport}/rejeter", [TransportController::class, "rejeter"]);
+        Route::patch("/transports/{transport}/demander-precisions", [TransportController::class, "demanderPrecisions"]);
 
         // Chambres, plats, trajets (sous-entités)
         Route::post("/chambres", [ChambreController::class, "store"]);
@@ -464,14 +472,19 @@ Route::middleware(["auth:responsable", "responsable"])
 
         Route::patch("/sites/{site}/valider", [SiteController::class, "valider"]);
         Route::patch("/sites/{site}/rejeter", [SiteController::class, "rejeter"]);
+        Route::patch("/sites/{site}/demander-precisions", [SiteController::class, "demanderPrecisions"]);
         Route::patch("/evenements/{evenement}/valider", [EvenementController::class, "valider"]);
         Route::patch("/evenements/{evenement}/rejeter", [EvenementController::class, "rejeter"]);
+        Route::patch("/evenements/{evenement}/demander-precisions", [EvenementController::class, "demanderPrecisions"]);
         Route::patch("/hotels/{hotel}/valider", [HotelController::class, "valider"]);
         Route::patch("/hotels/{hotel}/rejeter", [HotelController::class, "rejeter"]);
+        Route::patch("/hotels/{hotel}/demander-precisions", [HotelController::class, "demanderPrecisions"]);
         Route::patch("/restaurants/{restaurant}/valider", [RestaurantController::class, "valider"]);
         Route::patch("/restaurants/{restaurant}/rejeter", [RestaurantController::class, "rejeter"]);
+        Route::patch("/restaurants/{restaurant}/demander-precisions", [RestaurantController::class, "demanderPrecisions"]);
         Route::patch("/transports/{transport}/valider", [TransportController::class, "valider"]);
         Route::patch("/transports/{transport}/rejeter", [TransportController::class, "rejeter"]);
+        Route::patch("/transports/{transport}/demander-precisions", [TransportController::class, "demanderPrecisions"]);
 
         // Mes sites
         Route::get("/sites", [SiteController::class, "mine"]);
