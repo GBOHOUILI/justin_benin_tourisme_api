@@ -43,6 +43,17 @@ class RestaurantController extends Controller
             $query->where("id_region", $request->id_region);
         }
 
+        if ($request->filled("prix_min") || $request->filled("prix_max")) {
+            $query->whereHas("plats", function ($q) use ($request) {
+                if ($request->filled("prix_min")) {
+                    $q->where("prix", ">=", $request->prix_min);
+                }
+                if ($request->filled("prix_max")) {
+                    $q->where("prix", "<=", $request->prix_max);
+                }
+            });
+        }
+
         if ($request->filled("lat") && $request->filled("lng")) {
             $lat = (float) $request->lat;
             $lng = (float) $request->lng;
@@ -72,6 +83,8 @@ class RestaurantController extends Controller
                 new OA\Parameter(name: "lat", in: "query", schema: new OA\Schema(type: "number")),
                 new OA\Parameter(name: "lng", in: "query", schema: new OA\Schema(type: "number")),
                 new OA\Parameter(name: "radius", in: "query", schema: new OA\Schema(type: "number")),
+                new OA\Parameter(name: "prix_min", in: "query", description: "Prix minimum (filtre sur le prix des plats)", schema: new OA\Schema(type: "number")),
+                new OA\Parameter(name: "prix_max", in: "query", description: "Prix maximum (filtre sur le prix des plats)", schema: new OA\Schema(type: "number")),
             ],
             responses: [new OA\Response(response: 200, description: "Liste paginée des restaurants")],
         ),
