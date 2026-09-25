@@ -2572,6 +2572,22 @@
                         "schema": {
                             "type": "number"
                         }
+                    },
+                    {
+                        "name": "prix_min",
+                        "in": "query",
+                        "description": "Prix minimum (filtre sur le prix/nuit des chambres)",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "prix_max",
+                        "in": "query",
+                        "description": "Prix maximum (filtre sur le prix/nuit des chambres)",
+                        "schema": {
+                            "type": "number"
+                        }
                     }
                 ],
                 "responses": {
@@ -3360,6 +3376,22 @@
                     {
                         "name": "radius",
                         "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "prix_min",
+                        "in": "query",
+                        "description": "Prix minimum (filtre sur le prix des plats)",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "prix_max",
+                        "in": "query",
+                        "description": "Prix maximum (filtre sur le prix des plats)",
                         "schema": {
                             "type": "number"
                         }
@@ -4398,6 +4430,22 @@
                     {
                         "name": "radius",
                         "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "prix_min",
+                        "in": "query",
+                        "description": "Prix minimum (filtre sur le prix des trajets)",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "prix_max",
+                        "in": "query",
+                        "description": "Prix maximum (filtre sur le prix des trajets)",
                         "schema": {
                             "type": "number"
                         }

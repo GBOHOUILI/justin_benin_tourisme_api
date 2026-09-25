@@ -41,6 +41,17 @@ class HotelController extends Controller
             $query->where("nombre_etoiles", ">=", $request->nombre_etoiles);
         }
 
+        if ($request->filled("prix_min") || $request->filled("prix_max")) {
+            $query->whereHas("chambres", function ($q) use ($request) {
+                if ($request->filled("prix_min")) {
+                    $q->where("prix_nuit", ">=", $request->prix_min);
+                }
+                if ($request->filled("prix_max")) {
+                    $q->where("prix_nuit", "<=", $request->prix_max);
+                }
+            });
+        }
+
         if ($request->filled("lat") && $request->filled("lng")) {
             $lat = (float) $request->lat;
             $lng = (float) $request->lng;
@@ -69,6 +80,8 @@ class HotelController extends Controller
                 new OA\Parameter(name: "lat", in: "query", schema: new OA\Schema(type: "number")),
                 new OA\Parameter(name: "lng", in: "query", schema: new OA\Schema(type: "number")),
                 new OA\Parameter(name: "radius", in: "query", schema: new OA\Schema(type: "number")),
+                new OA\Parameter(name: "prix_min", in: "query", description: "Prix minimum (filtre sur le prix/nuit des chambres)", schema: new OA\Schema(type: "number")),
+                new OA\Parameter(name: "prix_max", in: "query", description: "Prix maximum (filtre sur le prix/nuit des chambres)", schema: new OA\Schema(type: "number")),
             ],
             responses: [new OA\Response(response: 200, description: "Liste paginée des hôtels")],
         ),
