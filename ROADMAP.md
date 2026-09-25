@@ -355,7 +355,8 @@ Trou de sécurité laissé ouvert dans la section précédente, résolu avant d'
 
 ### Reste à faire (étape 3)
 
-- [ ] Favoris, notifications (push/SMS/email), blog, marketing — modules du document jamais commencés, hors du périmètre prestataire
+- [x] Favoris — voir module dédié plus bas
+- [ ] Notifications (push/SMS/email), blog, marketing — modules du document jamais commencés, hors du périmètre prestataire
 
 ## Module Abonnement SaaS — Plan/Abonnement/FactureAbonnement (étape 3/3 du module Prestataire, 2026-09-18)
 
@@ -436,3 +437,33 @@ Démarré le 2026-09-18, suite à la demande de l'utilisateur de s'inspirer d'un
 - [ ] Hors scope explicite (voir spec) : hero des autres pages, avis Hôtel/Restaurant/Transport (pas de flux de réservation), témoignages liés à un vrai compte
 
 **Module Fiches détail enrichies + Témoignages plateforme : terminé** (chantiers 1, 2 et 3 tous livrés et vérifiés).
+
+## Module Favoris (2026-09-25)
+
+Démarré suite à l'audit du prototype mobile fourni par l'utilisateur (`web.html`, cf. section ci-dessous) : "Favoris" identifié comme fonctionnalité totalement absente. Ordre de priorité des fonctionnalités restantes du proto discuté et validé avec l'utilisateur (Favoris → recherche proximité/budget Hôtel/Restaurant/Transport → action "demander des précisions" Responsable → note chiffrée → notifications → bilingue FR/EN).
+
+### Backend
+
+- [x] Table `favori` : `id_user` + 5 FK nullables (`id_site`/`id_evnmt`/`id_hotel`/`id_restaurant`/`id_transport`), une seule renseignée par ligne — même convention que `Reservation`/`EtapeCircuit` plutôt qu'une relation polymorphique Laravel (jamais utilisée dans ce projet). Index unique composite anti-doublon.
+- [x] `FavoriController` : `index()` (`GET /favoris`, auth:sanctum) renvoie `[{id, type, item}]` (`type` déduit de la colonne FK renseignée via l'accessor `Favori::type`, `item` = la fiche chargée) ; `store()` (`POST /favoris`, `{type, id}`) idempotent via `firstOrCreate` ; `destroy()` (`DELETE /favoris/{id}`) avec vérification d'ownership (403 si le favori n'appartient pas à l'appelant).
+- [x] Vérifié en réel via HTTP (register touriste, création site admin, add/list/doublon idempotent/delete/liste vide, cleanup) puis 8 tests Feature ajoutés (`tests/Feature/FavoriTest.php`, 55/55 tests backend verts, 0 régression). Branche `feature/favoris` (API) mergée `--no-ff` sur `main`.
+
+### Frontend
+
+- [x] `FavorisContext` (mirroir `AuthContext`) : charge la liste une fois à la connexion dans une `Map` `"type:id" -> favoriId`, mise à jour de façon optimiste au clic (aucun appel API individuel par carte pour savoir si elle est favorite).
+- [x] `FavoriButton` (composant partagé, `components/ui/index.jsx`) superposé sur les 5 cartes (`SiteCard`/`EventCard`/`HotelCard`/`RestaurantCard`/`TransportCard`) — `stopPropagation`+`preventDefault` car la carte entière est un `Link`. Non connecté : toast invitant à se connecter, aucun appel API déclenché.
+- [x] `MesFavoris.jsx` (mirroir `MesReservations.jsx`, lien ajouté au menu utilisateur `Navbar.jsx`) : réutilise directement les 5 composants Card existants (pas de nouveau composant de carte). Le filtrage à l'affichage se fait sur `isFavori()` du contexte plutôt que sur l'état local de la liste chargée au montage — retirer un favori (depuis cette page ou une autre) le fait disparaître immédiatement, sans recharger la liste ni la page.
+- [x] Vérifié en réel (Playwright) : inscription touriste réelle, ajout depuis `/sites`, bouton actif confirmé, affichage sur Mes Favoris, retrait depuis Mes Favoris avec disparition réactive immédiate (sans rechargement), tentative de favori non connecté (aucune navigation, aucune erreur, comportement de garde confirmé). 0 erreur console. Données de test supprimées après vérification. Branche `feature/favoris` (front) mergée `--no-ff` sur `main`.
+
+## Audit du prototype mobile `web.html` (2026-09-25)
+
+L'utilisateur a fourni un prototype cliquable ("Sen Impact Technologies · Bénin Tourisme", app mobile 3 rôles) — un artefact Claude bundlé, décompilé pour en extraire la source React exacte plutôt que deviné visuellement. Chaque écran y référence le cahier des charges (`Benin-Tourisme-Documentation-Projet.docx`, même document que celui déjà cité au module Prestataire). Confirmé avec l'utilisateur : "mobile" dans ce proto signifie uniquement responsive web (pas d'app native prévue) — le proto sert de référence fonctionnelle/visuelle à adapter au site existant.
+
+Gaps identifiés (rien construit avant cette session) et non encore traités, par ordre de priorité validé avec l'utilisateur :
+- [x] Favoris — traité ci-dessus
+- [ ] Recherche proximité/budget sur Hôtel/Restaurant/Transport (actuellement seulement Site/Événement)
+- [ ] Action "Demander des précisions" côté Responsable régional (actuellement seuls Valider/Rejeter existent)
+- [ ] Note chiffrée par service (le modèle `Avis` n'a volontairement pas de champ note — nécessite une décision produit sur où stocker/calculer la moyenne, et si étendue à Hôtel/Restaurant/Transport qui n'ont pas d'avis du tout aujourd'hui)
+- [ ] Notifications (email + in-app) — chantier transverse, touche soumission prestataire/confirmation commande/validation responsable
+- [ ] Bilingue FR/EN — chantier transverse à toutes les pages, décision d'architecture i18n à prendre en amont
+- Hors périmètre par décision explicite : app mobile native, génération de circuit par IA (déjà acté ailleurs), blog/mailing (déjà listés hors scope au module Prestataire)
