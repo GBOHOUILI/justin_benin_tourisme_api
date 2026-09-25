@@ -28,7 +28,7 @@ php artisan l5-swagger:generate         # regenerate OpenAPI docs from PHP attri
 php artisan db:seed --class=DemoContentSeeder  # populate demo content (real Bénin sites/events/hotels/restaurants/transports + testimonials) — idempotent, not run by default, cf. ROADMAP.md "Constat environnement 2026-09-25"
 ```
 
-There are 5 Feature test files (~40 tests as of this branch) covering Auth, Reservation ownership, Avis ownership, User ownership, and the "contenu enrichi" fields (round-trips + HTTP validation). Not yet covered: Site/Hotel/Restaurant/Transport workflow-validation and Prestataire/Responsable ownership paths. Tests run against a dedicated MySQL database `benin_tourisme_test` (see `phpunit.xml`), separate from the dev database `benin_tourisme` — several migrations use raw MySQL-specific SQL incompatible with SQLite.
+There are 8 Feature test files (74 tests as of this branch) covering Auth, Reservation ownership, Avis ownership, User ownership, the "contenu enrichi" fields (round-trips + HTTP validation), Circuit IA (structured + free-chat), and the Responsable "demander précisions" workflow (covered on Site + a Hotel smoke test). Not yet covered: full Site/Hotel/Restaurant/Transport workflow-validation (valider/rejeter themselves) and general Prestataire/Responsable ownership paths beyond that one workflow. Tests run against a dedicated MySQL database `benin_tourisme_test` (see `phpunit.xml`), separate from the dev database `benin_tourisme` — several migrations use raw MySQL-specific SQL incompatible with SQLite.
 
 ## API documentation (Swagger)
 
