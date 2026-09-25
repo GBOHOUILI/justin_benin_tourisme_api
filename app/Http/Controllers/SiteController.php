@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Prestataire;
 use App\Models\ResponsableRegional;
 use App\Models\Site;
@@ -281,6 +282,16 @@ class SiteController extends Controller
 
         $site = Site::create($validated);
 
+        if ($user instanceof Prestataire) {
+            Notification::notifierResponsablesRegion(
+                $site->id_region,
+                "soumission_prestataire",
+                "Nouvelle fiche à valider",
+                "{$user->nom_entreprise} a soumis un nouveau site : « {$site->libelle} ».",
+                "/responsable",
+            );
+        }
+
         return response()->json($site->load(["categorie", "admin", "prestataire", "responsable", "region"]), 201);
     }
 
@@ -475,6 +486,7 @@ class SiteController extends Controller
         if ($refus = $this->refuserSiHorsPerimetre($request, $site)) return $refus;
 
         $site->update(["status" => "valide", "commentaire_responsable" => null]);
+        $this->notifierPrestataire($site, "fiche_validee", "Fiche validée", "Votre site « {$site->libelle} » a été validé et est maintenant visible publiquement.");
 
         return response()->json(["message" => "Site validé", "site" => $site]);
     }
@@ -499,6 +511,7 @@ class SiteController extends Controller
         if ($refus = $this->refuserSiHorsPerimetre($request, $site)) return $refus;
 
         $site->update(["status" => "rejete"]);
+        $this->notifierPrestataire($site, "fiche_rejetee", "Fiche rejetée", "Votre site « {$site->libelle} » a été rejeté.");
 
         return response()->json(["message" => "Site rejeté", "site" => $site]);
     }
@@ -534,6 +547,7 @@ class SiteController extends Controller
         ]);
 
         $site->update(["status" => "precisions_demandees", "commentaire_responsable" => $validated["commentaire"]]);
+        $this->notifierPrestataire($site, "precisions_demandees", "Précisions demandées", "Le responsable régional a demandé des précisions sur votre site « {$site->libelle} » : {$validated['commentaire']}");
 
         return response()->json(["message" => "Précisions demandées", "site" => $site]);
     }
@@ -573,5 +587,18 @@ class SiteController extends Controller
             ["message" => "Site supprimé avec succès"],
             200,
         );
+    }
+
+    /** Aucune notification si la fiche n'a pas de prestataire (créée par un admin/responsable). */
+    private function notifierPrestataire(Site $site, string $typeEvenement, string $titre, string $message): void
+    {
+        if (! $site->id_prestataire) {
+            return;
+        }
+
+        $prestataire = $site->prestataire ?? Prestataire::find($site->id_prestataire);
+        if ($prestataire) {
+            Notification::envoyer("prestataire", $prestataire, $typeEvenement, $titre, $message, "/prestataire/sites");
+        }
     }
 }

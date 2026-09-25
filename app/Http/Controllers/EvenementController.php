@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Evenement;
+use App\Models\Notification;
 use App\Models\Prestataire;
 use App\Models\ResponsableRegional;
 use Illuminate\Http\Request;
@@ -301,6 +302,16 @@ class EvenementController extends Controller
 
         $evenement = Evenement::create($validated);
 
+        if ($user instanceof Prestataire) {
+            Notification::notifierResponsablesRegion(
+                $evenement->id_region,
+                "soumission_prestataire",
+                "Nouvelle fiche à valider",
+                "{$user->nom_entreprise} a soumis un nouvel événement : « {$evenement->libelle} ».",
+                "/responsable",
+            );
+        }
+
         return response()->json($evenement->load(["categorie", "admin", "prestataire", "responsable", "region"]), 201);
     }
 
@@ -517,6 +528,7 @@ class EvenementController extends Controller
         if ($refus = $this->refuserSiHorsPerimetre($request, $evenement)) return $refus;
 
         $evenement->update(["status" => "valide", "commentaire_responsable" => null]);
+        $this->notifierPrestataire($evenement, "fiche_validee", "Fiche validée", "Votre événement « {$evenement->libelle} » a été validé et est maintenant visible publiquement.");
 
         return response()->json([
             "message" => "Événement validé",
@@ -549,6 +561,7 @@ class EvenementController extends Controller
         if ($refus = $this->refuserSiHorsPerimetre($request, $evenement)) return $refus;
 
         $evenement->update(["status" => "rejete"]);
+        $this->notifierPrestataire($evenement, "fiche_rejetee", "Fiche rejetée", "Votre événement « {$evenement->libelle} » a été rejeté.");
 
         return response()->json([
             "message" => "Événement rejeté",
@@ -587,6 +600,7 @@ class EvenementController extends Controller
         ]);
 
         $evenement->update(["status" => "precisions_demandees", "commentaire_responsable" => $validated["commentaire"]]);
+        $this->notifierPrestataire($evenement, "precisions_demandees", "Précisions demandées", "Le responsable régional a demandé des précisions sur votre événement « {$evenement->libelle} » : {$validated['commentaire']}");
 
         return response()->json([
             "message" => "Précisions demandées",
@@ -629,5 +643,17 @@ class EvenementController extends Controller
         $evenement->delete();
 
         return response()->json(["message" => "Événement supprimé"], 200);
+    }
+
+    private function notifierPrestataire(Evenement $evenement, string $typeEvenement, string $titre, string $message): void
+    {
+        if (! $evenement->id_prestataire) {
+            return;
+        }
+
+        $prestataire = $evenement->prestataire ?? Prestataire::find($evenement->id_prestataire);
+        if ($prestataire) {
+            Notification::envoyer("prestataire", $prestataire, $typeEvenement, $titre, $message, "/prestataire/evenements");
+        }
     }
 }

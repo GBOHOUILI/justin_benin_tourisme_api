@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hotel;
+use App\Models\Notification;
 use App\Models\Prestataire;
 use App\Models\ResponsableRegional;
 use Illuminate\Http\Request;
@@ -185,6 +186,16 @@ class HotelController extends Controller
 
         $hotel = Hotel::create($validated);
 
+        if ($user instanceof Prestataire) {
+            Notification::notifierResponsablesRegion(
+                $hotel->id_region,
+                "soumission_prestataire",
+                "Nouvelle fiche à valider",
+                "{$user->nom_entreprise} a soumis un nouvel hôtel : « {$hotel->libelle} ».",
+                "/responsable",
+            );
+        }
+
         return response()->json($hotel->load(["admin", "prestataire", "responsable", "region"]), 201);
     }
 
@@ -303,6 +314,7 @@ class HotelController extends Controller
         if ($refus = $this->refuserSiHorsPerimetre($request, $hotel)) return $refus;
 
         $hotel->update(["status" => "valide", "commentaire_responsable" => null]);
+        $this->notifierPrestataire($hotel, "fiche_validee", "Fiche validée", "Votre hôtel « {$hotel->libelle} » a été validé et est maintenant visible publiquement.");
 
         return response()->json(["message" => "Hôtel validé", "hotel" => $hotel]);
     }
@@ -322,6 +334,7 @@ class HotelController extends Controller
         if ($refus = $this->refuserSiHorsPerimetre($request, $hotel)) return $refus;
 
         $hotel->update(["status" => "rejete"]);
+        $this->notifierPrestataire($hotel, "fiche_rejetee", "Fiche rejetée", "Votre hôtel « {$hotel->libelle} » a été rejeté.");
 
         return response()->json(["message" => "Hôtel rejeté", "hotel" => $hotel]);
     }
@@ -351,6 +364,7 @@ class HotelController extends Controller
         ]);
 
         $hotel->update(["status" => "precisions_demandees", "commentaire_responsable" => $validated["commentaire"]]);
+        $this->notifierPrestataire($hotel, "precisions_demandees", "Précisions demandées", "Le responsable régional a demandé des précisions sur votre hôtel « {$hotel->libelle} » : {$validated['commentaire']}");
 
         return response()->json(["message" => "Précisions demandées", "hotel" => $hotel]);
     }
@@ -378,5 +392,17 @@ class HotelController extends Controller
         $hotel->delete();
 
         return response()->json(["message" => "Hôtel supprimé avec succès"], 200);
+    }
+
+    private function notifierPrestataire(Hotel $hotel, string $typeEvenement, string $titre, string $message): void
+    {
+        if (! $hotel->id_prestataire) {
+            return;
+        }
+
+        $prestataire = $hotel->prestataire ?? Prestataire::find($hotel->id_prestataire);
+        if ($prestataire) {
+            Notification::envoyer("prestataire", $prestataire, $typeEvenement, $titre, $message, "/prestataire/hotels");
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Prestataire;
 use App\Models\ResponsableRegional;
 use App\Models\Transport;
@@ -186,6 +187,16 @@ class TransportController extends Controller
 
         $transport = Transport::create($validated);
 
+        if ($user instanceof Prestataire) {
+            Notification::notifierResponsablesRegion(
+                $transport->id_region,
+                "soumission_prestataire",
+                "Nouvelle fiche à valider",
+                "{$user->nom_entreprise} a soumis un nouveau transport : « {$transport->libelle} ».",
+                "/responsable",
+            );
+        }
+
         return response()->json($transport->load(["admin", "prestataire", "responsable", "region"]), 201);
     }
 
@@ -304,6 +315,7 @@ class TransportController extends Controller
         if ($refus = $this->refuserSiHorsPerimetre($request, $transport)) return $refus;
 
         $transport->update(["status" => "valide", "commentaire_responsable" => null]);
+        $this->notifierPrestataire($transport, "fiche_validee", "Fiche validée", "Votre transport « {$transport->libelle} » a été validé et est maintenant visible publiquement.");
 
         return response()->json(["message" => "Transport validé", "transport" => $transport]);
     }
@@ -323,6 +335,7 @@ class TransportController extends Controller
         if ($refus = $this->refuserSiHorsPerimetre($request, $transport)) return $refus;
 
         $transport->update(["status" => "rejete"]);
+        $this->notifierPrestataire($transport, "fiche_rejetee", "Fiche rejetée", "Votre transport « {$transport->libelle} » a été rejeté.");
 
         return response()->json(["message" => "Transport rejeté", "transport" => $transport]);
     }
@@ -352,6 +365,7 @@ class TransportController extends Controller
         ]);
 
         $transport->update(["status" => "precisions_demandees", "commentaire_responsable" => $validated["commentaire"]]);
+        $this->notifierPrestataire($transport, "precisions_demandees", "Précisions demandées", "Le responsable régional a demandé des précisions sur votre transport « {$transport->libelle} » : {$validated['commentaire']}");
 
         return response()->json(["message" => "Précisions demandées", "transport" => $transport]);
     }
@@ -379,5 +393,17 @@ class TransportController extends Controller
         $transport->delete();
 
         return response()->json(["message" => "Transport supprimé avec succès"], 200);
+    }
+
+    private function notifierPrestataire(Transport $transport, string $typeEvenement, string $titre, string $message): void
+    {
+        if (! $transport->id_prestataire) {
+            return;
+        }
+
+        $prestataire = $transport->prestataire ?? Prestataire::find($transport->id_prestataire);
+        if ($prestataire) {
+            Notification::envoyer("prestataire", $prestataire, $typeEvenement, $titre, $message, "/prestataire/transports");
+        }
     }
 }

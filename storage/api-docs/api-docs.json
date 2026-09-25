@@ -3060,6 +3060,95 @@
                 ]
             }
         },
+        "/api/mes-notifications": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Lister mes notifications (le type de compte se déduit du guard connecté)",
+                "operationId": "9f5f87580f06aeea3e770a7c2990edb8",
+                "responses": {
+                    "200": {
+                        "description": "Notifications paginées, les plus récentes en premier"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/mes-notifications/non-lues": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Nombre de notifications non lues (pour un badge)",
+                "operationId": "3af6c0fb7e3a0c59015e5e80f7de3c09",
+                "responses": {
+                    "200": {
+                        "description": "{ nombre }"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/mes-notifications/{id}/lu": {
+            "patch": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Marquer une notification comme lue",
+                "operationId": "8efdce90139513ab63cf483b9883252f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notification marquée comme lue"
+                    },
+                    "403": {
+                        "description": "Cette notification ne vous appartient pas"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/mes-notifications/tout-lire": {
+            "patch": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Marquer toutes mes notifications comme lues",
+                "operationId": "f6ae90681718c557a4e7747b95945e89",
+                "responses": {
+                    "200": {
+                        "description": "Notifications marquées comme lues"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/paiements/{id}/verifier": {
             "patch": {
                 "tags": [
@@ -5491,6 +5580,10 @@
         {
             "name": "Hôtels",
             "description": "Hôtels"
+        },
+        {
+            "name": "Notifications",
+            "description": "Notifications"
         },
         {
             "name": "Paiements",

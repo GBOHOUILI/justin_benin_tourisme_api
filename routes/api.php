@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CatSiteController;
@@ -136,6 +137,11 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::post("/logout", [AuthController::class, "logout"]);
     Route::post("/update-password", [AuthController::class, "updatePassword"]);
 
+    Route::get("/mes-notifications", [NotificationController::class, "index"]);
+    Route::get("/mes-notifications/non-lues", [NotificationController::class, "nonLues"]);
+    Route::patch("/mes-notifications/tout-lire", [NotificationController::class, "marquerToutesLues"]);
+    Route::patch("/mes-notifications/{notification}/lu", [NotificationController::class, "marquerLu"]);
+
     // Profil user
     Route::get("/users/{user}", [UserController::class, "show"]);
     Route::put("/users/{user}", [UserController::class, "update"]);
@@ -183,6 +189,11 @@ Route::middleware(["auth:admin", "admin"])
             AuthController::class,
             "updatePassword",
         ]);
+
+        Route::get("/mes-notifications", [NotificationController::class, "index"]);
+        Route::get("/mes-notifications/non-lues", [NotificationController::class, "nonLues"]);
+        Route::patch("/mes-notifications/tout-lire", [NotificationController::class, "marquerToutesLues"]);
+        Route::patch("/mes-notifications/{notification}/lu", [NotificationController::class, "marquerLu"]);
 
         // Gestion des admins
         Route::apiResource("admins", AdminController::class);
@@ -387,6 +398,11 @@ Route::middleware(["auth:prestataire", "prestataire"])
         Route::put("/profil", [PrestataireController::class, "updateProfil"]);
         Route::get("/dashboard", [PrestataireController::class, "dashboard"]);
 
+        Route::get("/mes-notifications", [NotificationController::class, "index"]);
+        Route::get("/mes-notifications/non-lues", [NotificationController::class, "nonLues"]);
+        Route::patch("/mes-notifications/tout-lire", [NotificationController::class, "marquerToutesLues"]);
+        Route::patch("/mes-notifications/{notification}/lu", [NotificationController::class, "marquerLu"]);
+
         // Abonnement SaaS (module Prestataire, étape 3)
         Route::get("/abonnement", [AbonnementController::class, "statut"]);
         Route::post("/abonnements", [AbonnementController::class, "souscrire"]);
@@ -474,6 +490,11 @@ Route::middleware(["auth:responsable", "responsable"])
         Route::get("/me", [AuthController::class, "me"]);
         Route::post("/logout", [AuthController::class, "logout"]);
         Route::post("/update-password", [AuthController::class, "updatePassword"]);
+
+        Route::get("/mes-notifications", [NotificationController::class, "index"]);
+        Route::get("/mes-notifications/non-lues", [NotificationController::class, "nonLues"]);
+        Route::patch("/mes-notifications/tout-lire", [NotificationController::class, "marquerToutesLues"]);
+        Route::patch("/mes-notifications/{notification}/lu", [NotificationController::class, "marquerLu"]);
 
         Route::get("/a-valider", [ResponsableRegionalController::class, "aValider"]);
 
