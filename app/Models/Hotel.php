@@ -68,4 +68,11 @@ class Hotel extends Model
     {
         return $this->hasMany(GalerieHotel::class, 'id_hotel');
     }
+
+    // Contrairement à Site/Evenement, pas de Reservation pour un Hotel - un
+    // avis s'y rattache directement (cf. Avis/migration 2026_09_25_200254).
+    public function avis()
+    {
+        return $this->hasMany(Avis::class, 'id_hotel');
+    }
 }

@@ -28,7 +28,9 @@ class TransportController extends Controller
 
     private function requeteFiltree(Request $request)
     {
-        $query = Transport::with(["galeries", "trajets.villeDepart", "trajets.villeArrivee", "region", "prestataire", "responsable"]);
+        $query = Transport::with(["galeries", "trajets.villeDepart", "trajets.villeArrivee", "region", "prestataire", "responsable"])
+            ->withAvg(["avis as note_moyenne" => fn($q) => $q->where("avis.status", "approuve")], "note")
+            ->withCount(["avis as nombre_avis" => fn($q) => $q->where("avis.status", "approuve")]);
 
         if ($request->filled("libelle")) {
             $query->where("libelle", "like", "%" . $request->libelle . "%");
@@ -202,9 +204,11 @@ class TransportController extends Controller
             abort(404);
         }
 
-        return response()->json(
-            $transport->load(["admin", "prestataire", "responsable", "region", "galeries", "trajets.villeDepart", "trajets.villeArrivee"]),
-        );
+        $transport->load(["admin", "prestataire", "responsable", "region", "galeries", "trajets.villeDepart", "trajets.villeArrivee"]);
+        $transport->loadAvg(["avis as note_moyenne" => fn($q) => $q->where("avis.status", "approuve")], "note");
+        $transport->loadCount(["avis as nombre_avis" => fn($q) => $q->where("avis.status", "approuve")]);
+
+        return response()->json($transport);
     }
 
     #[

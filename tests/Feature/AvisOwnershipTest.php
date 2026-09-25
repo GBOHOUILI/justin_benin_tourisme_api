@@ -20,6 +20,7 @@ class AvisOwnershipTest extends TestCase
         $response = $this->actingAs($user, 'sanctum')->postJson('/api/avis', [
             'id_reservation' => $reservation->id,
             'message' => "Très belle visite.",
+            'note' => 5,
         ]);
 
         $response->assertCreated();
@@ -37,6 +38,7 @@ class AvisOwnershipTest extends TestCase
         $response = $this->actingAs($user, 'sanctum')->postJson('/api/avis', [
             'id_reservation' => $reservation->id,
             'message' => 'Avis prématuré',
+            'note' => 4,
         ]);
 
         $response->assertUnprocessable();
@@ -51,6 +53,7 @@ class AvisOwnershipTest extends TestCase
         $this->actingAs($user, 'sanctum')->postJson('/api/avis', [
             'id_reservation' => $reservation->id,
             'message' => 'Parfait',
+            'note' => 5,
             'status' => 'approuve',
         ]);
 
@@ -69,6 +72,7 @@ class AvisOwnershipTest extends TestCase
         $this->actingAs($intruder, 'sanctum')->postJson('/api/avis', [
             'id_reservation' => $reservation->id,
             'message' => "Je m'incruste",
+            'note' => 3,
         ])->assertForbidden();
 
         $this->assertDatabaseMissing('avis', ['id_reservation' => $reservation->id]);
@@ -83,6 +87,7 @@ class AvisOwnershipTest extends TestCase
         $this->actingAs($user, 'sanctum')->postJson('/api/avis', [
             'id_reservation' => $reservation->id,
             'message' => 'Deuxième avis',
+            'note' => 4,
         ])->assertUnprocessable();
     }
 

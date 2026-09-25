@@ -78,6 +78,14 @@ class Site extends Model
         return $this->hasMany(Reservation::class, 'id_site');
     }
 
+    // Un avis Site porte toujours sur une réservation confirmée (pas de
+    // colonne id_site directe sur avis, contrairement à Hotel/Restaurant/
+    // Transport - cf. Avis/migration 2026_09_25_200254).
+    public function avis()
+    {
+        return $this->hasManyThrough(Avis::class, Reservation::class, 'id_site', 'id_reservation');
+    }
+
     public function prix()
     {
         return $this->hasMany(Prix::class, 'id_site');

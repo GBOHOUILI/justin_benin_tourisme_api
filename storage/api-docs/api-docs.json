@@ -533,6 +533,30 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "name": "id_hotel",
+                        "in": "query",
+                        "description": "Avis laissés sur cet hôtel",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id_restaurant",
+                        "in": "query",
+                        "description": "Avis laissés sur ce restaurant",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id_transport",
+                        "in": "query",
+                        "description": "Avis laissés sur ce transport",
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "responses": {
@@ -545,23 +569,37 @@
                 "tags": [
                     "Avis"
                 ],
-                "summary": "Créer un avis",
+                "summary": "Créer un avis (sur une réservation confirmée pour Site/Événement, directement sur la fiche pour Hôtel/Restaurant/Transport)",
                 "operationId": "c6eeaa4be5353dc347263747d29b964d",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "id_reservation",
-                                    "message"
+                                    "message",
+                                    "note"
                                 ],
                                 "properties": {
                                     "id_reservation": {
-                                        "description": "Réservation confirmée du touriste sur laquelle porte l'avis",
+                                        "description": "Réservation confirmée du touriste (Site/Événement)",
+                                        "type": "integer"
+                                    },
+                                    "id_hotel": {
+                                        "type": "integer"
+                                    },
+                                    "id_restaurant": {
+                                        "type": "integer"
+                                    },
+                                    "id_transport": {
                                         "type": "integer"
                                     },
                                     "message": {
                                         "type": "string"
+                                    },
+                                    "note": {
+                                        "type": "integer",
+                                        "maximum": 5,
+                                        "minimum": 1
                                     }
                                 },
                                 "type": "object"
@@ -574,7 +612,7 @@
                         "description": "Avis créé"
                     },
                     "422": {
-                        "description": "Réservation non confirmée, ou déjà notée"
+                        "description": "Cible manquante/multiple, réservation non confirmée, ou avis déjà déposé"
                     }
                 }
             }
@@ -625,6 +663,11 @@
                                 "properties": {
                                     "message": {
                                         "type": "string"
+                                    },
+                                    "note": {
+                                        "type": "integer",
+                                        "maximum": 5,
+                                        "minimum": 1
                                     }
                                 },
                                 "type": "object"
