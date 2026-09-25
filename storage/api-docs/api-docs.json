@@ -315,6 +315,59 @@
                 }
             }
         },
+        "/api/assistant/chat": {
+            "post": {
+                "tags": [
+                    "Circuits"
+                ],
+                "summary": "Discuter librement avec l'assistant IA (questions sur sites, événements, hôtels, restaurants, transports, ou demande de circuit)",
+                "operationId": "ff7bec6ff7ebd1645dda62205f7e7c76",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "messages"
+                                ],
+                                "properties": {
+                                    "messages": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "role": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "user",
+                                                        "assistant"
+                                                    ]
+                                                },
+                                                "content": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "{ reponse, circuit: {titre, budget_estime, etapes} | null }"
+                    },
+                    "422": {
+                        "description": "Messages invalides"
+                    },
+                    "503": {
+                        "description": "IA non configurée ou indisponible"
+                    }
+                }
+            }
+        },
         "/api/prestataire/register": {
             "post": {
                 "tags": [
@@ -5009,6 +5062,10 @@
             "description": "Abonnements"
         },
         {
+            "name": "Circuits",
+            "description": "Circuits"
+        },
+        {
             "name": "Prestataires",
             "description": "Prestataires"
         },
@@ -5023,10 +5080,6 @@
         {
             "name": "Categories Sites",
             "description": "Categories Sites"
-        },
-        {
-            "name": "Circuits",
-            "description": "Circuits"
         },
         {
             "name": "Commandes",
