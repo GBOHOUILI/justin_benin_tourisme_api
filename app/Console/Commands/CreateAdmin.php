@@ -8,13 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class CreateAdmin extends Command
 {
-    /**
-     * Commande : php artisan admin:create
-     *
-     * Permet de créer un administrateur en interactif depuis le terminal.
-     * Utile pour créer le premier admin sur un serveur vierge où le seeder
-     * n'a pas encore été exécuté.
-     */
+    // Utile pour créer le premier admin sur un serveur vierge où le seeder n'a pas encore tourné.
     protected $signature = "admin:create";
     protected $description = "Créer un nouvel administrateur de manière interactive";
 
