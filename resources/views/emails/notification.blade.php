@@ -8,14 +8,14 @@
     <table role="presentation" style="max-width:480px; margin:0 auto; background:#ffffff; padding:32px;">
         <tr>
             <td>
-                <h1 style="font-size:20px; margin:0 0 16px;">Totché</h1>
+                <h1 style="font-size:20px; margin:0 0 16px;">{{ config('app.name') }}</h1>
                 <h2 style="font-size:16px; margin:0 0 16px;">{{ $titreNotif }}</h2>
                 <p style="margin:0 0 24px; line-height:1.6;">{{ $messageNotif }}</p>
                 @if($lienComplet)
                     <p style="margin:0;">
                         <a href="{{ $lienComplet }}"
                            style="display:inline-block; background:#E63946; color:#ffffff; text-decoration:none; padding:12px 24px; font-weight:bold;">
-                            Voir sur Totché
+                            Voir sur {{ config('app.name') }}
                         </a>
                     </p>
                 @endif

@@ -8,7 +8,7 @@
     <table role="presentation" style="max-width:480px; margin:0 auto; background:#ffffff; padding:32px;">
         <tr>
             <td>
-                <h1 style="font-size:20px; margin:0 0 16px;">Totché</h1>
+                <h1 style="font-size:20px; margin:0 0 16px;">{{ config('app.name') }}</h1>
                 <p style="margin:0 0 16px;">Bonjour {{ $prenom }},</p>
                 <p style="margin:0 0 16px;">
                     Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le

@@ -75,6 +75,11 @@ services:
         VITE_API_URL: http://localhost:8000/api
         VITE_KKIAPAY_PUBLIC_KEY: ""
         VITE_KKIAPAY_SANDBOX: "true"
+        VITE_PLATFORM_NAME: "Totché"
+        VITE_COMPANY_NAME: "Sen Impact Technologies"
+        VITE_CONTACT_EMAIL: "ajustinsena@gmail.com"
+        VITE_CONTACT_TEL: "+229 01 67 75 88 20"
+        VITE_CONTACT_ADRESSE: "Cotonou, Bénin"
     container_name: totche_frontend
     restart: unless-stopped
     ports:
