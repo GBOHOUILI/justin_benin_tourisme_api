@@ -24,6 +24,20 @@ fi
 # dev). C'est ce qui a causé la destruction répétée de la base de dev par
 # RefreshDatabase (migrate:fresh) avant d'être diagnostiqué.
 php artisan config:clear
+
+# Le healthcheck MySQL de docker-compose peut passer "healthy" quelques
+# secondes avant que le serveur accepte réellement de nouvelles connexions
+# au tout premier démarrage sur un volume vide (constaté : la toute première
+# tentative de migrate échoue avec "Connection refused", rattrapée seulement
+# par le redémarrage automatique du conteneur - fragile pour un premier
+# déploiement). On attend ici que la connexion PDO réponde avant de continuer.
+echo "→ Attente de la disponibilité de MySQL..."
+tries=0
+until php artisan migrate:status > /dev/null 2>&1 || [ "$tries" -ge 15 ]; do
+    tries=$((tries + 1))
+    sleep 2
+done
+
 php artisan migrate --force
 
 # Idempotents (firstOrCreate) - sûrs à rejouer à chaque démarrage, y compris
