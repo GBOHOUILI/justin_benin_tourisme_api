@@ -61,7 +61,7 @@ services:
       # rendant inutile le `composer install` fait au build de l'image.
       - vendor_data:/var/www/vendor
       - ./storage:/var/www/storage
-    # Pas de 'command' — l'entrypoint (docker/entrypoint.sh) démarre Apache
+    # Pas de 'command' : l'entrypoint (docker/entrypoint.sh) démarre Apache
 
   # ─── Frontend (React/Vite, servi par Nginx) ─────────────────
   # Ports/URL de test par défaut ci-dessous - à changer ici si le domaine de
