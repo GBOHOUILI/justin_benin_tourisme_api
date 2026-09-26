@@ -1,4 +1,4 @@
-# Déploiement — Totché (serveur de test)
+# Déploiement : Totché (serveur de test)
 
 Guide pour l'ops : deux dépôts, une seule commande. Rien d'autre à
 configurer, l'application se prépare elle-même au premier démarrage
@@ -28,7 +28,7 @@ C'est tout. Cette seule commande :
 1. Construit l'image de l'API (installe les dépendances PHP, `composer install` compris)
 2. Construit l'image du frontend (build de production + Nginx)
 3. Démarre MySQL, attend qu'il soit prêt
-4. Démarre l'API — au premier démarrage seulement : crée le fichier
+4. Démarre l'API : au premier démarrage seulement, crée le fichier
    `.env` depuis `.env.example` et génère la clé d'application
    automatiquement (rien à taper) ; à chaque démarrage : migrations et
    données de démo (idempotentes, sans risque de doublons)
