@@ -7,16 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Vérifie que l'utilisateur authentifié est bien un Admin.
- * À utiliser APRÈS le middleware auth:sanctum ou auth:admin.
- *
- * Usage dans les routes :
- *   Route::middleware(['auth:sanctum', 'admin'])->group(...)
- *
- * Ou directement avec le guard admin :
- *   Route::middleware('auth:admin')->group(...)
- */
+// Doit s'exécuter après un middleware de guard (auth:sanctum ou auth:admin).
 class EnsureIsAdmin
 {
     public function handle(Request $request, Closure $next): Response
