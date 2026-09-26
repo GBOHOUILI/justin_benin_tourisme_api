@@ -56,12 +56,37 @@ services:
       - benin_network
     volumes:
       - .:/var/www
-      ##- /var/www/vendor # vendor isolé dans le container
+      # vendor isolé dans un volume nommé : le bind mount ci-dessus écrase
+      # sinon /var/www/vendor par celui (absent) du dépôt cloné côté hôte,
+      # rendant inutile le `composer install` fait au build de l'image.
+      - vendor_data:/var/www/vendor
       - ./storage:/var/www/storage
-    # Pas de 'command' — Apache démarre automatiquement via Dockerfile CMD
+    # Pas de 'command' — l'entrypoint (docker/entrypoint.sh) démarre Apache
+
+  # ─── Frontend (React/Vite, servi par Nginx) ─────────────────
+  # Ports/URL de test par défaut ci-dessous - à changer ici si le domaine de
+  # test diffère (seule modification prévue avant de remettre la main à
+  # l'ops, qui n'a ensuite qu'à lancer `docker compose up -d --build`).
+  frontend:
+    build:
+      context: ../totche-front
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8000/api
+        VITE_KKIAPAY_PUBLIC_KEY: ""
+        VITE_KKIAPAY_SANDBOX: "true"
+    container_name: totche_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    networks:
+      - benin_network
 
 volumes:
   db_data:
+  vendor_data:
 
 networks:
   benin_network:
